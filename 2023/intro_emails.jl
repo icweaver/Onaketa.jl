@@ -167,7 +167,7 @@ intro(;
 	parent_names = "Erin",
 	parent_emails = "eyoungbloodsmith@gmail.com",
 	student_name = "Maya Reddick",
-	subject = "Math",
+	subject = "Mid-level math",
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
@@ -179,7 +179,7 @@ intro(;
 	parent_names = "Aspen Maiden",
 	parent_emails = "amaiden125@gmail.com",
 	student_name = "Azariya Smith",
-	subject = "Math",
+	subject = "Mid-level math",
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
@@ -215,7 +215,7 @@ intro(;
 	parent_names = "Kalkidan Bekele, Jumma Jahdid",
 	parent_emails = "yeab7@yahoo.com, jahdid@gmail.com",
 	student_name = "Elshadi Jahdid",
-	subject = "Math",
+	subject = "Mid-level math",
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
@@ -227,7 +227,7 @@ intro(;
 	parent_names = "Takiyah Jones",
 	parent_emails = "takiyah.jones1@gmail.com",
 	student_name = "Takiyah Jones",
-	subject = "Math",
+	subject = "IM III",
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
@@ -599,7 +599,7 @@ version = "17.4.0+0"
 # ╠═27284c5b-bbe2-4988-bb92-d722a1b7536e
 # ╟─cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
 # ╟─cfb10e2e-41eb-41eb-92f0-63f34f548c11
-# ╟─98e032e7-723b-4d50-913b-a445d662d84e
+# ╠═98e032e7-723b-4d50-913b-a445d662d84e
 # ╟─cc67ce30-becd-43c1-ad47-66800b0f7163
 # ╠═74dc18b6-d576-4d79-832f-0178512b4382
 # ╟─598b2c06-41a8-4000-99f0-6833804e840a
