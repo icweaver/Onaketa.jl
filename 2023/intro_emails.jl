@@ -71,6 +71,24 @@ md"""
 ## Davion Caron Brown
 """
 
+# ╔═╡ 7339eef8-62f6-42ff-aab8-76807bc5426f
+md"""
+# Greg
+"""
+
+# ╔═╡ fbc5458e-6100-43d5-a277-9f961ac44654
+md"""
+## Maya Berhane 
+"""
+
+# ╔═╡ 31bb818e-a602-4e04-bb19-283d09db24df
+md"""
+## Justin Martin
+"""
+
+# ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
+
+
 # ╔═╡ 066e40df-12a0-4ad1-b09a-e481847ef296
 TableOfContents(title="Intros 👋🏾")
 
@@ -178,7 +196,7 @@ intro(;
 	parent_names = "Ken",
 	parent_emails = "kjuma@Att.net",
 	student_name = "Nadia Juma",
-	subject = "Proofs, algebra, polynomials",
+	subject = "proofs/algebra/polynomials",
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
@@ -231,6 +249,30 @@ intro(;
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
 	date_start = "**Friday, January 20th at 5:00 pm PT**"
+)
+
+# ╔═╡ 0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+intro(;
+	parent_names = "Lidite Kebede, Fesha Berhane",
+	parent_emails = "lidite_kebede@yahoo.com, feshabd@yahoo.com",
+	student_name = "Maya Berhane",
+	subject = "Mid-level math",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Tuesday, January 17th at 4:00 pm PT**"
+)
+
+# ╔═╡ 32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
+intro(;
+	parent_names = "Tamiko Martin",
+	parent_emails = "trixiezack@msn.com",
+	student_name = "Maya Berhane",
+	subject = "Advanced math",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Tuesday, January 17th at 5:00 pm PT**"
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -533,6 +575,12 @@ version = "17.4.0+0"
 # ╠═e48d3bb6-c5f1-4b0b-ad2b-7a8b6ed4eda5
 # ╟─16373e73-1907-4cd6-9dda-376454dd2650
 # ╠═9c26dde8-965b-4e85-9a8f-6be4712bc81f
+# ╟─7339eef8-62f6-42ff-aab8-76807bc5426f
+# ╟─fbc5458e-6100-43d5-a277-9f961ac44654
+# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+# ╠═31bb818e-a602-4e04-bb19-283d09db24df
+# ╠═32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
+# ╠═009a94fc-72bc-486d-b9ee-94bf09a888b8
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
 # ╟─3acea62a-c3cc-4456-8a05-edf0592dd010
 # ╠═a0e573cb-2c06-4e20-a924-acef0f0f8827
