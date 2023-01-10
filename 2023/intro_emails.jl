@@ -53,11 +53,23 @@ md"""
 
 # ╔═╡ cfb10e2e-41eb-41eb-92f0-63f34f548c11
 md"""
-## 
+## Elshadi Jahdid
 """
 
-# ╔═╡ 98e032e7-723b-4d50-913b-a445d662d84e
+# ╔═╡ cc67ce30-becd-43c1-ad47-66800b0f7163
+md"""
+## Takiyah Jones
+"""
 
+# ╔═╡ 598b2c06-41a8-4000-99f0-6833804e840a
+md"""
+## Hailey Lewis
+"""
+
+# ╔═╡ 16373e73-1907-4cd6-9dda-376454dd2650
+md"""
+## Davion Caron Brown
+"""
 
 # ╔═╡ 066e40df-12a0-4ad1-b09a-e481847ef296
 TableOfContents(title="Intros 👋🏾")
@@ -70,6 +82,9 @@ function day_time(s)
 	return "$(day) $(time)"
 end
 
+# ╔═╡ bb598ced-e545-4e11-bf2d-5cf55d12c2de
+first_name(s) = first(split(s))
+
 # ╔═╡ f453fdfd-ecd8-4a19-a53f-d824da7426a2
 function intro(;
 	parent_names,
@@ -81,8 +96,12 @@ function intro(;
 	tutor_position,
 	date_start,
 )
-	tutor_first = first(split(tutor_name))
-	student_first = first(split(student_name))
+	tutor_first = first_name(tutor_name)
+	student_first = first_name(student_name)
+	parents_first = let
+		s = first_name.(split(parent_names, ","))
+		join(s, ", ")
+	end
 	date = day_time(date_start)
 	
 	@mdx """
@@ -92,7 +111,7 @@ function intro(;
 	cc: info@onaketa.com, $(tutor_email)
 	```
 	
-	Dear $(parent_names) and $(student_first),
+	Dear $(parents_first) and $(student_first),
 
 	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is a $(tutor_position); their bio can be found on our [website](https://www.onaketa.com/about). 
 	
@@ -125,7 +144,7 @@ intro(;
 	student_name = "Maya Reddick",
 	subject = "Math",
 	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com ",
+	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
 	date_start = "**Wednesday, January 18th at 6:00 pm PT**"
 )
@@ -137,7 +156,7 @@ intro(;
 	student_name = "Azariya Smith",
 	subject = "Math",
 	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com ",
+	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
 	date_start = "**Saturday, January 21st at 2:00 pm PT**"
 )
@@ -149,7 +168,7 @@ intro(;
 	student_name = "Meshack Juma",
 	subject = "Pre-calculus",
 	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com ",
+	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
 	date_start = "**Saturday, January 21st at 3:00 pm PT**"
 )
@@ -161,9 +180,57 @@ intro(;
 	student_name = "Nadia Juma",
 	subject = "Proofs, algebra, polynomials",
 	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com ",
+	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
 	date_start = "**Saturday, January 21st at 4:00 pm PT**"
+)
+
+# ╔═╡ 98e032e7-723b-4d50-913b-a445d662d84e
+intro(;
+	parent_names = "Kalkidan Bekele, Jumma Jahdid",
+	parent_emails = "yeab7@yahoo.com, jahdid@gmail.com",
+	student_name = "Elshadi Jahdid",
+	subject = "Math",
+	tutor_name = "Haley Carrasco",
+	tutor_email = "haleycarrasco7@gmail.com",
+	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	date_start = "**Tuesday, January 17th at 4:00 pm PT**"
+)
+
+# ╔═╡ 74dc18b6-d576-4d79-832f-0178512b4382
+intro(;
+	parent_names = "Takiyah Jones",
+	parent_emails = "takiyah.jones1@gmail.com",
+	student_name = "Takiyah Jones",
+	subject = "Math",
+	tutor_name = "Haley Carrasco",
+	tutor_email = "haleycarrasco7@gmail.com",
+	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	date_start = "**Tuesday, January 17th at 5:00 pm PT**"
+)
+
+# ╔═╡ e48d3bb6-c5f1-4b0b-ad2b-7a8b6ed4eda5
+intro(;
+	parent_names = "Jasmine Allen, Raul Vargas",
+	parent_emails = "jnallen@scu.edu, rvraider75@gmail.com",
+	student_name = "Hailey Lewis",
+	subject = "Math",
+	tutor_name = "Haley Carrasco",
+	tutor_email = "haleycarrasco7@gmail.com",
+	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	date_start = "**Friday, January 20th at 4:00 pm PT**"
+)
+
+# ╔═╡ 9c26dde8-965b-4e85-9a8f-6be4712bc81f
+intro(;
+	parent_names = "Devonna Johnson",
+	parent_emails = "jdevonna69@yahoo.com",
+	student_name = "Davion Caron Brown",
+	subject = "Math",
+	tutor_name = "Haley Carrasco",
+	tutor_email = "haleycarrasco7@gmail.com",
+	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	date_start = "**Friday, January 20th at 5:00 pm PT**"
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -457,12 +524,19 @@ version = "17.4.0+0"
 # ╠═497b7154-5352-4c56-b92a-7905efeb191f
 # ╟─06edbec7-94b7-447c-9e4f-fc1d55c7f94f
 # ╠═27284c5b-bbe2-4988-bb92-d722a1b7536e
-# ╠═cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
-# ╠═cfb10e2e-41eb-41eb-92f0-63f34f548c11
-# ╠═98e032e7-723b-4d50-913b-a445d662d84e
+# ╟─cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
+# ╟─cfb10e2e-41eb-41eb-92f0-63f34f548c11
+# ╟─98e032e7-723b-4d50-913b-a445d662d84e
+# ╟─cc67ce30-becd-43c1-ad47-66800b0f7163
+# ╠═74dc18b6-d576-4d79-832f-0178512b4382
+# ╟─598b2c06-41a8-4000-99f0-6833804e840a
+# ╠═e48d3bb6-c5f1-4b0b-ad2b-7a8b6ed4eda5
+# ╟─16373e73-1907-4cd6-9dda-376454dd2650
+# ╠═9c26dde8-965b-4e85-9a8f-6be4712bc81f
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
 # ╟─3acea62a-c3cc-4456-8a05-edf0592dd010
-# ╟─a0e573cb-2c06-4e20-a924-acef0f0f8827
-# ╠═f453fdfd-ecd8-4a19-a53f-d824da7426a2
+# ╠═a0e573cb-2c06-4e20-a924-acef0f0f8827
+# ╟─f453fdfd-ecd8-4a19-a53f-d824da7426a2
+# ╠═bb598ced-e545-4e11-bf2d-5cf55d12c2de
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
