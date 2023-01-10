@@ -86,8 +86,15 @@ md"""
 ## Justin Martin
 """
 
-# ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
+# ╔═╡ 0f804e78-a323-4443-b400-18bd721f1fce
+md"""
+## Nailah Cannon
+"""
 
+# ╔═╡ 0d58a06a-6ad3-4448-8c62-13e439054773
+md"""
+## Dorien Omar Hughes
+"""
 
 # ╔═╡ 066e40df-12a0-4ad1-b09a-e481847ef296
 TableOfContents(title="Intros 👋🏾")
@@ -273,6 +280,30 @@ intro(;
 	tutor_email = "gcunningham@g.harvard.edu",
 	tutor_position = "PhD student at Harvard University",
 	date_start = "**Tuesday, January 17th at 5:00 pm PT**"
+)
+
+# ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
+intro(;
+	parent_names = "Jeanene Cannon, Terry Cannon",
+	parent_emails = "jeanene.cannon@gmail.com, tcan3001@gmail.com",
+	student_name = "Nailah Cannon",
+	subject = "Pre-calculus",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Saturday, January 21st at 10:00 am PT**"
+)
+
+# ╔═╡ 60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
+intro(;
+	parent_names = "Rolita Monique Hill",
+	parent_emails = "doriens1mom@gmail.com",
+	student_name = "Dorien Omar Hughes",
+	subject = "Physics",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Saturday, January 21st at 11:00 am PT**"
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -580,7 +611,10 @@ version = "17.4.0+0"
 # ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
 # ╠═31bb818e-a602-4e04-bb19-283d09db24df
 # ╠═32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
+# ╟─0f804e78-a323-4443-b400-18bd721f1fce
 # ╠═009a94fc-72bc-486d-b9ee-94bf09a888b8
+# ╟─0d58a06a-6ad3-4448-8c62-13e439054773
+# ╠═60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
 # ╟─3acea62a-c3cc-4456-8a05-edf0592dd010
 # ╠═a0e573cb-2c06-4e20-a924-acef0f0f8827
