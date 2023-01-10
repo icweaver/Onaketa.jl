@@ -138,7 +138,7 @@ function intro(;
 	
 	Dear $(parents_first) and $(student_first),
 
-	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is a $(tutor_position); their bio can be found on our [website](https://www.onaketa.com/about). 
+	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is a $(tutor_position); their updated bios will be made available on our [website](https://www.onaketa.com/about) soon. 
 	
 	$(tutor_first) would like to meet with $(student_first) on $(date). If this time does not work for $(student_first)'s schedule, please contact us ASAP. Otherwise, your first session will be on $(date_start).
 	
@@ -617,8 +617,8 @@ version = "17.4.0+0"
 # ╠═60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
 # ╟─3acea62a-c3cc-4456-8a05-edf0592dd010
-# ╠═a0e573cb-2c06-4e20-a924-acef0f0f8827
+# ╟─a0e573cb-2c06-4e20-a924-acef0f0f8827
 # ╟─f453fdfd-ecd8-4a19-a53f-d824da7426a2
-# ╠═bb598ced-e545-4e11-bf2d-5cf55d12c2de
+# ╟─bb598ced-e545-4e11-bf2d-5cf55d12c2de
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
