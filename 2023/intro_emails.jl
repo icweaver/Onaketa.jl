@@ -76,24 +76,24 @@ md"""
 # Greg
 """
 
-# ╔═╡ fbc5458e-6100-43d5-a277-9f961ac44654
-md"""
-## Maya Berhane 
-"""
-
 # ╔═╡ 31bb818e-a602-4e04-bb19-283d09db24df
 md"""
 ## Justin Martin
 """
 
-# ╔═╡ 0f804e78-a323-4443-b400-18bd721f1fce
-md"""
-## Nailah Cannon
-"""
-
 # ╔═╡ 0d58a06a-6ad3-4448-8c62-13e439054773
 md"""
 ## Dorien Omar Hughes
+"""
+
+# ╔═╡ fbc5458e-6100-43d5-a277-9f961ac44654
+md"""
+## Maya Berhane 
+"""
+
+# ╔═╡ 0f804e78-a323-4443-b400-18bd721f1fce
+md"""
+## Nailah Cannon
 """
 
 # ╔═╡ 066e40df-12a0-4ad1-b09a-e481847ef296
@@ -131,9 +131,9 @@ function intro(;
 	
 	@mdx """
 	```
-	Subject: $(student_first) meet $(tutor_first)
-	to: $(parent_emails)
-	cc: info@onaketa.com, $(tutor_email)
+	$(parent_emails)
+	info@onaketa.com, $(tutor_email)
+	$(student_first) meet $(tutor_first)
 	```
 	
 	Dear $(parents_first) and $(student_first),
@@ -146,7 +146,8 @@ function intro(;
 	
 	Please don't hesitate to reach out if you have questions!
 	
-	Best,
+	Best,<br>
+	The Onaketa Team
 	"""
 end
 
@@ -159,7 +160,7 @@ intro(;
 	tutor_name = "Filipe Cerqueira",
 	tutor_email = "fmcerque@utmb.edu",
 	tutor_position = "Postdoctoral fellow at the University of Michigan",
-	date_start = "**Tuesday, January 17th at 4:00 pm PT**"
+	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
 )
 
 # ╔═╡ 189ed825-dc67-40df-b255-cd16a23cfd24
@@ -171,7 +172,7 @@ intro(;
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
-	date_start = "**Wednesday, January 18th at 6:00 pm PT**"
+	date_start = "**Wednesday, January 18th at 6:00 pm PT**",
 )
 
 # ╔═╡ adc6f4f1-fc53-4afa-a3e1-12eabe8058ae
@@ -183,7 +184,7 @@ intro(;
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
-	date_start = "**Saturday, January 21st at 2:00 pm PT**"
+	date_start = "**Saturday, January 21st at 2:00 pm PT**",
 )
 
 # ╔═╡ 497b7154-5352-4c56-b92a-7905efeb191f
@@ -195,7 +196,7 @@ intro(;
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
-	date_start = "**Saturday, January 21st at 3:00 pm PT**"
+	date_start = "**Saturday, January 21st at 3:00 pm PT**",
 )
 
 # ╔═╡ 27284c5b-bbe2-4988-bb92-d722a1b7536e
@@ -207,7 +208,7 @@ intro(;
 	tutor_name = "Reza Barghi",
 	tutor_email = "majidrezabarghi@gmail.com",
 	tutor_position = "Lead lab technician at Ohlone Community College",
-	date_start = "**Saturday, January 21st at 4:00 pm PT**"
+	date_start = "**Saturday, January 21st at 4:00 pm PT**",
 )
 
 # ╔═╡ 98e032e7-723b-4d50-913b-a445d662d84e
@@ -219,7 +220,7 @@ intro(;
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
-	date_start = "**Tuesday, January 17th at 4:00 pm PT**"
+	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
 )
 
 # ╔═╡ 74dc18b6-d576-4d79-832f-0178512b4382
@@ -231,7 +232,7 @@ intro(;
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
-	date_start = "**Tuesday, January 17th at 5:00 pm PT**"
+	date_start = "**Tuesday, January 17th at 5:00 pm PT**",
 )
 
 # ╔═╡ e48d3bb6-c5f1-4b0b-ad2b-7a8b6ed4eda5
@@ -243,7 +244,7 @@ intro(;
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
-	date_start = "**Friday, January 20th at 4:00 pm PT**"
+	date_start = "**Friday, January 20th at 4:00 pm PT**",
 )
 
 # ╔═╡ 9c26dde8-965b-4e85-9a8f-6be4712bc81f
@@ -255,43 +256,20 @@ intro(;
 	tutor_name = "Haley Carrasco",
 	tutor_email = "haleycarrasco7@gmail.com",
 	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
-	date_start = "**Friday, January 20th at 5:00 pm PT**"
-)
-
-# ╔═╡ 0d8ff4bc-a7fe-418a-b85a-66b145a88a60
-intro(;
-	parent_names = "Lidite Kebede, Fesha Berhane",
-	parent_emails = "lidite_kebede@yahoo.com, feshabd@yahoo.com",
-	student_name = "Maya Berhane",
-	subject = "Mid-level math",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
-	date_start = "**Tuesday, January 17th at 4:00 pm PT**"
+	date_start = "**Friday, January 20th at 5:00 pm PT**",
 )
 
 # ╔═╡ 32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
 intro(;
 	parent_names = "Tamiko Martin",
-	parent_emails = "trixiezack@msn.com",
-	student_name = "Maya Berhane",
+	parent_emails = "trixiezack@msn.com, justinmartin2827@gmail.com",
+	student_name = "Justin Martin",
 	subject = "Advanced math",
 	tutor_name = "Gregory Cunningham",
 	tutor_email = "gcunningham@g.harvard.edu",
 	tutor_position = "PhD student at Harvard University",
-	date_start = "**Tuesday, January 17th at 5:00 pm PT**"
-)
+	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
 
-# ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
-intro(;
-	parent_names = "Jeanene Cannon, Terry Cannon",
-	parent_emails = "jeanene.cannon@gmail.com, tcan3001@gmail.com",
-	student_name = "Nailah Cannon",
-	subject = "Pre-calculus",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
-	date_start = "**Saturday, January 21st at 10:00 am PT**"
 )
 
 # ╔═╡ 60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
@@ -303,7 +281,31 @@ intro(;
 	tutor_name = "Gregory Cunningham",
 	tutor_email = "gcunningham@g.harvard.edu",
 	tutor_position = "PhD student at Harvard University",
-	date_start = "**Saturday, January 21st at 11:00 am PT**"
+	date_start = "**Tuesday, January 17th at 5:00 pm PT**",
+)
+
+# ╔═╡ 0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+intro(;
+	parent_names = "Lidite Kebede, Fesha Berhane",
+	parent_emails = "lidite_kebede@yahoo.com, feshabd@yahoo.com",
+	student_name = "Maya Berhane",
+	subject = "Mid-level math",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Saturday, January 21st at 10:00 am PT**",
+)
+
+# ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
+intro(;
+	parent_names = "Jeanene Cannon, Terry Cannon",
+	parent_emails = "jeanene.cannon@gmail.com, tcan3001@gmail.com",
+	student_name = "Nailah Cannon",
+	subject = "Pre-calculus",
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "PhD student at Harvard University",
+	date_start = "**Saturday, January 21st at 11:00 am PT**",
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -607,14 +609,14 @@ version = "17.4.0+0"
 # ╟─16373e73-1907-4cd6-9dda-376454dd2650
 # ╠═9c26dde8-965b-4e85-9a8f-6be4712bc81f
 # ╟─7339eef8-62f6-42ff-aab8-76807bc5426f
-# ╟─fbc5458e-6100-43d5-a277-9f961ac44654
-# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
-# ╠═31bb818e-a602-4e04-bb19-283d09db24df
+# ╟─31bb818e-a602-4e04-bb19-283d09db24df
 # ╠═32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
-# ╟─0f804e78-a323-4443-b400-18bd721f1fce
-# ╠═009a94fc-72bc-486d-b9ee-94bf09a888b8
 # ╟─0d58a06a-6ad3-4448-8c62-13e439054773
 # ╠═60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
+# ╟─fbc5458e-6100-43d5-a277-9f961ac44654
+# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+# ╟─0f804e78-a323-4443-b400-18bd721f1fce
+# ╠═009a94fc-72bc-486d-b9ee-94bf09a888b8
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
 # ╟─3acea62a-c3cc-4456-8a05-edf0592dd010
 # ╟─a0e573cb-2c06-4e20-a924-acef0f0f8827
