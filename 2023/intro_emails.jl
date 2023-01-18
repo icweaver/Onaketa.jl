@@ -16,15 +16,34 @@ md"""
 # Filipe
 """
 
+# ╔═╡ 6dbd0282-4643-4f14-9e8e-cbd247feafc2
+info_filipe = (
+	tutor_name = "Filipe Cerqueira",
+	tutor_email = "fmcerque@utmb.edu",
+	tutor_position = "a Clinical Microbiology Fellow at the University of Texas Medical Branch",
+)
+
 # ╔═╡ ab911de1-076b-4304-80dd-46e668e1e97c
 md"""
 ## Joëlle Mendy
+"""
+
+# ╔═╡ fbc5458e-6100-43d5-a277-9f961ac44654
+md"""
+## Maya Berhane 
 """
 
 # ╔═╡ 1d50acc7-6640-4c49-a92b-dcbaf8f35b4f
 md"""
 # Reza
 """
+
+# ╔═╡ c2cdaabf-b033-4a26-89fa-e5918aa3a093
+info_reza = (
+	tutor_name = "Reza Barghi",
+	tutor_email = "majidrezabarghi@gmail.com",
+	tutor_position = "the lead Physics, Computer Science, and Mechanical/Electrical Engineering Technician at Ohlone Community College",
+)
 
 # ╔═╡ e4efd4a2-46a8-4b15-be32-9fef14d68a8e
 md"""
@@ -51,6 +70,13 @@ md"""
 # Haley
 """
 
+# ╔═╡ e9cabb05-a421-455f-8491-ea6eb9117def
+info_haley = (
+	tutor_name = "Haley Carrasco",
+	tutor_email = "haleycarrasco7@gmail.com",
+	tutor_position = "a medical student at Kent State University College of Podiatric Medicine",
+)
+
 # ╔═╡ cfb10e2e-41eb-41eb-92f0-63f34f548c11
 md"""
 ## Elshadi Jahdid
@@ -66,15 +92,17 @@ md"""
 ## Hailey Lewis
 """
 
-# ╔═╡ 16373e73-1907-4cd6-9dda-376454dd2650
-md"""
-## Davion Caron Brown
-"""
-
 # ╔═╡ 7339eef8-62f6-42ff-aab8-76807bc5426f
 md"""
 # Greg
 """
+
+# ╔═╡ d8554f6e-0bfe-4cab-a94f-dfd60dc45ace
+info_greg = (
+	tutor_name = "Gregory Cunningham",
+	tutor_email = "gcunningham@g.harvard.edu",
+	tutor_position = "a GEM PhD fellow and applied physics PhD student at Harvard University as well as a graduate student researcher at Massachusetts Institute of Technology",
+)
 
 # ╔═╡ 31bb818e-a602-4e04-bb19-283d09db24df
 md"""
@@ -86,9 +114,9 @@ md"""
 ## Dorien Omar Hughes
 """
 
-# ╔═╡ fbc5458e-6100-43d5-a277-9f961ac44654
+# ╔═╡ 16373e73-1907-4cd6-9dda-376454dd2650
 md"""
-## Maya Berhane 
+## Davion Caron Brown
 """
 
 # ╔═╡ 0f804e78-a323-4443-b400-18bd721f1fce
@@ -138,7 +166,7 @@ function intro(;
 	
 	Dear $(parents_first) and $(student_first),
 
-	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is a $(tutor_position); their updated bios will be made available on our [website](https://www.onaketa.com/about) soon. 
+	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is $(tutor_position). Their bio is available on our [website](https://www.onaketa.com/about). 
 	
 	$(tutor_first) would like to meet with $(student_first) on $(date). If this time does not work for $(student_first)'s schedule, please contact us ASAP. Otherwise, your first session will be on $(date_start).
 	
@@ -157,10 +185,18 @@ intro(;
 	parent_emails = "chrispersonal21@gmail.com",
 	student_name = "Joëlle Mendy",
 	subject = "Pre-Algebra",
-	tutor_name = "Filipe Cerqueira",
-	tutor_email = "fmcerque@utmb.edu",
-	tutor_position = "Postdoctoral fellow at the University of Michigan",
+	info_filipe...,
 	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
+)
+
+# ╔═╡ 0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+intro(;
+	parent_names = "Lidite Kebede, Fesha Berhane",
+	parent_emails = "lidite_kebede@yahoo.com, feshabd@yahoo.com",
+	student_name = "Maya Berhane",
+	subject = "Chemistry and Algebra II",
+	info_filipe...,
+	date_start = "**Saturday, January 21st at 10:00 am PT**",
 )
 
 # ╔═╡ 189ed825-dc67-40df-b255-cd16a23cfd24
@@ -169,9 +205,7 @@ intro(;
 	parent_emails = "eyoungbloodsmith@gmail.com",
 	student_name = "Maya Reddick",
 	subject = "Mid-level math",
-	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com",
-	tutor_position = "Lead lab technician at Ohlone Community College",
+	info_reza...,
 	date_start = "**Wednesday, January 18th at 6:00 pm PT**",
 )
 
@@ -181,9 +215,7 @@ intro(;
 	parent_emails = "amaiden125@gmail.com",
 	student_name = "Azariya Smith",
 	subject = "Mid-level math",
-	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com",
-	tutor_position = "Lead lab technician at Ohlone Community College",
+	info_reza...,
 	date_start = "**Saturday, January 21st at 2:00 pm PT**",
 )
 
@@ -193,9 +225,7 @@ intro(;
 	parent_emails = "kjuma@Att.net",
 	student_name = "Meshack Juma",
 	subject = "Pre-calculus",
-	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com",
-	tutor_position = "Lead lab technician at Ohlone Community College",
+	info_reza...,
 	date_start = "**Saturday, January 21st at 3:00 pm PT**",
 )
 
@@ -205,9 +235,7 @@ intro(;
 	parent_emails = "kjuma@Att.net",
 	student_name = "Nadia Juma",
 	subject = "proofs/algebra/polynomials",
-	tutor_name = "Reza Barghi",
-	tutor_email = "majidrezabarghi@gmail.com",
-	tutor_position = "Lead lab technician at Ohlone Community College",
+	info_reza...,
 	date_start = "**Saturday, January 21st at 4:00 pm PT**",
 )
 
@@ -217,9 +245,7 @@ intro(;
 	parent_emails = "yeab7@yahoo.com, jahdid@gmail.com",
 	student_name = "Elshadi Jahdid",
 	subject = "Mid-level math",
-	tutor_name = "Haley Carrasco",
-	tutor_email = "haleycarrasco7@gmail.com",
-	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	info_haley...,
 	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
 )
 
@@ -229,9 +255,7 @@ intro(;
 	parent_emails = "takiyah.jones1@gmail.com",
 	student_name = "Takiyah Jones",
 	subject = "IM III",
-	tutor_name = "Haley Carrasco",
-	tutor_email = "haleycarrasco7@gmail.com",
-	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	info_haley...,
 	date_start = "**Tuesday, January 17th at 5:00 pm PT**",
 )
 
@@ -241,22 +265,8 @@ intro(;
 	parent_emails = "jnallen@scu.edu, rvraider75@gmail.com",
 	student_name = "Hailey Lewis",
 	subject = "Math",
-	tutor_name = "Haley Carrasco",
-	tutor_email = "haleycarrasco7@gmail.com",
-	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
+	info_haley...,
 	date_start = "**Friday, January 20th at 4:00 pm PT**",
-)
-
-# ╔═╡ 9c26dde8-965b-4e85-9a8f-6be4712bc81f
-intro(;
-	parent_names = "Devonna Johnson",
-	parent_emails = "jdevonna69@yahoo.com",
-	student_name = "Davion Caron Brown",
-	subject = "Math",
-	tutor_name = "Haley Carrasco",
-	tutor_email = "haleycarrasco7@gmail.com",
-	tutor_position = "Podiatry student at Kent State University’s College of Podiatric Medicine",
-	date_start = "**Friday, January 20th at 5:00 pm PT**",
 )
 
 # ╔═╡ 32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
@@ -265,9 +275,7 @@ intro(;
 	parent_emails = "trixiezack@msn.com, justinmartin2827@gmail.com",
 	student_name = "Justin Martin",
 	subject = "Advanced math",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
+	info_greg...,
 	date_start = "**Tuesday, January 17th at 4:00 pm PT**",
 
 )
@@ -278,22 +286,18 @@ intro(;
 	parent_emails = "doriens1mom@gmail.com",
 	student_name = "Dorien Omar Hughes",
 	subject = "Physics",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
+	info_greg...,
 	date_start = "**Tuesday, January 17th at 5:00 pm PT**",
 )
 
-# ╔═╡ 0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+# ╔═╡ 9c26dde8-965b-4e85-9a8f-6be4712bc81f
 intro(;
-	parent_names = "Lidite Kebede, Fesha Berhane",
-	parent_emails = "lidite_kebede@yahoo.com, feshabd@yahoo.com",
-	student_name = "Maya Berhane",
-	subject = "Mid-level math",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
-	date_start = "**Saturday, January 21st at 10:00 am PT**",
+	parent_names = "Devonna Johnson",
+	parent_emails = "jdevonna69@yahoo.com",
+	student_name = "Davion Caron Brown",
+	subject = "Physics",
+	info_greg...,
+	date_start = "**Thursday, January 19th at 3:00 pm PT**",
 )
 
 # ╔═╡ 009a94fc-72bc-486d-b9ee-94bf09a888b8
@@ -302,9 +306,7 @@ intro(;
 	parent_emails = "jeanene.cannon@gmail.com, tcan3001@gmail.com",
 	student_name = "Nailah Cannon",
 	subject = "Pre-calculus",
-	tutor_name = "Gregory Cunningham",
-	tutor_email = "gcunningham@g.harvard.edu",
-	tutor_position = "PhD student at Harvard University",
+	info_greg...,
 	date_start = "**Saturday, January 21st at 11:00 am PT**",
 )
 
@@ -588,9 +590,13 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─3c1286e6-1add-4239-9954-8787a5e5cb9c
+# ╟─6dbd0282-4643-4f14-9e8e-cbd247feafc2
 # ╟─ab911de1-076b-4304-80dd-46e668e1e97c
 # ╠═8f5dc354-495c-4b5e-8797-f21848f6fc36
+# ╟─fbc5458e-6100-43d5-a277-9f961ac44654
+# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
 # ╟─1d50acc7-6640-4c49-a92b-dcbaf8f35b4f
+# ╟─c2cdaabf-b033-4a26-89fa-e5918aa3a093
 # ╟─e4efd4a2-46a8-4b15-be32-9fef14d68a8e
 # ╠═189ed825-dc67-40df-b255-cd16a23cfd24
 # ╟─6f33b85b-1b6e-488f-9faf-272214a7601d
@@ -600,21 +606,21 @@ version = "17.4.0+0"
 # ╟─06edbec7-94b7-447c-9e4f-fc1d55c7f94f
 # ╠═27284c5b-bbe2-4988-bb92-d722a1b7536e
 # ╟─cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
+# ╟─e9cabb05-a421-455f-8491-ea6eb9117def
 # ╟─cfb10e2e-41eb-41eb-92f0-63f34f548c11
 # ╠═98e032e7-723b-4d50-913b-a445d662d84e
 # ╟─cc67ce30-becd-43c1-ad47-66800b0f7163
 # ╠═74dc18b6-d576-4d79-832f-0178512b4382
 # ╟─598b2c06-41a8-4000-99f0-6833804e840a
 # ╠═e48d3bb6-c5f1-4b0b-ad2b-7a8b6ed4eda5
-# ╟─16373e73-1907-4cd6-9dda-376454dd2650
-# ╠═9c26dde8-965b-4e85-9a8f-6be4712bc81f
 # ╟─7339eef8-62f6-42ff-aab8-76807bc5426f
+# ╠═d8554f6e-0bfe-4cab-a94f-dfd60dc45ace
 # ╟─31bb818e-a602-4e04-bb19-283d09db24df
 # ╠═32bbcbb9-5e1a-4648-a3ce-090a256e3a3d
 # ╟─0d58a06a-6ad3-4448-8c62-13e439054773
 # ╠═60c244c3-bd9b-4e5f-b2f8-2ad9ce31a291
-# ╟─fbc5458e-6100-43d5-a277-9f961ac44654
-# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+# ╟─16373e73-1907-4cd6-9dda-376454dd2650
+# ╠═9c26dde8-965b-4e85-9a8f-6be4712bc81f
 # ╟─0f804e78-a323-4443-b400-18bd721f1fce
 # ╠═009a94fc-72bc-486d-b9ee-94bf09a888b8
 # ╟─066e40df-12a0-4ad1-b09a-e481847ef296
