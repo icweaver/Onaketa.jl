@@ -9,50 +9,31 @@ begin
 	using DataFrames, CSV
 	using MarkdownLiteral: @mdx
 	using PythonCall, CondaPkg
+	using PlutoUI
 
 	CondaPkg.add("selenium")
 end
 
-# ╔═╡ e3cca2c0-4c13-42d8-a7c9-ea6700683700
-df_bob = let
-	s = """
-Time
-Monday 12:00:00 PM
-Monday 12:15:00 PM
-Monday 12:30:00 PM
-Monday 12:45:00 PM
-Monday 01:00:00 PM
-Monday 01:15:00 PM
-Monday 01:30:00 PM
-Monday 01:45:00 PM
-Monday 02:00:00 PM
-Tuesday 12:00:00 PM
-Tuesday 12:15:00 PM
-Tuesday 12:30:00 PM
-Tuesday 12:45:00 PM
-Tuesday 01:00:00 PM
-Tuesday 01:15:00 PM
-Tuesday 01:30:00 PM
-Tuesday 01:45:00 PM
-Tuesday 02:00:00 PM
-Tuesday 02:15:00 PM
-Tuesday 02:30:00 PM
-Tuesday 02:45:00 PM
-Tuesday 03:00:00 PM
-Tuesday 03:15:00 PM
-Tuesday 03:30:00 PM
-Tuesday 03:45:00 PM
-Tuesday 04:00:00 PM
-Wednesday 01:00:00 PM
-Wednesday 01:15:00 PM
-Wednesday 01:30:00 PM
-Wednesday 01:45:00 PM
-Wednesday 02:00:00 PM"""
-	CSV.read(IOBuffer(s), DataFrame)
-end;
+# ╔═╡ b9710087-9f17-49f1-a61e-4478a5304982
+md"""
+# Overview
+"""
 
-# ╔═╡ af4fae44-afb0-4574-85ab-2e9fd9102913
-innerjoin(df_ian, df_bob; on=:Time)
+# ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
+begin
+	url_tutor = "https://www.when2meet.com/?18376577-X5PlH"
+	url_student = "https://www.when2meet.com/?18376613-r2r2c"
+end
+
+# ╔═╡ b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
+md"""
+## Common times
+"""
+
+# ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
+md"""
+# Data scraping
+"""
 
 # ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
 md"""
@@ -90,12 +71,6 @@ md"""
 	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver)
 """
 
-# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
-@py begin
-	import selenium: webdriver
-	import selenium.webdriver.common.by: By
-end
-
 # ╔═╡ 3ea5ad8e-6e77-45da-a320-686575189751
 js = raw"""
 function getElementByXpath(path) {
@@ -132,11 +107,41 @@ function get_times(url, js, driver)
 	return df
 end
 
+# ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
+md"""
+# Packages
+"""
+
+# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
+@py begin
+	import selenium: webdriver
+	import selenium.webdriver.common.by: By
+	import selenium.webdriver.firefox.options: Options
+end
+
+# ╔═╡ aff4a417-a86b-4397-8415-02f686756a1a
+begin
+	options = Options()
+	options.headless = true
+end
+
 # ╔═╡ a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
-driver_tutor = webdriver.Firefox()
+driver_tutor = webdriver.Firefox(; options)
 
 # ╔═╡ a067ba0e-505e-456a-a669-ad2d8147993f
-get_times("https://www.when2meet.com/?18376577-X5PlH", js, driver_tutor)
+df_tutor = get_times(url_tutor, js, driver_tutor)
+
+# ╔═╡ 7e5d7766-2e94-46ac-b3dc-5595690d71b9
+driver_student = webdriver.Firefox(; options)
+
+# ╔═╡ f40370b9-ce23-41bc-a5bd-5f3775a65ded
+df_student = get_times(url_student, js, driver_student)
+
+# ╔═╡ af4fae44-afb0-4574-85ab-2e9fd9102913
+innerjoin(df_tutor, df_student; on=:Time)
+
+# ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -145,6 +150,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 
 [compat]
@@ -152,6 +158,7 @@ CSV = "~0.10.9"
 CondaPkg = "~0.2.15"
 DataFrames = "~1.4.4"
 MarkdownLiteral = "~0.1.1"
+PlutoUI = "~0.7.49"
 PythonCall = "~0.9.10"
 """
 
@@ -161,7 +168,13 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "6864791ccf5fb73a0dc95c4192565e2f814b4052"
+project_hash = "de280aa3bbdc420ad767ff4699ebc00809acd9fd"
+
+[[deps.AbstractPlutoDingetjes]]
+deps = ["Pkg"]
+git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
+uuid = "6e696c72-6542-2067-7265-42206c756150"
+version = "1.1.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -184,6 +197,12 @@ deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "ded953804d019afa9a3f98981d99b33e3db7b6da"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
 version = "0.7.0"
+
+[[deps.ColorTypes]]
+deps = ["FixedPointNumbers", "Random"]
+git-tree-sha1 = "eb7f0f8307f71fac7c606984ea5fb2817275d6e4"
+uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
+version = "0.11.4"
 
 [[deps.CommonMark]]
 deps = ["Crayons", "JSON", "SnoopPrecompile", "URIs"]
@@ -253,6 +272,12 @@ version = "0.9.20"
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
+[[deps.FixedPointNumbers]]
+deps = ["Statistics"]
+git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
+uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
+version = "0.8.4"
+
 [[deps.Formatting]]
 deps = ["Printf"]
 git-tree-sha1 = "8339d61043228fdd3eb658d86c926cb282ae72a8"
@@ -263,11 +288,23 @@ version = "0.4.2"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[deps.Hyperscript]]
+deps = ["Test"]
+git-tree-sha1 = "8d511d5b81240fc8e6802386302675bdf47737b9"
+uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+version = "0.0.4"
+
 [[deps.HypertextLiteral]]
 deps = ["Tricks"]
 git-tree-sha1 = "c47c5fa4c5308f27ccaac35504858d8914e102f9"
 uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 version = "0.9.4"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "f7be53659ab06ddc986428d3a9dcc95f6fa6705a"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "0.2.2"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
@@ -345,6 +382,11 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
+[[deps.MIMEs]]
+git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "0.1.4"
+
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
 git-tree-sha1 = "42324d08725e200c23d4dfb549e0d5d89dede2d2"
@@ -415,6 +457,12 @@ version = "1.3.0"
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.8.0"
+
+[[deps.PlutoUI]]
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "eadad7b14cf046de6eb41f13c9275e5aa2711ab6"
+uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+version = "0.7.49"
 
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
@@ -609,15 +657,23 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═e3cca2c0-4c13-42d8-a7c9-ea6700683700
+# ╟─b9710087-9f17-49f1-a61e-4478a5304982
+# ╠═83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
+# ╟─b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
 # ╠═af4fae44-afb0-4574-85ab-2e9fd9102913
+# ╠═a067ba0e-505e-456a-a669-ad2d8147993f
+# ╠═f40370b9-ce23-41bc-a5bd-5f3775a65ded
+# ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
-# ╟─3ea5ad8e-6e77-45da-a320-686575189751
+# ╠═aff4a417-a86b-4397-8415-02f686756a1a
+# ╠═3ea5ad8e-6e77-45da-a320-686575189751
 # ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
-# ╠═a067ba0e-505e-456a-a669-ad2d8147993f
+# ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
+# ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
+# ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
+# ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
