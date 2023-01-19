@@ -23,7 +23,7 @@ md"""
 url_tutor = "https://www.when2meet.com/?18376577-X5PlH"
 
 # ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-url_student = "https://www.when2meet.com/?18377845-68O7t"
+url_student = "https://www.when2meet.com/?18377997-5fP7t"
 
 # ╔═╡ b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
 md"""
