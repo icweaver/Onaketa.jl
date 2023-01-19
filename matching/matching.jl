@@ -59,6 +59,26 @@ md"""
 **Student:** $(@bind name_student Select(collect(keys(id_students))))
 """
 
+# ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
+function match_tutor(df_tutor, df_student)
+	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
+
+	if iszero(nrow(df_common))
+		@warn "No matches found"
+	else
+		@chain df_common begin
+			@rselect! $[:Day, :Time, :Period] = split(:DayTime)
+			groupby(:Day)
+		end
+	end
+
+	fpath = "/home/mango/Desktop/$(name_tutor)_$(name_student).csv"
+	@info "Saving to $(fpath)"
+	CSV.write(fpath, groupby(df_common, :Day))
+
+	return df_common
+end
+
 # ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
 id_student = id_students[name_student]
 
@@ -168,22 +188,8 @@ driver_student = webdriver.Firefox(; options)
 # ╔═╡ f40370b9-ce23-41bc-a5bd-5f3775a65ded
 df_student = get_times(id_student, js, driver_student)
 
-# ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
-let
-	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
-
-	if iszero(nrow(df_common))
-		md"""
-		!!! warning "=("
-			No matches found
-		"""
-	else
-		@chain df_common begin
-			@rselect $[:Day, :Time, :Period] = split(:DayTime)
-			groupby(:Day)
-		end
-	end
-end
+# ╔═╡ f19c7cd9-f76b-4c2a-8759-674ac97ab161
+match_tutor(df_tutor, df_student)
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
 TableOfContents()
@@ -717,10 +723,11 @@ version = "17.4.0+0"
 # ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
 # ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╠═f19c7cd9-f76b-4c2a-8759-674ac97ab161
+# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╟─dadaad55-238c-4814-a5fe-f91e150573c3
 # ╟─83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+# ╟─5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╟─4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 # ╟─a067ba0e-505e-456a-a669-ad2d8147993f
