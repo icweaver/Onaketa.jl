@@ -4,9 +4,19 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
-	using DataFrames, CSV
+	using DataFramesMeta, CSV
 	using MarkdownLiteral: @mdx
 	using PythonCall, CondaPkg
 	using PlutoUI
@@ -19,15 +29,37 @@ md"""
 # Overview
 """
 
+# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+id_tutors = Dict(
+	"Ian" => "18376577-X5PlH",
+	"Alice" => "8377794-6d6Do",
+)
+
+# ╔═╡ 79be5fb1-6df1-4b10-9a88-d09902619d9d
+md"""
+**Tutor:** $(@bind name_tutor Select(collect(keys(id_tutors))))
+"""
+
 # ╔═╡ dadaad55-238c-4814-a5fe-f91e150573c3
-url_tutor = "https://www.when2meet.com/?18376577-X5PlH"
+id_tutor = id_tutors[name_tutor]
+
+# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
+id_students = Dict(
+	"Bob" => "18376613-r2r2c",
+	"Charlie" => "18377974-jYazr",
+)
+
+# ╔═╡ 99b3b052-d54f-4216-9d9a-c2653408c7d8
+md"""
+**Student:** $(@bind name_student Select(collect(keys(id_students))))
+"""
 
 # ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-url_student = "https://www.when2meet.com/?18377997-5fP7t"
+id_student = id_students[name_student]
 
-# ╔═╡ b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
+# ╔═╡ 1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 md"""
-## Common times
+## Original input
 """
 
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
@@ -45,7 +77,7 @@ function getElementByXpath(path) {
 }
 
 function getCSV() {
-	result = "Time"+"\\n"; 
+	result = "DayTime"+"\\n"; 
   
 	for(let i = 0; i < AvailableAtSlot.length; i++) {
   		if (AvailableAtSlot[i].length == 1) {
@@ -78,7 +110,7 @@ function getElementByXpath(path) {
 }
 
 function getCSV() {
-	result = "Time"+"\n"; 
+	result = "DayTime"+"\n"; 
   
 	for(let i = 0; i < AvailableAtSlot.length; i++) {
   		if (AvailableAtSlot[i].length == 1) {
@@ -98,7 +130,8 @@ return getCSV()
 """
 
 # ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
-function get_times(url, js, driver)
+function get_times(id, js, driver)
+	url = "https://www.when2meet.com/?$(id)"
 	driver.get(url)
 	df = let
 		s = pyconvert(String, driver.execute_script(js))
@@ -134,16 +167,23 @@ end
 driver_tutor = webdriver.Firefox(; options)
 
 # ╔═╡ a067ba0e-505e-456a-a669-ad2d8147993f
-df_tutor = get_times(url_tutor, js, driver_tutor)
+df_tutor = get_times(id_tutor, js, driver_tutor)
 
 # ╔═╡ 7e5d7766-2e94-46ac-b3dc-5595690d71b9
 driver_student = webdriver.Firefox(; options)
 
 # ╔═╡ f40370b9-ce23-41bc-a5bd-5f3775a65ded
-df_student = get_times(url_student, js, driver_student)
+df_student = get_times(id_student, js, driver_student)
 
-# ╔═╡ af4fae44-afb0-4574-85ab-2e9fd9102913
-innerjoin(df_tutor, df_student; on=:Time)
+# ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
+let
+	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
+	
+	@chain df_common begin
+		@rselect $[:Day, :Time, :Period] = split(:DayTime)
+		groupby(:Day)
+	end
+end
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
 TableOfContents()
@@ -153,7 +193,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
@@ -161,7 +201,7 @@ PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 [compat]
 CSV = "~0.10.9"
 CondaPkg = "~0.2.15"
-DataFrames = "~1.4.4"
+DataFramesMeta = "~0.12.0"
 MarkdownLiteral = "~0.1.1"
 PlutoUI = "~0.7.49"
 PythonCall = "~0.9.10"
@@ -173,7 +213,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "a8d687459817d6e2c5ac52934b436a51f1307c52"
+project_hash = "b6e6812d98f4a39533bcd33b79d91c41ed179176"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -196,6 +236,11 @@ deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers
 git-tree-sha1 = "c700cce799b51c9045473de751e9319bdd1c6e94"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.9"
+
+[[deps.Chain]]
+git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
+uuid = "8be319e6-bccf-4806-a6f7-6fae938471bc"
+version = "0.5.0"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -247,6 +292,12 @@ deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExte
 git-tree-sha1 = "d4f69885afa5e6149d0cab3818491565cf41446d"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 version = "1.4.4"
+
+[[deps.DataFramesMeta]]
+deps = ["Chain", "DataFrames", "MacroTools", "OrderedCollections", "Reexport"]
+git-tree-sha1 = "a70c340c1306febfd770a932218561b5e19cf0f6"
+uuid = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+version = "0.12.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -663,17 +714,21 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─b9710087-9f17-49f1-a61e-4478a5304982
-# ╠═dadaad55-238c-4814-a5fe-f91e150573c3
-# ╠═83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-# ╟─b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
-# ╠═af4fae44-afb0-4574-85ab-2e9fd9102913
-# ╠═a067ba0e-505e-456a-a669-ad2d8147993f
-# ╠═f40370b9-ce23-41bc-a5bd-5f3775a65ded
+# ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
+# ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╟─dadaad55-238c-4814-a5fe-f91e150573c3
+# ╟─83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
+# ╟─5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+# ╟─4d1afb9e-f98a-4945-9c6e-5925e4439f34
+# ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
+# ╟─a067ba0e-505e-456a-a669-ad2d8147993f
+# ╟─f40370b9-ce23-41bc-a5bd-5f3775a65ded
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
 # ╠═aff4a417-a86b-4397-8415-02f686756a1a
-# ╠═3ea5ad8e-6e77-45da-a320-686575189751
+# ╟─3ea5ad8e-6e77-45da-a320-686575189751
 # ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
 # ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
