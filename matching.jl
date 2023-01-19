@@ -13,39 +13,6 @@ begin
 	CondaPkg.add("selenium")
 end
 
-# ╔═╡ 14083450-7c1a-4483-aa26-75a793576eb4
-df_ian = let
-	s = """
-Time
-Monday 09:00:00 AM
-Monday 09:15:00 AM
-Monday 09:30:00 AM
-Monday 09:45:00 AM
-Monday 10:00:00 AM
-Monday 10:15:00 AM
-Monday 10:30:00 AM
-Monday 10:45:00 AM
-Monday 11:00:00 AM
-Monday 11:15:00 AM
-Monday 11:30:00 AM
-Monday 11:45:00 AM
-Monday 12:00:00 PM
-Monday 12:15:00 PM
-Monday 12:30:00 PM
-Monday 12:45:00 PM
-Monday 01:00:00 PM
-Wednesday 12:00:00 PM
-Wednesday 12:15:00 PM
-Wednesday 12:30:00 PM
-Wednesday 12:45:00 PM
-Wednesday 01:00:00 PM
-Wednesday 01:15:00 PM
-Wednesday 01:30:00 PM
-Wednesday 01:45:00 PM
-Wednesday 02:00:00 PM"""
-	CSV.read(IOBuffer(s), DataFrame)
-end;
-
 # ╔═╡ e3cca2c0-4c13-42d8-a7c9-ea6700683700
 df_bob = let
 	s = """
@@ -123,11 +90,53 @@ md"""
 	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver)
 """
 
-# ╔═╡ 83bb98cb-df93-4b88-9ec8-8ec4244e6dad
-@py import selenium: webdriver
+# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
+@py begin
+	import selenium: webdriver
+	import selenium.webdriver.common.by: By
+end
 
-# ╔═╡ 0a199dbd-a4d8-4096-9e7b-59249c946491
+# ╔═╡ 3ea5ad8e-6e77-45da-a320-686575189751
+js = raw"""
+function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
 
+function getCSV() {
+	result = "Time"+"\n"; 
+  
+	for(let i = 0; i < AvailableAtSlot.length; i++) {
+  		if (AvailableAtSlot[i].length == 1) {
+			
+			let slot = getElementByXpath(
+				`//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover`
+			).nodeValue;
+		
+			slot = slot.match(/.*"(.*)".*/)[1];
+			result += slot + "\n";
+		}
+  	}
+	return result
+}
+
+return getCSV()
+"""
+
+# ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+function get_times(url, js, driver)
+	driver.get(url)
+	df = let
+		s = pyconvert(String, driver.execute_script(js))
+		CSV.read(IOBuffer(s), DataFrame)
+	end
+	return df
+end
+
+# ╔═╡ a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
+driver_tutor = webdriver.Firefox()
+
+# ╔═╡ a067ba0e-505e-456a-a669-ad2d8147993f
+get_times("https://www.when2meet.com/?18376577-X5PlH", js, driver_tutor)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -600,13 +609,15 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─14083450-7c1a-4483-aa26-75a793576eb4
-# ╟─e3cca2c0-4c13-42d8-a7c9-ea6700683700
+# ╠═e3cca2c0-4c13-42d8-a7c9-ea6700683700
 # ╠═af4fae44-afb0-4574-85ab-2e9fd9102913
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# ╠═83bb98cb-df93-4b88-9ec8-8ec4244e6dad
-# ╠═0a199dbd-a4d8-4096-9e7b-59249c946491
+# ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
+# ╟─3ea5ad8e-6e77-45da-a320-686575189751
+# ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
+# ╠═a067ba0e-505e-456a-a669-ad2d8147993f
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
