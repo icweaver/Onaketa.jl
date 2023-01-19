@@ -26,13 +26,18 @@ end
 
 # ╔═╡ b9710087-9f17-49f1-a61e-4478a5304982
 md"""
-# Overview
+# Overview 📖
+"""
+
+# ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
+md"""
+## Common Times
 """
 
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 id_tutors = Dict(
-	"Ian" => "18376577-X5PlH",
-	"Alice" => "8377794-6d6Do",
+	"Ian"   => "18376577-X5PlH",
+	"Alice" => "18377794-6d6Do",
 )
 
 # ╔═╡ 79be5fb1-6df1-4b10-9a88-d09902619d9d
@@ -64,37 +69,12 @@ md"""
 
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
 md"""
-# Data scraping
+# Data scraping 🔎
 """
 
-# ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
+# ╔═╡ 4706cdf8-5aea-433f-a8d7-c81272e17c3d
 md"""
-Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just print the available times for a single user
-
-```javascript
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
-function getCSV() {
-	result = "DayTime"+"\\n"; 
-  
-	for(let i = 0; i < AvailableAtSlot.length; i++) {
-  		if (AvailableAtSlot[i].length == 1) {
-			
-			let slot = getElementByXpath(
-				`//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover`
-			).nodeValue;
-		
-			slot = slot.match(/.*"(.*)".*/)[1];
-			result += slot + "\\n";
-		}
-  	}
-	return result
-}
-
-return getCSV()
-```
+## Script
 """
 
 # ╔═╡ 9c57fcc6-06ed-4bab-934f-beef92a8cc50
@@ -126,7 +106,20 @@ function getCSV() {
 	return result
 }
 
-return getCSV()
+return getCSV()"""
+
+# ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
+Markdown.parse("""
+Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just print the available times for a single user
+
+```javascript
+$(js)
+```
+""")
+
+# ╔═╡ 0ccd4b3d-2469-4618-a56d-c39fbee799e5
+md"""
+## Request
 """
 
 # ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
@@ -142,7 +135,7 @@ end
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
-# Packages
+# Packages 📦
 """
 
 # ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
@@ -178,10 +171,17 @@ df_student = get_times(id_student, js, driver_student)
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 let
 	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
-	
-	@chain df_common begin
-		@rselect $[:Day, :Time, :Period] = split(:DayTime)
-		groupby(:Day)
+
+	if iszero(nrow(df_common))
+		md"""
+		!!! warning "=("
+			No matches found
+		"""
+	else
+		@chain df_common begin
+			@rselect $[:Day, :Time, :Period] = split(:DayTime)
+			groupby(:Day)
+		end
 	end
 end
 
@@ -716,22 +716,25 @@ version = "17.4.0+0"
 # ╟─b9710087-9f17-49f1-a61e-4478a5304982
 # ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
 # ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
+# ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╟─dadaad55-238c-4814-a5fe-f91e150573c3
 # ╟─83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-# ╟─5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╟─4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 # ╟─a067ba0e-505e-456a-a669-ad2d8147993f
 # ╟─f40370b9-ce23-41bc-a5bd-5f3775a65ded
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
+# ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# ╠═aff4a417-a86b-4397-8415-02f686756a1a
 # ╟─3ea5ad8e-6e77-45da-a320-686575189751
-# ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# ╟─0ccd4b3d-2469-4618-a56d-c39fbee799e5
 # ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
 # ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
+# ╠═aff4a417-a86b-4397-8415-02f686756a1a
+# ╟─e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═90830035-c25b-489a-92e2-456c362a8d2f
 # ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
