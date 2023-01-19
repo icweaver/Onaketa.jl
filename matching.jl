@@ -13,291 +13,96 @@ end
 # ╔═╡ 14083450-7c1a-4483-aa26-75a793576eb4
 df_ian = let
 	s = """
-Time,Ian
-Monday 09:00:00 AM,0
-Monday 09:15:00 AM,0
-Monday 09:30:00 AM,0
-Monday 09:45:00 AM,0
-Monday 10:00:00 AM,1
-Monday 10:15:00 AM,1
-Monday 10:30:00 AM,1
-Monday 10:45:00 AM,1
-Monday 11:00:00 AM,1
-Monday 11:15:00 AM,1
-Monday 11:30:00 AM,1
-Monday 11:45:00 AM,1
-Monday 12:00:00 PM,1
-Monday 12:15:00 PM,1
-Monday 12:30:00 PM,1
-Monday 12:45:00 PM,1
-Monday 01:00:00 PM,1
-Monday 01:15:00 PM,0
-Monday 01:30:00 PM,0
-Monday 01:45:00 PM,0
-Monday 02:00:00 PM,0
-Monday 02:15:00 PM,0
-Monday 02:30:00 PM,0
-Monday 02:45:00 PM,0
-Monday 03:00:00 PM,0
-Monday 03:15:00 PM,0
-Monday 03:30:00 PM,0
-Monday 03:45:00 PM,0
-Monday 04:00:00 PM,0
-Monday 04:15:00 PM,0
-Monday 04:30:00 PM,0
-Monday 04:45:00 PM,0
-Tuesday 09:00:00 AM,0
-Tuesday 09:15:00 AM,0
-Tuesday 09:30:00 AM,0
-Tuesday 09:45:00 AM,0
-Tuesday 10:00:00 AM,0
-Tuesday 10:15:00 AM,0
-Tuesday 10:30:00 AM,0
-Tuesday 10:45:00 AM,0
-Tuesday 11:00:00 AM,0
-Tuesday 11:15:00 AM,0
-Tuesday 11:30:00 AM,0
-Tuesday 11:45:00 AM,0
-Tuesday 12:00:00 PM,0
-Tuesday 12:15:00 PM,0
-Tuesday 12:30:00 PM,0
-Tuesday 12:45:00 PM,0
-Tuesday 01:00:00 PM,0
-Tuesday 01:15:00 PM,0
-Tuesday 01:30:00 PM,0
-Tuesday 01:45:00 PM,0
-Tuesday 02:00:00 PM,0
-Tuesday 02:15:00 PM,0
-Tuesday 02:30:00 PM,0
-Tuesday 02:45:00 PM,0
-Tuesday 03:00:00 PM,0
-Tuesday 03:15:00 PM,0
-Tuesday 03:30:00 PM,0
-Tuesday 03:45:00 PM,0
-Tuesday 04:00:00 PM,0
-Tuesday 04:15:00 PM,0
-Tuesday 04:30:00 PM,0
-Tuesday 04:45:00 PM,0
-Wednesday 09:00:00 AM,0
-Wednesday 09:15:00 AM,0
-Wednesday 09:30:00 AM,0
-Wednesday 09:45:00 AM,0
-Wednesday 10:00:00 AM,0
-Wednesday 10:15:00 AM,0
-Wednesday 10:30:00 AM,0
-Wednesday 10:45:00 AM,0
-Wednesday 11:00:00 AM,0
-Wednesday 11:15:00 AM,0
-Wednesday 11:30:00 AM,0
-Wednesday 11:45:00 AM,0
-Wednesday 12:00:00 PM,1
-Wednesday 12:15:00 PM,1
-Wednesday 12:30:00 PM,1
-Wednesday 12:45:00 PM,1
-Wednesday 01:00:00 PM,1
-Wednesday 01:15:00 PM,1
-Wednesday 01:30:00 PM,1
-Wednesday 01:45:00 PM,1
-Wednesday 02:00:00 PM,1
-Wednesday 02:15:00 PM,0
-Wednesday 02:30:00 PM,0
-Wednesday 02:45:00 PM,0
-Wednesday 03:00:00 PM,0
-Wednesday 03:15:00 PM,0
-Wednesday 03:30:00 PM,0
-Wednesday 03:45:00 PM,0
-Wednesday 04:00:00 PM,0
-Wednesday 04:15:00 PM,0
-Wednesday 04:30:00 PM,0
-Wednesday 04:45:00 PM,0
-Thursday 09:00:00 AM,0
-Thursday 09:15:00 AM,0
-Thursday 09:30:00 AM,0
-Thursday 09:45:00 AM,0
-Thursday 10:00:00 AM,0
-Thursday 10:15:00 AM,0
-Thursday 10:30:00 AM,0
-Thursday 10:45:00 AM,0
-Thursday 11:00:00 AM,0
-Thursday 11:15:00 AM,0
-Thursday 11:30:00 AM,0
-Thursday 11:45:00 AM,0
-Thursday 12:00:00 PM,0
-Thursday 12:15:00 PM,0
-Thursday 12:30:00 PM,0
-Thursday 12:45:00 PM,0
-Thursday 01:00:00 PM,0
-Thursday 01:15:00 PM,0
-Thursday 01:30:00 PM,0
-Thursday 01:45:00 PM,0
-Thursday 02:00:00 PM,0
-Thursday 02:15:00 PM,0
-Thursday 02:30:00 PM,0
-Thursday 02:45:00 PM,0
-Thursday 03:00:00 PM,0
-Thursday 03:15:00 PM,0
-Thursday 03:30:00 PM,0
-Thursday 03:45:00 PM,0
-Thursday 04:00:00 PM,0
-Thursday 04:15:00 PM,0
-Thursday 04:30:00 PM,0
-Thursday 04:45:00 PM,0"""
+Time
+Monday 09:00:00 AM
+Monday 09:15:00 AM
+Monday 09:30:00 AM
+Monday 09:45:00 AM
+Monday 10:00:00 AM
+Monday 10:15:00 AM
+Monday 10:30:00 AM
+Monday 10:45:00 AM
+Monday 11:00:00 AM
+Monday 11:15:00 AM
+Monday 11:30:00 AM
+Monday 11:45:00 AM
+Monday 12:00:00 PM
+Monday 12:15:00 PM
+Monday 12:30:00 PM
+Monday 12:45:00 PM
+Monday 01:00:00 PM
+Wednesday 12:00:00 PM
+Wednesday 12:15:00 PM
+Wednesday 12:30:00 PM
+Wednesday 12:45:00 PM
+Wednesday 01:00:00 PM
+Wednesday 01:15:00 PM
+Wednesday 01:30:00 PM
+Wednesday 01:45:00 PM
+Wednesday 02:00:00 PM"""
 	CSV.read(IOBuffer(s), DataFrame)
 end
 
 # ╔═╡ e3cca2c0-4c13-42d8-a7c9-ea6700683700
 df_bob = let
-	s = "Time,Bob
-Monday 09:00:00 AM,0
-Monday 09:15:00 AM,0
-Monday 09:30:00 AM,0
-Monday 09:45:00 AM,0
-Monday 10:00:00 AM,0
-Monday 10:15:00 AM,0
-Monday 10:30:00 AM,0
-Monday 10:45:00 AM,0
-Monday 11:00:00 AM,0
-Monday 11:15:00 AM,0
-Monday 11:30:00 AM,0
-Monday 11:45:00 AM,0
-Monday 12:00:00 PM,1
-Monday 12:15:00 PM,1
-Monday 12:30:00 PM,1
-Monday 12:45:00 PM,1
-Monday 01:00:00 PM,1
-Monday 01:15:00 PM,1
-Monday 01:30:00 PM,1
-Monday 01:45:00 PM,1
-Monday 02:00:00 PM,1
-Monday 02:15:00 PM,0
-Monday 02:30:00 PM,0
-Monday 02:45:00 PM,0
-Monday 03:00:00 PM,0
-Monday 03:15:00 PM,0
-Monday 03:30:00 PM,0
-Monday 03:45:00 PM,0
-Monday 04:00:00 PM,0
-Monday 04:15:00 PM,0
-Monday 04:30:00 PM,0
-Monday 04:45:00 PM,0
-Tuesday 09:00:00 AM,0
-Tuesday 09:15:00 AM,0
-Tuesday 09:30:00 AM,0
-Tuesday 09:45:00 AM,0
-Tuesday 10:00:00 AM,0
-Tuesday 10:15:00 AM,0
-Tuesday 10:30:00 AM,0
-Tuesday 10:45:00 AM,0
-Tuesday 11:00:00 AM,0
-Tuesday 11:15:00 AM,0
-Tuesday 11:30:00 AM,0
-Tuesday 11:45:00 AM,0
-Tuesday 12:00:00 PM,1
-Tuesday 12:15:00 PM,1
-Tuesday 12:30:00 PM,1
-Tuesday 12:45:00 PM,1
-Tuesday 01:00:00 PM,1
-Tuesday 01:15:00 PM,1
-Tuesday 01:30:00 PM,1
-Tuesday 01:45:00 PM,1
-Tuesday 02:00:00 PM,1
-Tuesday 02:15:00 PM,1
-Tuesday 02:30:00 PM,1
-Tuesday 02:45:00 PM,1
-Tuesday 03:00:00 PM,1
-Tuesday 03:15:00 PM,1
-Tuesday 03:30:00 PM,1
-Tuesday 03:45:00 PM,1
-Tuesday 04:00:00 PM,1
-Tuesday 04:15:00 PM,0
-Tuesday 04:30:00 PM,0
-Tuesday 04:45:00 PM,0
-Wednesday 09:00:00 AM,0
-Wednesday 09:15:00 AM,0
-Wednesday 09:30:00 AM,0
-Wednesday 09:45:00 AM,0
-Wednesday 10:00:00 AM,0
-Wednesday 10:15:00 AM,0
-Wednesday 10:30:00 AM,0
-Wednesday 10:45:00 AM,0
-Wednesday 11:00:00 AM,0
-Wednesday 11:15:00 AM,0
-Wednesday 11:30:00 AM,0
-Wednesday 11:45:00 AM,0
-Wednesday 12:00:00 PM,0
-Wednesday 12:15:00 PM,0
-Wednesday 12:30:00 PM,0
-Wednesday 12:45:00 PM,0
-Wednesday 01:00:00 PM,1
-Wednesday 01:15:00 PM,1
-Wednesday 01:30:00 PM,1
-Wednesday 01:45:00 PM,1
-Wednesday 02:00:00 PM,1
-Wednesday 02:15:00 PM,0
-Wednesday 02:30:00 PM,0
-Wednesday 02:45:00 PM,0
-Wednesday 03:00:00 PM,0
-Wednesday 03:15:00 PM,0
-Wednesday 03:30:00 PM,0
-Wednesday 03:45:00 PM,0
-Wednesday 04:00:00 PM,0
-Wednesday 04:15:00 PM,0
-Wednesday 04:30:00 PM,0
-Wednesday 04:45:00 PM,0
-Thursday 09:00:00 AM,0
-Thursday 09:15:00 AM,0
-Thursday 09:30:00 AM,0
-Thursday 09:45:00 AM,0
-Thursday 10:00:00 AM,0
-Thursday 10:15:00 AM,0
-Thursday 10:30:00 AM,0
-Thursday 10:45:00 AM,0
-Thursday 11:00:00 AM,0
-Thursday 11:15:00 AM,0
-Thursday 11:30:00 AM,0
-Thursday 11:45:00 AM,0
-Thursday 12:00:00 PM,0
-Thursday 12:15:00 PM,0
-Thursday 12:30:00 PM,0
-Thursday 12:45:00 PM,0
-Thursday 01:00:00 PM,0
-Thursday 01:15:00 PM,0
-Thursday 01:30:00 PM,0
-Thursday 01:45:00 PM,0
-Thursday 02:00:00 PM,0
-Thursday 02:15:00 PM,0
-Thursday 02:30:00 PM,0
-Thursday 02:45:00 PM,0
-Thursday 03:00:00 PM,0
-Thursday 03:15:00 PM,0
-Thursday 03:30:00 PM,0
-Thursday 03:45:00 PM,0
-Thursday 04:00:00 PM,0
-Thursday 04:15:00 PM,0
-Thursday 04:30:00 PM,0
-Thursday 04:45:00 PM,0"
+	s = """
+Time
+Monday 12:00:00 PM
+Monday 12:15:00 PM
+Monday 12:30:00 PM
+Monday 12:45:00 PM
+Monday 01:00:00 PM
+Monday 01:15:00 PM
+Monday 01:30:00 PM
+Monday 01:45:00 PM
+Monday 02:00:00 PM
+Tuesday 12:00:00 PM
+Tuesday 12:15:00 PM
+Tuesday 12:30:00 PM
+Tuesday 12:45:00 PM
+Tuesday 01:00:00 PM
+Tuesday 01:15:00 PM
+Tuesday 01:30:00 PM
+Tuesday 01:45:00 PM
+Tuesday 02:00:00 PM
+Tuesday 02:15:00 PM
+Tuesday 02:30:00 PM
+Tuesday 02:45:00 PM
+Tuesday 03:00:00 PM
+Tuesday 03:15:00 PM
+Tuesday 03:30:00 PM
+Tuesday 03:45:00 PM
+Tuesday 04:00:00 PM
+Wednesday 01:00:00 PM
+Wednesday 01:15:00 PM
+Wednesday 01:30:00 PM
+Wednesday 01:45:00 PM
+Wednesday 02:00:00 PM"""
 	CSV.read(IOBuffer(s), DataFrame)
 end
 
 # ╔═╡ af4fae44-afb0-4574-85ab-2e9fd9102913
-df_ian[df_ian.Avail .== df_bob.Avail .== 1, :]
+innerjoin(df_ian, df_bob; on=:Time)
 
 # ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
 md"""
-Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd)
+Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just print the available times for a single user
 
 ```javascript
 function getCSV() {
-  result = "Time,Avail"+"\n"; 
+  result = "Time"+"\n"; 
   for(let i = 0; i < AvailableAtSlot.length; i++) {
-      let slot = $x(`string(//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover)`);
+  	if (AvailableAtSlot[i].length == 1) {
+    	let slot = $x(`string(//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover)`);
       slot = slot.match(/.*"(.*)".*/)[1];
-      result += slot + ",";
-      result += PeopleIDs.map(id => AvailableAtSlot[i].includes(id) ? 1 : 0).join(",");
-      result+= "\n";
+      result += slot + "\n";
+		}
   }
-  console.log(result);
+
+console.log(result);
+  
 }
+
 getCSV();
 ```
 """
