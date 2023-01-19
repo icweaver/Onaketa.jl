@@ -19,11 +19,11 @@ md"""
 # Overview
 """
 
+# ╔═╡ dadaad55-238c-4814-a5fe-f91e150573c3
+url_tutor = "https://www.when2meet.com/?18376577-X5PlH"
+
 # ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-begin
-	url_tutor = "https://www.when2meet.com/?18376577-X5PlH"
-	url_student = "https://www.when2meet.com/?18376613-r2r2c"
-end
+url_student = "https://www.when2meet.com/?18377845-68O7t"
 
 # ╔═╡ b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
 md"""
@@ -112,6 +112,11 @@ md"""
 # Packages
 """
 
+# ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
+@pyexec """
+from selenium import webdriver
+"""
+
 # ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
 @py begin
 	import selenium: webdriver
@@ -168,7 +173,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "de280aa3bbdc420ad767ff4699ebc00809acd9fd"
+project_hash = "a8d687459817d6e2c5ac52934b436a51f1307c52"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -658,6 +663,7 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─b9710087-9f17-49f1-a61e-4478a5304982
+# ╠═dadaad55-238c-4814-a5fe-f91e150573c3
 # ╠═83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
 # ╟─b04bd74a-6d73-4505-b6e7-9b8eeacc3a8d
 # ╠═af4fae44-afb0-4574-85ab-2e9fd9102913
@@ -672,6 +678,7 @@ version = "17.4.0+0"
 # ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
 # ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
+# ╠═90830035-c25b-489a-92e2-456c362a8d2f
 # ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
