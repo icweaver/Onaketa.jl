@@ -29,58 +29,59 @@ md"""
 # Overview 📖
 """
 
-# ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
-md"""
-## Common Times
-"""
-
-# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-id_tutors = Dict(
-	"Ian"   => "18376577-X5PlH",
-	"Alice" => "18377794-6d6Do",
-)
-
 # ╔═╡ 79be5fb1-6df1-4b10-9a88-d09902619d9d
-md"""
-**Tutor:** $(@bind name_tutor Select(collect(keys(id_tutors))))
-"""
-
-# ╔═╡ dadaad55-238c-4814-a5fe-f91e150573c3
-id_tutor = id_tutors[name_tutor]
-
-# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
-id_students = Dict(
-	"Bob" => "18376613-r2r2c",
-	"Charlie" => "18377974-jYazr",
-)
+# md"""
+# **Tutor:** $(@bind name_tutor Select(collect(keys(id_tutors))))
+# """
 
 # ╔═╡ 99b3b052-d54f-4216-9d9a-c2653408c7d8
+# md"""
+# **Student:** $(@bind name_student Select(collect(keys(id_students))))
+# """
+
+# ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
-**Student:** $(@bind name_student Select(collect(keys(id_students))))
+## $(@bind run_common_times CheckBox()) Common Times
 """
 
+# ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
+if run_common_times
+	@bind run_matches Button("Match")
+end
+
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
-function match_tutor(df_tutor, df_student)
+function match_tutor(df_tutor, df_student, tutor_name, student_name)
 	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
 
 	if iszero(nrow(df_common))
-		@warn "No matches found"
+		@warn "No matches found for $(tutor_name) and $(student_name) =("
 	else
 		@chain df_common begin
 			@rselect! $[:Day, :Time, :Period] = split(:DayTime)
 			groupby(:Day)
 		end
+
+		dirpath = "./$(tutor_name)"
+		fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
+		mkpath(dirpath)
+		@info "Saving to $(fpath)"
+		CSV.write(fpath, df_common)
 	end
-
-	fpath = "/home/mango/Desktop/$(name_tutor)_$(name_student).csv"
-	@info "Saving to $(fpath)"
-	CSV.write(fpath, groupby(df_common, :Day))
-
+	
 	return df_common
 end
 
-# ╔═╡ 83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-id_student = id_students[name_student]
+# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+tutors = Dict(
+	"Ian"   => "18376577-X5PlH",
+	"Alice" => "18377794-6d6Do",
+)
+
+# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
+students = Dict(
+	"Bob" => "18376613-r2r2c",
+	"Charlie" => "18377974-jYazr",
+)
 
 # ╔═╡ 1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 md"""
@@ -179,17 +180,31 @@ end
 # ╔═╡ a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
 driver_tutor = webdriver.Firefox(; options)
 
-# ╔═╡ a067ba0e-505e-456a-a669-ad2d8147993f
-df_tutor = get_times(id_tutor, js, driver_tutor)
-
 # ╔═╡ 7e5d7766-2e94-46ac-b3dc-5595690d71b9
 driver_student = webdriver.Firefox(; options)
 
-# ╔═╡ f40370b9-ce23-41bc-a5bd-5f3775a65ded
-df_student = get_times(id_student, js, driver_student)
-
-# ╔═╡ f19c7cd9-f76b-4c2a-8759-674ac97ab161
-match_tutor(df_tutor, df_student)
+# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
+if run_common_times
+	run_matches
+	
+	for (tutor_name, tutor_id) ∈ tutors
+		for (student_name, student_id) ∈ students
+			# Download schedules
+			df_tutor = get_times(tutor_id, js, driver_tutor)
+			df_student = get_times(student_id, js, driver_student)		
+			
+			# Find overlap
+			match_tutor(df_tutor, df_student, tutor_name, student_name)
+			
+			# Show link to schedule
+			@debug Markdown.parse("""
+			**Schedules** \\
+			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
+			$(student_name): <https://www.when2meet.com/?$(student_id)>
+			""")
+		end
+	end
+end
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
 TableOfContents()
@@ -723,15 +738,12 @@ version = "17.4.0+0"
 # ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
 # ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╠═f19c7cd9-f76b-4c2a-8759-674ac97ab161
-# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─dadaad55-238c-4814-a5fe-f91e150573c3
-# ╟─83eae75d-ee1e-4ba4-8f0a-5b0fcaa0f308
-# ╟─5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-# ╟─4d1afb9e-f98a-4945-9c6e-5925e4439f34
+# ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
+# ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+# ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
-# ╟─a067ba0e-505e-456a-a669-ad2d8147993f
-# ╟─f40370b9-ce23-41bc-a5bd-5f3775a65ded
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
@@ -741,7 +753,7 @@ version = "17.4.0+0"
 # ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
 # ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
 # ╠═aff4a417-a86b-4397-8415-02f686756a1a
-# ╟─e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═90830035-c25b-489a-92e2-456c362a8d2f
 # ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
