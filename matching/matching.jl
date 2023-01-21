@@ -35,22 +35,6 @@ md"""
 # Visualize 📊
 """
 
-# ╔═╡ b26abb3a-36ef-4c2f-8265-aa4f02e2784a
-# ╠═╡ disabled = true
-#=╠═╡
-x = [[1, 2, 3], [4, 5, 6]]
-  ╠═╡ =#
-
-# ╔═╡ 58578022-d5db-4572-8cf1-a084cee8da11
-#=╠═╡
-[[x[1][1], x[2][1]], [x[1][2], x[2][2]], [x[1][3], x[2][3]]]
-  ╠═╡ =#
-
-# ╔═╡ e81e3a85-2fac-46b2-b057-b2b5208bcf08
-#=╠═╡
-Matrix(x)
-  ╠═╡ =#
-
 # ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
 X = rand(1:10, 3, 4)
 
@@ -124,8 +108,8 @@ if run_common_times
 	@bind run_matches Button("Match")
 end
 
-# ╔═╡ 35462067-f1d7-4e2b-a0fe-43ab66cf886d
-[customdata_matrix[i, :] for i ∈ 1:size(customdata_matrix, 1)]
+# ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
+js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(df_tutor, df_student, tutor_name, student_name)
@@ -298,20 +282,20 @@ let
 	tutor_names, student_names = keys.((tutors, students))
 	customdata = js_transform(daytimes_matrix)
 	
-	# fig = Plot()
+	fig = Plot()
 	
-	# add_trace!(fig,
-	# 	heatmap(z = N_matrix;
-	# 		y = student_names,
-	# 		x = tutor_names,
-	# 		customdata,
-	# 		hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
-	# 	)
-	# )
+	add_trace!(fig,
+		heatmap(z = N_matrix;
+			y = student_names,
+			x = tutor_names,
+			customdata,
+			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
+		)
+	)
 
-	# update_yaxes!(fig, autorange="reversed")
+	update_yaxes!(fig, autorange="reversed")
 	
-	# plot(fig)
+	plot(fig)
 end
 
 # ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
@@ -955,9 +939,6 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
-# ╠═b26abb3a-36ef-4c2f-8265-aa4f02e2784a
-# ╠═58578022-d5db-4572-8cf1-a084cee8da11
-# ╠═e81e3a85-2fac-46b2-b057-b2b5208bcf08
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
 # ╠═69e8b71b-0998-4959-a834-f96988e9779d
 # ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
@@ -972,7 +953,7 @@ version = "17.4.0+0"
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
 # ╠═e077cacc-e638-49bc-9e50-62a43a7af574
-# ╠═35462067-f1d7-4e2b-a0fe-43ab66cf886d
+# ╠═d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
