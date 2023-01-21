@@ -39,32 +39,30 @@ md"""
 md"""
 # Load ⬇
 
-This will load in the names and when2meet IDs of tutors/students from the google form 
+This will load in the names and when2meet IDs of tutors/students from the google form. using these dicts as a placeholder for now. 
 """
 
-# ╔═╡ b9710087-9f17-49f1-a61e-4478a5304982
-md"""
-# Overview 📖
-"""
+# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+tutors = OrderedDict(
+	"Ian"   => "18376577-X5PlH",
+	"Reza" => "18412723-MdMz3",
+)
 
-# ╔═╡ 79be5fb1-6df1-4b10-9a88-d09902619d9d
-# md"""
-# **Tutor:** $(@bind name_tutor Select(collect(keys(id_tutors))))
-# """
-
-# ╔═╡ 99b3b052-d54f-4216-9d9a-c2653408c7d8
-# md"""
-# **Student:** $(@bind name_student Select(collect(keys(id_students))))
-# """
+# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
+students = OrderedDict(
+	"Alice" => "18377794-6d6Do",
+	"Bob" => "18376613-r2r2c",
+	"Charlie" => "18377974-jYazr",
+)
 
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
-## $(@bind run_common_times CheckBox()) Common Times
+# $(@bind run_common_times CheckBox()) Common Times
 
 Performs the following operations:
 * Opens When2meet schedule in a headless browser
 * Downloads the given times and stores them in a `DataFrame`
-* Computes overlap between all tutor-student pairs and stores each match to file
+* Computes overlap between all tutor-student pairs and stores each match in memory
 """
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
@@ -73,6 +71,7 @@ if run_common_times
 end
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
+# Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
 js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
@@ -91,24 +90,6 @@ function save_df(df, tutor_name, student_name)
 	@info "Saving to $(fpath)"
 	CSV.write(fpath, df)
 end
-
-# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-tutors = OrderedDict(
-	"Ian"   => "18376577-X5PlH",
-	"Reza" => "18412723-MdMz3",
-)
-
-# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
-students = OrderedDict(
-	"Alice" => "18377794-6d6Do",
-	"Bob" => "18376613-r2r2c",
-	"Charlie" => "18377974-jYazr",
-)
-
-# ╔═╡ 1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
-md"""
-## Original input
-"""
 
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
 md"""
@@ -242,7 +223,7 @@ if run_common_times
 end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
-let
+if run_common_times
 	tutor_names, student_names = keys.((tutors, students))
 	customdata = js_transform(daytimes_matrix)
 	
@@ -299,7 +280,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "168016c858d1f2d3640b3f7fe2987c3ac591638f"
+project_hash = "590d6bda88ae9ef3785ef3c15153b5296a3b70fd"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -906,9 +887,8 @@ version = "17.4.0+0"
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
 # ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
-# ╟─b9710087-9f17-49f1-a61e-4478a5304982
-# ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
-# ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
+# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
+# ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
@@ -916,9 +896,6 @@ version = "17.4.0+0"
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
-# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-# ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
-# ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
