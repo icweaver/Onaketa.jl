@@ -33,7 +33,8 @@ md"""
 md"""
 # Load ⬇
 
-This will load in the names and when2meet IDs of tutors/students from the google form. using these dicts as a placeholder for now. 
+!!! note
+	This will eventually load in the names and when2meet IDs of tutors/students from the google form. Just using these dicts below as a placeholder for now. 
 """
 
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
@@ -101,7 +102,7 @@ md"""
 # ╔═╡ 9c57fcc6-06ed-4bab-934f-beef92a8cc50
 md"""
 !!! note
-	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver)
+	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver).
 """
 
 # ╔═╡ 3ea5ad8e-6e77-45da-a320-686575189751
@@ -131,7 +132,7 @@ return getCSV()"""
 
 # ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
 Markdown.parse("""
-Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just print the available times for a single user
+Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just grab the available times for a single user.
 
 ```javascript
 $(js)
@@ -141,6 +142,8 @@ $(js)
 # ╔═╡ 0ccd4b3d-2469-4618-a56d-c39fbee799e5
 md"""
 ## Request
+
+Here we spin up a browser for a tutor and student, and send over the javascript. The result is returned as a `DataFrame` that we can use to perform the schedule matching.
 """
 
 # ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
@@ -157,6 +160,9 @@ end
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
 # Packages 📦
+
+!!! todo
+	Migrate from selenium + PythonCall.jl to Webdriver.jl?
 """
 
 # ╔═╡ 2ab28351-7e59-4988-a836-2396e99977ed
