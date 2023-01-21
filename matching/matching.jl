@@ -32,20 +32,26 @@ md"""
 # Visualize 📊
 """
 
-# ╔═╡ 037c8b27-7191-42e3-8950-cac6b019ca56
-df = DataFrame(
-	fruit = ["apple", "pear", "banana"],
-	weight = [3, 5, 2],
-)
+# ╔═╡ 7fee00f5-2a02-45e8-9f9f-e9d94fdaa5d6
+cd = rand(3)
 
-# ╔═╡ 99dc73ac-ad03-4145-aa87-8596869d95f6
-bar(df; x=:fruit, y=:fruit) |> plot
+# ╔═╡ 32acd50c-0bdd-4428-8255-31bf0168aed0
+let
+	fig = Plot()
+	add_trace!(fig,
+		scatter(x = [1, 2, 3], y = [4, 5, 2],
+			customdata = cd,
+			hovertemplate = "%{customdata:.2f}<extra></extra>",			
+		)
+	)
+	plot(fig)
+end
 
 # ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
 X = rand(3, 4)
 
 # ╔═╡ 15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
-customdata = rand(1:10, 4, 3)
+customdata = rand(4, 3)
 
 # ╔═╡ 7922b757-0156-433e-9d69-1359256ada1b
 let
@@ -53,9 +59,9 @@ let
 	add_trace!(fig,
 		heatmap(z=X;
 			x = ["A", "B", "C", "D"],
-			y = ["a", "b", "c"],
+			y = ["x", "y", "z"],
 			customdata = customdata,
-			hovertemplate = "%{customdata}<extra></extra>",
+			hovertemplate = "<b>%{x} and %{y}</b><br>%{customdata:.6f}<extra></extra>",			
 		)
 	)
 	plot(fig)
@@ -910,8 +916,8 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
-# ╠═037c8b27-7191-42e3-8950-cac6b019ca56
-# ╠═99dc73ac-ad03-4145-aa87-8596869d95f6
+# ╠═32acd50c-0bdd-4428-8255-31bf0168aed0
+# ╠═7fee00f5-2a02-45e8-9f9f-e9d94fdaa5d6
 # ╠═69e8b71b-0998-4959-a834-f96988e9779d
 # ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
 # ╠═7922b757-0156-433e-9d69-1359256ada1b
