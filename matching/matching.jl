@@ -35,47 +35,11 @@ md"""
 # Visualize 📊
 """
 
-# ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
-X = rand(1:10, 3, 4)
-
-# ╔═╡ 15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
-customdata_matrix = reshape(["hi<br>there_$(i)" for i ∈ 1:12], 3, 4)
-
-# ╔═╡ 7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
-# Because javascript
-customdata = [customdata_matrix[i, :] for i ∈ 1:size(customdata_matrix, 1)]
-
-# ╔═╡ 7922b757-0156-433e-9d69-1359256ada1b
-let
-	fig = Plot()
-	add_trace!(fig,
-		heatmap(z=X;
-			x = ["Ian", "Reza", "Maya", "Greg"],
-			y = ["Alice", "Bob", "Charlie"],
-			customdata = customdata,
-			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
-		)
-	)
-	update_yaxes!(fig, autorange="reversed")
-	plot(fig)
-end
-
-# ╔═╡ 7083f71e-f3e8-4b48-890e-2e55aa8c1270
-# begin
-# 	fig= Plot(Layout(Subplots(rows=1, cols=2, subplot_titles=["Some noise" "More noise"])))
-# 	add_trace!(fig, scatter(;x=1:50, y=rand(50), name = "some"),  row=1, col=1)
-# 	add_trace!(fig, scatter(;x=1:50, y=rand(50), name = "more"), row=1, col=2)
-# 	# relayout!(fig, hovermode="x")
-# 	add_vrect!(fig,  5, 10,  fillcolor = "red", opacity = 0.2, line_width = 0; row=1, col=1)
-# 	add_vrect!(fig,  20, 26,  fillcolor = "blue", opacity = 0.2, line_width = 0; row=1, col=2)
-# 	PlutoPlotly.plot(fig) # This need to be the `plot` function from PlutoPlotly, not from PlotlyJS
-# end
-
 # ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
 md"""
 # Load ⬇
 
-This will load in the names and when2meet IDs of tutors/students from the google for 
+This will load in the names and when2meet IDs of tutors/students from the google form 
 """
 
 # ╔═╡ b9710087-9f17-49f1-a61e-4478a5304982
@@ -271,7 +235,7 @@ if run_common_times
 			$(student_name): <https://www.when2meet.com/?$(student_id)>
 			""")
 
-			# Save to file
+			# Save to file for debugging
 			# save_df(df_common, tutor_name, student_name)
 		end
 	end
@@ -289,7 +253,7 @@ let
 			y = student_names,
 			x = tutor_names,
 			customdata,
-			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
+			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",
 		)
 	)
 
@@ -940,11 +904,7 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
-# ╠═69e8b71b-0998-4959-a834-f96988e9779d
-# ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
-# ╠═7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
-# ╠═7922b757-0156-433e-9d69-1359256ada1b
-# ╠═7083f71e-f3e8-4b48-890e-2e55aa8c1270
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╟─b9710087-9f17-49f1-a61e-4478a5304982
 # ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
@@ -952,7 +912,6 @@ version = "17.4.0+0"
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╠═d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
