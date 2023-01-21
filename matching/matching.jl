@@ -17,6 +17,9 @@ end
 # ╔═╡ 9d38f93e-d44f-4c43-8546-19afeac30f5c
 using PlutoPlotly
 
+# ╔═╡ 1ab6ef36-1ba2-411f-b639-0537566cbc1e
+using OrderedCollections
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
 	using DataFramesMeta, CSV
@@ -31,21 +34,6 @@ end
 md"""
 # Visualize 📊
 """
-
-# ╔═╡ 7fee00f5-2a02-45e8-9f9f-e9d94fdaa5d6
-cd = rand(3)
-
-# ╔═╡ 32acd50c-0bdd-4428-8255-31bf0168aed0
-let
-	fig = Plot()
-	add_trace!(fig,
-		scatter(x = [1, 2, 3], y = [4, 5, 2],
-			customdata = cd,
-			hovertemplate = "%{customdata:.2f}<extra></extra>",			
-		)
-	)
-	plot(fig)
-end
 
 # ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
 X = rand(1:10, 3, 4)
@@ -125,14 +113,9 @@ end
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(df_tutor, df_student, tutor_name, student_name)
 	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
-
-	if iszero(nrow(df_common))
-		@warn "No matches found for $(tutor_name) and $(student_name) =("
-	else
-		@rselect! df_common $[:Day, :Time, :Period] = split(:DayTime)
-	end
-	
-	return df_common
+	N = nrow(df_common)
+	iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
+	return df_common.DayTime, N
 end
 
 # ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
@@ -145,16 +128,37 @@ function save_df(df, tutor_name, student_name)
 end
 
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-tutors = Dict(
+tutors = OrderedDict(
 	"Ian"   => "18376577-X5PlH",
-	"Alice" => "18377794-6d6Do",
+	"Reza" => "18412723-MdMz3",
 )
 
 # ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
-students = Dict(
+students = OrderedDict(
+	"Alice" => "18377794-6d6Do",
 	"Bob" => "18376613-r2r2c",
 	"Charlie" => "18377974-jYazr",
 )
+
+# ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
+let
+	tutor_names, student_names = keys.((tutors, students))
+	# N_matrix = reshape(N_list, length.((tutor_names, student_names)))
+	# customdata = match_list
+	
+	# fig = Plot()
+	
+	# add_trace!(fig,
+	# 	heatmap(z = N_matrix;
+	# 		x = tutor_names,
+	# 		y = student_names,
+	# 		# customdata,
+	# 		# hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
+	# 	)
+	# )
+	
+	# plot(fig)
+end
 
 # ╔═╡ 1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 md"""
@@ -260,7 +264,8 @@ end
 # ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
 if run_common_times
 	run_matches
-	
+	match_list = []
+	N_list = Int[]
 	for (tutor_name, tutor_id) ∈ tutors
 		for (student_name, student_id) ∈ students
 			# Download schedules
@@ -268,7 +273,13 @@ if run_common_times
 			df_student = get_times(student_id, js, driver_student)		
 			
 			# Find overlap
-			df_common = match_tutor(df_tutor, df_student, tutor_name, student_name)
+			matches, N = match_tutor(
+				df_tutor, df_student, tutor_name, student_name
+			)
+
+			# Store matches for plotting
+			push!(match_list, matches)
+			push!(N_list, N)
 			
 			# Show link to schedule
 			@debug Markdown.parse("""
@@ -278,10 +289,13 @@ if run_common_times
 			""")
 
 			# Save to file
-			save_df(df_common, tutor_name, student_name)
+			# save_df(df_common, tutor_name, student_name)
 		end
 	end
 end
+
+# ╔═╡ 35462067-f1d7-4e2b-a0fe-43ab66cf886d
+match_list
 
 # ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
 md"""
@@ -298,6 +312,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
@@ -307,6 +322,7 @@ CSV = "~0.10.9"
 CondaPkg = "~0.2.15"
 DataFramesMeta = "~0.12.0"
 MarkdownLiteral = "~0.1.1"
+OrderedCollections = "~1.4.1"
 PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
 PythonCall = "~0.9.10"
@@ -318,7 +334,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "2d338c5f161ca551e13c63b0dad810aa608c5f32"
+project_hash = "168016c858d1f2d3640b3f7fe2987c3ac591638f"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -923,8 +939,6 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
-# ╠═32acd50c-0bdd-4428-8255-31bf0168aed0
-# ╠═7fee00f5-2a02-45e8-9f9f-e9d94fdaa5d6
 # ╠═69e8b71b-0998-4959-a834-f96988e9779d
 # ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
 # ╠═7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
@@ -938,6 +952,9 @@ version = "17.4.0+0"
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═35462067-f1d7-4e2b-a0fe-43ab66cf886d
+# ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
