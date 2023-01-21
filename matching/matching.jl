@@ -59,6 +59,7 @@ let
 			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
 		)
 	)
+	update_yaxes!(fig, autorange="reversed")
 	plot(fig)
 end
 
@@ -110,12 +111,18 @@ if run_common_times
 	@bind run_matches Button("Match")
 end
 
+# ╔═╡ 8c8e44f9-4bb8-47de-8063-c10392150256
+
+
+# ╔═╡ 046baeac-735e-4f46-a4a1-f339f8dd7517
+
+
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(df_tutor, df_student, tutor_name, student_name)
 	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
 	N = nrow(df_common)
 	iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
-	return df_common.DayTime, N
+	return df_common.DayTime, N, df_common
 end
 
 # ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
@@ -139,26 +146,6 @@ students = OrderedDict(
 	"Bob" => "18376613-r2r2c",
 	"Charlie" => "18377974-jYazr",
 )
-
-# ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
-let
-	tutor_names, student_names = keys.((tutors, students))
-	# N_matrix = reshape(N_list, length.((tutor_names, student_names)))
-	# customdata = match_list
-	
-	# fig = Plot()
-	
-	# add_trace!(fig,
-	# 	heatmap(z = N_matrix;
-	# 		x = tutor_names,
-	# 		y = student_names,
-	# 		# customdata,
-	# 		# hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
-	# 	)
-	# )
-	
-	# plot(fig)
-end
 
 # ╔═╡ 1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
 md"""
@@ -267,18 +254,19 @@ if run_common_times
 	match_list = []
 	N_list = Int[]
 	for (tutor_name, tutor_id) ∈ tutors
+		matches = []
 		for (student_name, student_id) ∈ students
 			# Download schedules
 			df_tutor = get_times(tutor_id, js, driver_tutor)
 			df_student = get_times(student_id, js, driver_student)		
 			
 			# Find overlap
-			matches, N = match_tutor(
+			daytimes, N, df_common = match_tutor(
 				df_tutor, df_student, tutor_name, student_name
 			)
 
 			# Store matches for plotting
-			push!(match_list, matches)
+			push!(matches, daytimes)
 			push!(N_list, N)
 			
 			# Show link to schedule
@@ -289,9 +277,33 @@ if run_common_times
 			""")
 
 			# Save to file
-			# save_df(df_common, tutor_name, student_name)
+			save_df(df_common, tutor_name, student_name)
 		end
+		push!(match_list, matches)
 	end
+end
+
+# ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
+let
+	tutor_names, student_names = keys.((tutors, students))
+	N_matrix = reshape(N_list, length.((student_names, tutor_names)))
+	customdata = match_list
+	@info customdata
+	
+	fig = Plot()
+	
+	add_trace!(fig,
+		heatmap(z = N_matrix;
+			y = student_names,
+			x = tutor_names,
+			# customdata,
+			# hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
+		)
+	)
+
+	update_yaxes!(fig, autorange="reversed")
+	
+	plot(fig)
 end
 
 # ╔═╡ 35462067-f1d7-4e2b-a0fe-43ab66cf886d
@@ -952,7 +964,9 @@ version = "17.4.0+0"
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╠═8c8e44f9-4bb8-47de-8063-c10392150256
 # ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═046baeac-735e-4f46-a4a1-f339f8dd7517
 # ╠═35462067-f1d7-4e2b-a0fe-43ab66cf886d
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
