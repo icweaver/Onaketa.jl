@@ -14,9 +14,6 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 9d38f93e-d44f-4c43-8546-19afeac30f5c
-using PlutoPlotly
-
 # ╔═╡ 1ab6ef36-1ba2-411f-b639-0537566cbc1e
 using OrderedCollections
 
@@ -25,14 +22,14 @@ begin
 	using DataFramesMeta, CSV
 	using MarkdownLiteral: @mdx
 	using PythonCall, CondaPkg
-	using PlutoUI
+	using PlutoPlotly, PlutoUI
 
 	CondaPkg.add("selenium")
 end
 
 # ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 md"""
-# Visualize 📊
+# Summary 📊
 """
 
 # ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
@@ -45,14 +42,17 @@ This will load in the names and when2meet IDs of tutors/students from the google
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 tutors = OrderedDict(
 	"Ian"   => "18376577-X5PlH",
-	"Reza" => "18412723-MdMz3",
+	"Reza"  => "18412723-MdMz3",
+	"Haley" => "18417153-eBdus",
+	"Greg"  => "18417148-YEnZO",
 )
 
 # ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
 students = OrderedDict(
-	"Alice" => "18377794-6d6Do",
+	"Alice" => "18377800-3D5I4",
 	"Bob" => "18376613-r2r2c",
 	"Charlie" => "18377974-jYazr",
+	"Dee" => "18415463-WVm2u",
 )
 
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
@@ -60,9 +60,9 @@ md"""
 # $(@bind run_common_times CheckBox()) Common Times
 
 Performs the following operations:
-* Opens When2meet schedule in a headless browser
-* Downloads the given times and stores them in a `DataFrame`
-* Computes overlap between all tutor-student pairs and stores each match in memory
+* Opens When2meet schedule in a headless browser for all tutors and students
+* Downloads the given times
+* Computes overlap between all tutor-student pairs
 """
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
@@ -217,7 +217,7 @@ if run_common_times
 			""")
 
 			# Save to file for debugging
-			# save_df(df_common, tutor_name, student_name)
+			save_df(df_common, tutor_name, student_name)
 		end
 	end
 end
@@ -227,18 +227,25 @@ if run_common_times
 	tutor_names, student_names = keys.((tutors, students))
 	customdata = js_transform(daytimes_matrix)
 	
-	fig = Plot()
+	fig = Plot(Layout(
+		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
+		# yaxis = attr(scaleanchor="x"), # Square cells
+		# plot_bgcolor = "rgba(0,0,0,0)",
+		xaxis = attr(fixedrange=true),
+		yaxis = attr(fixedrange=true),
+	))
 	
 	add_trace!(fig,
 		heatmap(z = N_matrix;
-			y = student_names,
 			x = tutor_names,
+			y = student_names,
 			customdata,
-			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",
+			hovertemplate = """
+			<b>%{x} and %{y}: %{z} matches</b>
+			<br>%{customdata}<extra></extra>
+			""",
 		)
 	)
-
-	update_yaxes!(fig, autorange="reversed")
 	
 	plot(fig)
 end
@@ -884,13 +891,12 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
-# ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
-# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
+# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
 # ╠═d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
