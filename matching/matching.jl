@@ -14,12 +14,9 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 1ab6ef36-1ba2-411f-b639-0537566cbc1e
-using OrderedCollections
-
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
-	using DataFramesMeta, CSV
+	using DataFramesMeta, CSV, OrderedCollections
 	using MarkdownLiteral: @mdx
 	using PythonCall, CondaPkg
 	using PlutoPlotly, PlutoUI
@@ -231,8 +228,9 @@ if run_common_times
 		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
 		# yaxis = attr(scaleanchor="x"), # Square cells
 		# plot_bgcolor = "rgba(0,0,0,0)",
+		title = "Tutor-student matching matrix", 
 		xaxis = attr(fixedrange=true),
-		yaxis = attr(fixedrange=true),
+		yaxis = attr(fixedrange=true, autorange="reversed"),
 	))
 	
 	add_trace!(fig,
@@ -897,19 +895,18 @@ version = "17.4.0+0"
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╠═d4cdbad9-c798-4753-b122-b13dfcff58ed
-# ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
-# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
+# ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╟─7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
 # ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
 # ╟─3ea5ad8e-6e77-45da-a320-686575189751
 # ╟─0ccd4b3d-2469-4618-a56d-c39fbee799e5
-# ╠═aff4a417-a86b-4397-8415-02f686756a1a
-# ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# ╟─aff4a417-a86b-4397-8415-02f686756a1a
+# ╟─e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╟─2ab28351-7e59-4988-a836-2396e99977ed
 # ╠═90830035-c25b-489a-92e2-456c362a8d2f
