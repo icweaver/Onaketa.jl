@@ -48,20 +48,27 @@ let
 end
 
 # ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
-X = rand(3, 4)
+X = rand(1:10, 3, 4)
 
 # ╔═╡ 15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
-customdata = rand(4, 3)
+customdata_matrix = fill("hi<br>there", 3, 4)
+
+# ╔═╡ 7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
+# Because javascript
+customdata = [customdata_matrix[i, :] for i ∈ 1:size(customdata_matrix, 1)]
+
+# ╔═╡ 9dde7881-140c-494e-975e-db310b0ce819
+customdata2 = [["10:$(i)<br>11:$(j)" for i in 1:4] for j in 1:3]
 
 # ╔═╡ 7922b757-0156-433e-9d69-1359256ada1b
 let
 	fig = Plot()
 	add_trace!(fig,
 		heatmap(z=X;
-			x = ["A", "B", "C", "D"],
-			y = ["x", "y", "z"],
+			x = ["Ian", "Reza", "Maya", "Greg"],
+			y = ["Alice", "Bob", "Charlie"],
 			customdata = customdata,
-			hovertemplate = "<b>%{x} and %{y}</b><br>%{customdata:.6f}<extra></extra>",			
+			hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
 		)
 	)
 	plot(fig)
@@ -920,6 +927,8 @@ version = "17.4.0+0"
 # ╠═7fee00f5-2a02-45e8-9f9f-e9d94fdaa5d6
 # ╠═69e8b71b-0998-4959-a834-f96988e9779d
 # ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
+# ╠═7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
+# ╠═9dde7881-140c-494e-975e-db310b0ce819
 # ╠═7922b757-0156-433e-9d69-1359256ada1b
 # ╠═7083f71e-f3e8-4b48-890e-2e55aa8c1270
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
