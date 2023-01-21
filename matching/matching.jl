@@ -35,18 +35,31 @@ md"""
 # Visualize 📊
 """
 
+# ╔═╡ b26abb3a-36ef-4c2f-8265-aa4f02e2784a
+# ╠═╡ disabled = true
+#=╠═╡
+x = [[1, 2, 3], [4, 5, 6]]
+  ╠═╡ =#
+
+# ╔═╡ 58578022-d5db-4572-8cf1-a084cee8da11
+#=╠═╡
+[[x[1][1], x[2][1]], [x[1][2], x[2][2]], [x[1][3], x[2][3]]]
+  ╠═╡ =#
+
+# ╔═╡ e81e3a85-2fac-46b2-b057-b2b5208bcf08
+#=╠═╡
+Matrix(x)
+  ╠═╡ =#
+
 # ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
 X = rand(1:10, 3, 4)
 
 # ╔═╡ 15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
-customdata_matrix = fill("hi<br>there", 3, 4)
+customdata_matrix = reshape(["hi<br>there_$(i)" for i ∈ 1:12], 3, 4)
 
 # ╔═╡ 7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
 # Because javascript
 customdata = [customdata_matrix[i, :] for i ∈ 1:size(customdata_matrix, 1)]
-
-# ╔═╡ 9dde7881-140c-494e-975e-db310b0ce819
-customdata2 = [["10:$(i)<br>11:$(j)" for i in 1:4] for j in 1:3]
 
 # ╔═╡ 7922b757-0156-433e-9d69-1359256ada1b
 let
@@ -111,11 +124,8 @@ if run_common_times
 	@bind run_matches Button("Match")
 end
 
-# ╔═╡ 8c8e44f9-4bb8-47de-8063-c10392150256
-
-
-# ╔═╡ 046baeac-735e-4f46-a4a1-f339f8dd7517
-
+# ╔═╡ 35462067-f1d7-4e2b-a0fe-43ab66cf886d
+[customdata_matrix[i, :] for i ∈ 1:size(customdata_matrix, 1)]
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(df_tutor, df_student, tutor_name, student_name)
@@ -251,11 +261,12 @@ end
 # ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
 if run_common_times
 	run_matches
-	match_list = []
-	N_list = Int[]
-	for (tutor_name, tutor_id) ∈ tutors
-		matches = []
-		for (student_name, student_id) ∈ students
+	
+	N_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+	daytimes_matrix =  Matrix(undef, length.((students, tutors))...)
+	
+	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
+		for (i, (student_name, student_id)) ∈ enumerate(students)
 			# Download schedules
 			df_tutor = get_times(tutor_id, js, driver_tutor)
 			df_student = get_times(student_id, js, driver_student)		
@@ -266,48 +277,42 @@ if run_common_times
 			)
 
 			# Store matches for plotting
-			push!(matches, daytimes)
-			push!(N_list, N)
+			N_matrix[i, j] = N
+			daytimes_matrix[i, j] = join(daytimes, "<br>")
 			
 			# Show link to schedule
 			@debug Markdown.parse("""
-			**Schedules** \\
+			**Fouund $(N) matches** \\
 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
 			$(student_name): <https://www.when2meet.com/?$(student_id)>
 			""")
 
 			# Save to file
-			save_df(df_common, tutor_name, student_name)
+			# save_df(df_common, tutor_name, student_name)
 		end
-		push!(match_list, matches)
 	end
 end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 let
 	tutor_names, student_names = keys.((tutors, students))
-	N_matrix = reshape(N_list, length.((student_names, tutor_names)))
-	customdata = match_list
-	@info customdata
+	customdata = js_transform(daytimes_matrix)
 	
-	fig = Plot()
+	# fig = Plot()
 	
-	add_trace!(fig,
-		heatmap(z = N_matrix;
-			y = student_names,
-			x = tutor_names,
-			# customdata,
-			# hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
-		)
-	)
+	# add_trace!(fig,
+	# 	heatmap(z = N_matrix;
+	# 		y = student_names,
+	# 		x = tutor_names,
+	# 		customdata,
+	# 		hovertemplate = "<b>%{x} and %{y}: %{z} matches</b><br>%{customdata}<extra></extra>",			
+	# 	)
+	# )
 
-	update_yaxes!(fig, autorange="reversed")
+	# update_yaxes!(fig, autorange="reversed")
 	
-	plot(fig)
+	# plot(fig)
 end
-
-# ╔═╡ 35462067-f1d7-4e2b-a0fe-43ab66cf886d
-match_list
 
 # ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
 md"""
@@ -950,11 +955,13 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+# ╠═b26abb3a-36ef-4c2f-8265-aa4f02e2784a
+# ╠═58578022-d5db-4572-8cf1-a084cee8da11
+# ╠═e81e3a85-2fac-46b2-b057-b2b5208bcf08
 # ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
 # ╠═69e8b71b-0998-4959-a834-f96988e9779d
 # ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
 # ╠═7334b8a7-eaac-4401-a6c8-0dfd745a0c9e
-# ╠═9dde7881-140c-494e-975e-db310b0ce819
 # ╠═7922b757-0156-433e-9d69-1359256ada1b
 # ╠═7083f71e-f3e8-4b48-890e-2e55aa8c1270
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
@@ -964,9 +971,7 @@ version = "17.4.0+0"
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╠═8c8e44f9-4bb8-47de-8063-c10392150256
 # ╠═e077cacc-e638-49bc-9e50-62a43a7af574
-# ╠═046baeac-735e-4f46-a4a1-f339f8dd7517
 # ╠═35462067-f1d7-4e2b-a0fe-43ab66cf886d
 # ╠═1ab6ef36-1ba2-411f-b639-0537566cbc1e
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
