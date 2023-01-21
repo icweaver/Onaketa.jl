@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.20
 
 using Markdown
 using InteractiveUtils
@@ -14,6 +14,9 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ 9d38f93e-d44f-4c43-8546-19afeac30f5c
+using PlutoPlotly
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
 	using DataFramesMeta, CSV
@@ -23,6 +26,58 @@ begin
 
 	CondaPkg.add("selenium")
 end
+
+# ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+md"""
+# Visualize 📊
+"""
+
+# ╔═╡ 037c8b27-7191-42e3-8950-cac6b019ca56
+df = DataFrame(
+	fruit = ["apple", "pear", "banana"],
+	weight = [3, 5, 2],
+)
+
+# ╔═╡ 99dc73ac-ad03-4145-aa87-8596869d95f6
+bar(df; x=:fruit, y=:fruit) |> plot
+
+# ╔═╡ 69e8b71b-0998-4959-a834-f96988e9779d
+X = rand(3, 4)
+
+# ╔═╡ 15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
+customdata = rand(1:10, 4, 3)
+
+# ╔═╡ 7922b757-0156-433e-9d69-1359256ada1b
+let
+	fig = Plot()
+	add_trace!(fig,
+		heatmap(z=X;
+			x = ["A", "B", "C", "D"],
+			y = ["a", "b", "c"],
+			customdata = customdata,
+			hovertemplate = "%{customdata}<extra></extra>",
+		)
+	)
+	plot(fig)
+end
+
+# ╔═╡ 7083f71e-f3e8-4b48-890e-2e55aa8c1270
+# begin
+# 	fig= Plot(Layout(Subplots(rows=1, cols=2, subplot_titles=["Some noise" "More noise"])))
+# 	add_trace!(fig, scatter(;x=1:50, y=rand(50), name = "some"),  row=1, col=1)
+# 	add_trace!(fig, scatter(;x=1:50, y=rand(50), name = "more"), row=1, col=2)
+# 	# relayout!(fig, hovermode="x")
+# 	add_vrect!(fig,  5, 10,  fillcolor = "red", opacity = 0.2, line_width = 0; row=1, col=1)
+# 	add_vrect!(fig,  20, 26,  fillcolor = "blue", opacity = 0.2, line_width = 0; row=1, col=2)
+# 	PlutoPlotly.plot(fig) # This need to be the `plot` function from PlutoPlotly, not from PlotlyJS
+# end
+
+# ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
+md"""
+# Load ⬇
+
+This will load in the names and when2meet IDs of tutors/students from the google for 
+"""
 
 # ╔═╡ b9710087-9f17-49f1-a61e-4478a5304982
 md"""
@@ -42,6 +97,11 @@ md"""
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
 ## $(@bind run_common_times CheckBox()) Common Times
+
+Performs the following operations:
+* Opens When2meet schedule in a headless browser
+* Downloads the given times and stores them in a `DataFrame`
+* Computes overlap between all tutor-student pairs and stores each match to file
 """
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
@@ -56,19 +116,19 @@ function match_tutor(df_tutor, df_student, tutor_name, student_name)
 	if iszero(nrow(df_common))
 		@warn "No matches found for $(tutor_name) and $(student_name) =("
 	else
-		@chain df_common begin
-			@rselect! $[:Day, :Time, :Period] = split(:DayTime)
-			groupby(:Day)
-		end
-
-		dirpath = "./$(tutor_name)"
-		fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
-		mkpath(dirpath)
-		@info "Saving to $(fpath)"
-		CSV.write(fpath, df_common)
+		@rselect! df_common $[:Day, :Time, :Period] = split(:DayTime)
 	end
 	
 	return df_common
+end
+
+# ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
+function save_df(df, tutor_name, student_name)
+	dirpath = "./$(tutor_name)"
+	fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
+	mkpath(dirpath)
+	@info "Saving to $(fpath)"
+	CSV.write(fpath, df)
 end
 
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
@@ -159,6 +219,11 @@ md"""
 # Packages 📦
 """
 
+# ╔═╡ 2ab28351-7e59-4988-a836-2396e99977ed
+md"""
+## Python
+"""
+
 # ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
 @pyexec """
 from selenium import webdriver
@@ -175,13 +240,9 @@ end
 begin
 	options = Options()
 	options.headless = true
+	driver_tutor = webdriver.Firefox(; options)
+	driver_student = webdriver.Firefox(; options)
 end
-
-# ╔═╡ a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
-driver_tutor = webdriver.Firefox(; options)
-
-# ╔═╡ 7e5d7766-2e94-46ac-b3dc-5595690d71b9
-driver_student = webdriver.Firefox(; options)
 
 # ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
 if run_common_times
@@ -194,7 +255,7 @@ if run_common_times
 			df_student = get_times(student_id, js, driver_student)		
 			
 			# Find overlap
-			match_tutor(df_tutor, df_student, tutor_name, student_name)
+			df_common = match_tutor(df_tutor, df_student, tutor_name, student_name)
 			
 			# Show link to schedule
 			@debug Markdown.parse("""
@@ -202,9 +263,17 @@ if run_common_times
 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
 			$(student_name): <https://www.when2meet.com/?$(student_id)>
 			""")
+
+			# Save to file
+			save_df(df_common, tutor_name, student_name)
 		end
 	end
 end
+
+# ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
+md"""
+## Julia
+"""
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
 TableOfContents()
@@ -216,6 +285,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 
@@ -224,6 +294,7 @@ CSV = "~0.10.9"
 CondaPkg = "~0.2.15"
 DataFramesMeta = "~0.12.0"
 MarkdownLiteral = "~0.1.1"
+PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
 PythonCall = "~0.9.10"
 """
@@ -234,7 +305,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "b6e6812d98f4a39533bcd33b79d91c41ed179176"
+project_hash = "2d338c5f161ca551e13c63b0dad810aa608c5f32"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -263,17 +334,47 @@ git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
 uuid = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 version = "0.5.0"
 
+[[deps.ChainRulesCore]]
+deps = ["Compat", "LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "c6d890a52d2c4d55d326439580c3b8d0875a77d9"
+uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+version = "1.15.7"
+
+[[deps.ChangesOfVariables]]
+deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
+git-tree-sha1 = "38f7a08f19d8810338d4f5085211c7dfa5d5bdd8"
+uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+version = "0.1.4"
+
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "ded953804d019afa9a3f98981d99b33e3db7b6da"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
 version = "0.7.0"
 
+[[deps.ColorSchemes]]
+deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Random", "SnoopPrecompile"]
+git-tree-sha1 = "aa3edc8f8dea6cbfa176ee12f7c2fc82f0608ed3"
+uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+version = "3.20.0"
+
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
 git-tree-sha1 = "eb7f0f8307f71fac7c606984ea5fb2817275d6e4"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.11.4"
+
+[[deps.ColorVectorSpace]]
+deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "SpecialFunctions", "Statistics", "TensorCore"]
+git-tree-sha1 = "600cc5508d66b78aae350f7accdb58763ac18589"
+uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
+version = "0.9.10"
+
+[[deps.Colors]]
+deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
+git-tree-sha1 = "fc08e5930ee9a4e03f84bfb5211cb54e7769758a"
+uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
+version = "0.12.10"
 
 [[deps.CommonMark]]
 deps = ["Crayons", "JSON", "SnoopPrecompile", "URIs"]
@@ -335,6 +436,16 @@ version = "1.0.0"
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
+[[deps.DelimitedFiles]]
+deps = ["Mmap"]
+uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+
+[[deps.DocStringExtensions]]
+deps = ["LibGit2"]
+git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
+uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+version = "0.9.3"
+
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -393,10 +504,21 @@ version = "1.3.2"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
+[[deps.InverseFunctions]]
+deps = ["Test"]
+git-tree-sha1 = "49510dfcb407e572524ba94aeae2fced1f3feb0f"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.8"
+
 [[deps.InvertedIndices]]
 git-tree-sha1 = "82aec7a3dd64f4d9584659dc0b62ef7db2ef3e19"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 version = "1.2.0"
+
+[[deps.IrrationalConstants]]
+git-tree-sha1 = "7fd44fd4ff43fc60815f8e764c0f352b83c49151"
+uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
+version = "0.1.1"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -456,6 +578,12 @@ uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 deps = ["Libdl", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
+[[deps.LogExpFunctions]]
+deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
+git-tree-sha1 = "946607f84feb96220f480e0422d3484c49c00239"
+uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
+version = "0.3.19"
+
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
@@ -513,10 +641,27 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.20+0"
 
+[[deps.OpenLibm_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
+version = "0.8.1+0"
+
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
+
 [[deps.OrderedCollections]]
 git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.4.1"
+
+[[deps.Parameters]]
+deps = ["OrderedCollections", "UnPack"]
+git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
+uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "SnoopPrecompile"]
@@ -534,6 +679,18 @@ version = "1.3.0"
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.8.0"
+
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.19"
+
+[[deps.PlutoPlotly]]
+deps = ["AbstractPlutoDingetjes", "Colors", "Dates", "HypertextLiteral", "InteractiveUtils", "LaTeXStrings", "Markdown", "PlotlyBase", "PlutoUI", "Reexport"]
+git-tree-sha1 = "dec81dcd52748ffc59ce3582e709414ff78d947f"
+uuid = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
+version = "0.3.6"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -626,6 +783,12 @@ version = "1.1.0"
 deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[deps.SpecialFunctions]]
+deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "d75bda01f8c31ebb72df80a46c88b25d1c79c56d"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.1.7"
+
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -663,6 +826,12 @@ deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 version = "1.10.1"
 
+[[deps.TensorCore]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "1feb45f88d133a655e001435632f019a9a1bcdb6"
+uuid = "62fd8b95-f654-4bbd-a8a5-9c27f68ccd50"
+version = "0.1.1"
+
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -686,6 +855,11 @@ version = "1.4.1"
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+
+[[deps.UnPack]]
+git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
+uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
+version = "1.0.2"
 
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
@@ -734,13 +908,23 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+# ╠═9d38f93e-d44f-4c43-8546-19afeac30f5c
+# ╠═037c8b27-7191-42e3-8950-cac6b019ca56
+# ╠═99dc73ac-ad03-4145-aa87-8596869d95f6
+# ╠═69e8b71b-0998-4959-a834-f96988e9779d
+# ╠═15f155a3-3c2e-4ee7-aa97-55c60c75c3a2
+# ╠═7922b757-0156-433e-9d69-1359256ada1b
+# ╠═7083f71e-f3e8-4b48-890e-2e55aa8c1270
+# ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╟─b9710087-9f17-49f1-a61e-4478a5304982
 # ╟─79be5fb1-6df1-4b10-9a88-d09902619d9d
 # ╟─99b3b052-d54f-4216-9d9a-c2653408c7d8
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
-# ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╠═16f5b0df-3b16-4e47-a88f-3a583d446e2e
+# ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─1e6d225b-1f4d-45a2-aa2c-f7bb3aab9aaf
@@ -750,13 +934,13 @@ version = "17.4.0+0"
 # ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
 # ╟─3ea5ad8e-6e77-45da-a320-686575189751
 # ╟─0ccd4b3d-2469-4618-a56d-c39fbee799e5
-# ╠═a38c48e4-9bc0-4649-a9aa-202fb2a8c1ec
-# ╠═7e5d7766-2e94-46ac-b3dc-5595690d71b9
 # ╠═aff4a417-a86b-4397-8415-02f686756a1a
 # ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
+# ╟─2ab28351-7e59-4988-a836-2396e99977ed
 # ╠═90830035-c25b-489a-92e2-456c362a8d2f
 # ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
+# ╟─ec425767-6918-49d4-aa30-69fc7cdef76a
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
 # ╟─00000000-0000-0000-0000-000000000001
