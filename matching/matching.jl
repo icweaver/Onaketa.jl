@@ -30,7 +30,7 @@ md"""
 
 Below is a top-level overview of all of the common times between tutors and students. 
 * Use the controls below to filter for different tutor-student pairs.
-* The brigher the cell, the more times in common there are for that pair.
+* The brighter the cell, the more times in common there are for that pair.
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 """
 
