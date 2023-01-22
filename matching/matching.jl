@@ -249,39 +249,53 @@ end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 if run_common_times
-	N_all = NamedArray(N_matrix, (student_names_all, tutor_names_all))
-	N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
-	
-	daytimes_all = NamedArray(daytimes_matrix, (student_names_all, tutor_names_all))
-	daytimes_selected = @view(
-		daytimes_all[student_names_selected, tutor_names_selected]
-	).array
-	customdata = js_transform(daytimes_selected)
-	
-	fig = Plot(Layout(
-		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
-		# yaxis = attr(scaleanchor="x"), # Square cells
-		# plot_bgcolor = "rgba(0,0,0,0)",
-		title = "Tutor-student matching matrix", 
-		xaxis = attr(fixedrange=true),
-		yaxis = attr(fixedrange=true, autorange="reversed"),
-	))
-	
-	add_trace!(fig,
-		heatmap(;
-			z = N_selected,
-			x = tutor_names_selected,
-			y = student_names_selected,
-			customdata,
-			hovertemplate = """
-			<b>%{x} and %{y}: %{z} matches</b>
-			<br>%{customdata}<extra></extra>
-			""",
+	@bind asd let
+		N_all = NamedArray(N_matrix, (student_names_all, tutor_names_all))
+		N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
+		
+		daytimes_all = NamedArray(daytimes_matrix, (student_names_all, tutor_names_all))
+		daytimes_selected = @view(
+			daytimes_all[student_names_selected, tutor_names_selected]
+		).array
+		customdata = js_transform(daytimes_selected)
+		
+		fig = Plot(Layout(
+			# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
+			# yaxis = attr(scaleanchor="x"), # Square cells
+			# plot_bgcolor = "rgba(0,0,0,0)",
+			title = "Tutor-student matching matrix", 
+			xaxis = attr(fixedrange=true),
+			yaxis = attr(fixedrange=true, autorange="reversed"),
+		))
+		
+		add_trace!(fig,
+			heatmap(;
+				z = N_selected,
+				x = tutor_names_selected,
+				y = student_names_selected,
+				customdata,
+				hovertemplate = """
+				<b>%{x} and %{y}: %{z} matches</b>
+				<br>%{customdata}<extra></extra>
+				""",
+			)
 		)
-	)
+		
+		p = plot(fig)
 	
-	plot(fig)
+		add_plotly_listener!(p,"plotly_click", "
+		(e) => {
+			console.log(e)
+		    let dt = e.points[0].bbox.customdata
+			PLOT.value = dt
+			PLOT.dispatchEvent(new CustomEvent('input'))
+		}
+		")
+	end
 end
+
+# ╔═╡ 8f61b336-d185-49d6-bd5b-9a95777d80cf
+asd
 
 # ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
 md"""
@@ -941,7 +955,8 @@ version = "17.4.0+0"
 # ╟─c44cb567-e918-420e-a09f-e0e634207119
 # ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
-# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═8f61b336-d185-49d6-bd5b-9a95777d80cf
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╠═13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
