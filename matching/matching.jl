@@ -27,6 +27,11 @@ end
 # ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 md"""
 # Summary 📊
+
+Below is a top-level overview of all of the common times between tutors and students. 
+* Use the controls below to filter for different tutor-student pairs.
+* The brigher the cell, the more times in common there are for that pair.
+* Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 """
 
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
@@ -48,9 +53,6 @@ tutors = OrderedDict(
 	"Greg"  => "18417148-YEnZO",
 )
 
-# ╔═╡ c44cb567-e918-420e-a09f-e0e634207119
-const tutor_names_all = String.(keys(tutors))
-
 # ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
 students = OrderedDict(
 	"Alice" => "18377800-3D5I4",
@@ -58,6 +60,9 @@ students = OrderedDict(
 	"Charlie" => "18377974-jYazr",
 	"Dee" => "18415463-WVm2u",
 )
+
+# ╔═╡ c44cb567-e918-420e-a09f-e0e634207119
+const tutor_names_all = String.(keys(tutors))
 
 # ╔═╡ 2924b351-8f60-4d49-bceb-0c9137cc08eb
 const student_names_all = String.(keys(students))
@@ -83,7 +88,7 @@ Performs the following operations:
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
 if run_common_times
-	@bind run_matches Button("Match")
+	@mdx """$(@bind run_matches Button("Match")) (Click to re-download data)"""
 end
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
@@ -941,15 +946,15 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
-# ╟─c44cb567-e918-420e-a09f-e0e634207119
-# ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
-# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
+# ╟─c44cb567-e918-420e-a09f-e0e634207119
+# ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
