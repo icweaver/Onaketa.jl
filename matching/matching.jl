@@ -14,6 +14,9 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ db5c74ab-81c7-4135-98a0-f75f51334c88
+using NamedArrays
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
 	using DataFramesMeta, CSV, OrderedCollections
@@ -28,6 +31,9 @@ end
 md"""
 # Summary 📊
 """
+
+# ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
+@bind reset_matrix Button("Reset")
 
 # ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
 md"""
@@ -45,6 +51,9 @@ tutors = OrderedDict(
 	"Greg"  => "18417148-YEnZO",
 )
 
+# ╔═╡ c44cb567-e918-420e-a09f-e0e634207119
+const tutor_names_all = String.(keys(tutors))
+
 # ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
 students = OrderedDict(
 	"Alice" => "18377800-3D5I4",
@@ -52,6 +61,19 @@ students = OrderedDict(
 	"Charlie" => "18377974-jYazr",
 	"Dee" => "18415463-WVm2u",
 )
+
+# ╔═╡ 2924b351-8f60-4d49-bceb-0c9137cc08eb
+const student_names_all = String.(keys(students))
+
+# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
+begin
+	reset_matrix
+	md"""
+	**Tutor:** $(@bind tutor_names_selected MultiSelect(tutor_names_all; default=tutor_names_all))
+	**Student:**
+	$(@bind student_names_selected MultiSelect(student_names_all; default=student_names_all))
+	"""
+end
 
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
@@ -227,8 +249,14 @@ end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 if run_common_times
-	tutor_names, student_names = keys.((tutors, students))
-	customdata = js_transform(daytimes_matrix)
+	N_all = NamedArray(N_matrix, (student_names_all, tutor_names_all))
+	N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
+	
+	daytimes_all = NamedArray(daytimes_matrix, (student_names_all, tutor_names_all))
+	daytimes_selected = @view(
+		daytimes_all[student_names_selected, tutor_names_selected]
+	).array
+	customdata = js_transform(daytimes_selected)
 	
 	fig = Plot(Layout(
 		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
@@ -240,9 +268,10 @@ if run_common_times
 	))
 	
 	add_trace!(fig,
-		heatmap(z = N_matrix;
-			x = tutor_names,
-			y = student_names,
+		heatmap(;
+			z = N_selected,
+			x = tutor_names_selected,
+			y = student_names_selected,
 			customdata,
 			hovertemplate = """
 			<b>%{x} and %{y}: %{z} matches</b>
@@ -269,6 +298,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -279,6 +309,7 @@ CSV = "~0.10.9"
 CondaPkg = "~0.2.15"
 DataFramesMeta = "~0.12.0"
 MarkdownLiteral = "~0.1.1"
+NamedArrays = "~0.9.6"
 OrderedCollections = "~1.4.1"
 PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
@@ -291,7 +322,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "590d6bda88ae9ef3785ef3c15153b5296a3b70fd"
+project_hash = "9a92324eb4dc98e427fb2c65bc9b7bbff178b656"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -361,6 +392,11 @@ deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "fc08e5930ee9a4e03f84bfb5211cb54e7769758a"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.10"
+
+[[deps.Combinatorics]]
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
+uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+version = "1.0.2"
 
 [[deps.CommonMark]]
 deps = ["Crayons", "JSON", "SnoopPrecompile", "URIs"]
@@ -617,6 +653,12 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2022.2.1"
+
+[[deps.NamedArrays]]
+deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
+git-tree-sha1 = "2fd5787125d1a93fbe30961bd841707b8a80d75b"
+uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
+version = "0.9.6"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -895,8 +937,13 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+# ╠═db5c74ab-81c7-4135-98a0-f75f51334c88
+# ╟─c44cb567-e918-420e-a09f-e0e634207119
+# ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
 # ╟─e077cacc-e638-49bc-9e50-62a43a7af574
+# ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
+# ╠═13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
