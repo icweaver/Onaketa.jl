@@ -14,17 +14,12 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ afdf8616-5ee9-47d4-bf77-30e25b15beb4
-using HTTP, Gumbo, Cascadia
-
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
+	using HTTP, Gumbo, Cascadia
 	using DataFramesMeta, CSV, OrderedCollections, NamedArrays
 	using MarkdownLiteral: @mdx
-	# using PythonCall, CondaPkg
 	using PlutoPlotly, PlutoUI
-
-	# CondaPkg.add("selenium")
 end
 
 # ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
@@ -37,6 +32,14 @@ Below is a top-level overview of all of the common times between tutors and stud
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 """
 
+# ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
+md"""
+## Heatmap
+"""
+
+# ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
+@mdx """$(@bind run_matches Button("Match")) (Click to re-download data)"""
+
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
 @bind reset_matrix Button("Reset")
 
@@ -44,12 +47,9 @@ Below is a top-level overview of all of the common times between tutors and stud
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
 js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
-# ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
+# ╔═╡ 7b21849b-5952-4d08-8158-f70679f8d0ae
 md"""
-# Load ⬇
-
-!!! note
-	This will eventually load in the names and when2meet IDs of tutors/students from the google form. Just using these dicts below as a placeholder for now. 
+## Tutor - student IDs
 """
 
 # ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
@@ -85,18 +85,13 @@ end
 
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
-# $(@bind run_common_times CheckBox()) Common Times
+# Common Times $(@bind run_common_times CheckBox()) 
 
 Performs the following operations:
-* Opens When2meet schedule in a headless browser for all tutors and students
-* Downloads the given times
+* Pulls HTML When2meet schedules for all tutors and students
+* Parses and extracts the day-time data (`dt`)
 * Computes overlap between all tutor-student pairs
 """
-
-# ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
-if run_common_times
-	@mdx """$(@bind run_matches Button("Match")) (Click to re-download data)"""
-end
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -104,15 +99,6 @@ function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
 	N = length(dt_common)
 	iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
 	return dt_common, N
-end
-
-# ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
-function save_df(df, tutor_name, student_name)
-	dirpath = "./$(tutor_name)"
-	fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
-	mkpath(dirpath)
-	@info "Saving to $(fpath)"
-	CSV.write(fpath, df)
 end
 
 # ╔═╡ fa087248-6914-4ebd-81f4-3d580e4f403d
@@ -132,81 +118,21 @@ function split_by_day(dt)
 	)
 end
 
+# ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
+function save_df(df, tutor_name, student_name)
+	dirpath = "./$(tutor_name)"
+	fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
+	mkpath(dirpath)
+	@info "Saving to $(fpath)"
+	CSV.write(fpath, df)
+end
+
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
 md"""
-# Data scraping 🔎
+## ETL
+
+Fun with HTML ...
 """
-
-# ╔═╡ 4706cdf8-5aea-433f-a8d7-c81272e17c3d
-md"""
-## Script
-"""
-
-# ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
-# Markdown.parse("""
-# Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just grab the available times for a single user.
-
-# ```javascript
-# $(js)
-# ```
-# """)
-
-# ╔═╡ 9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# md"""
-# !!! note
-# 	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver).
-# """
-
-# ╔═╡ 3ea5ad8e-6e77-45da-a320-686575189751
-# js = raw"""
-# function getElementByXpath(path) {
-#   return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-# }
-
-# function getCSV() {
-# 	result = "DayTime"+"\n"; 
-  
-# 	for(let i = 0; i < AvailableAtSlot.length; i++) {
-#   		if (AvailableAtSlot[i].length == 1) {
-			
-# 			let slot = getElementByXpath(
-# 				`//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover`
-# 			).nodeValue;
-		
-# 			slot = slot.match(/.*"(.*)".*/)[1];
-# 			result += slot + "\n";
-# 		}
-#   	}
-# 	return result
-# }
-
-# return getCSV()"""
-
-# ╔═╡ 0ccd4b3d-2469-4618-a56d-c39fbee799e5
-md"""
-## Request
-
-Here we spin up a browser for a tutor and student, and send over the javascript. The result is returned as a `DataFrame` that we can use to perform the schedule matching.
-"""
-
-# ╔═╡ aff4a417-a86b-4397-8415-02f686756a1a
-# begin
-# 	options = Options()
-# 	options.headless = true
-# 	driver_tutor = webdriver.Firefox(; options)
-# 	driver_student = webdriver.Firefox(; options)
-# end
-
-# ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
-# function get_times(id, js, driver)
-# 	url = "https://www.when2meet.com/?$(id)"
-# 	driver.get(url)
-# 	df = let
-# 		s = pyconvert(String, driver.execute_script(js))
-# 		CSV.read(IOBuffer(s), DataFrame)
-# 	end
-# 	return df
-# end
 
 # ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
 function download_schedule(id)
@@ -341,31 +267,6 @@ end
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
 # Packages 📦
-
-!!! todo
-	Migrate from selenium + PythonCall.jl to Webdriver.jl?
-"""
-
-# ╔═╡ 2ab28351-7e59-4988-a836-2396e99977ed
-md"""
-## Python
-"""
-
-# ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
-# @pyexec """
-# from selenium import webdriver
-# """
-
-# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
-# @py begin
-# 	import selenium: webdriver
-# 	import selenium.webdriver.common.by: By
-# 	import selenium.webdriver.firefox.options: Options
-# end
-
-# ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
-md"""
-## Julia
 """
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
@@ -1030,40 +931,29 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+# ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
-# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
-# ╟─42d542e2-e359-4698-ba11-57bea0f75242
+# ╟─7b21849b-5952-4d08-8158-f70679f8d0ae
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
 # ╟─c44cb567-e918-420e-a09f-e0e634207119
 # ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
-# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╟─0c739ea8-29d0-4183-af5f-d407fe2040af
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╟─7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
-# ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
-# ╠═bdb1b78c-603c-4f16-8ed3-51ca448c1233
-# ╠═9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# ╠═3ea5ad8e-6e77-45da-a320-686575189751
-# ╟─0ccd4b3d-2469-4618-a56d-c39fbee799e5
-# ╟─aff4a417-a86b-4397-8415-02f686756a1a
-# ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
-# ╠═0c739ea8-29d0-4183-af5f-d407fe2040af
-# ╠═97e212ea-9425-481a-add6-8fd09f00e4a2
-# ╠═b2eb9edd-78f8-46fe-8290-bb601fcb83e0
-# ╠═76911411-e5b2-4992-9f1c-7d432a141fdf
-# ╠═afdf8616-5ee9-47d4-bf77-30e25b15beb4
+# ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
+# ╟─b2eb9edd-78f8-46fe-8290-bb601fcb83e0
+# ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
-# ╟─2ab28351-7e59-4988-a836-2396e99977ed
-# ╠═90830035-c25b-489a-92e2-456c362a8d2f
-# ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
-# ╟─ec425767-6918-49d4-aa30-69fc7cdef76a
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
-# ╠═168567e7-5c80-4ff3-b094-8e58f6b3ce58
+# ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
