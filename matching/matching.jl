@@ -14,14 +14,17 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ afdf8616-5ee9-47d4-bf77-30e25b15beb4
+using HTTP, Gumbo, Cascadia
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
 	using DataFramesMeta, CSV, OrderedCollections, NamedArrays
 	using MarkdownLiteral: @mdx
-	using PythonCall, CondaPkg
+	# using PythonCall, CondaPkg
 	using PlutoPlotly, PlutoUI
 
-	CondaPkg.add("selenium")
+	# CondaPkg.add("selenium")
 end
 
 # ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
@@ -36,6 +39,10 @@ Below is a top-level overview of all of the common times between tutors and stud
 
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
 @bind reset_matrix Button("Reset")
+
+# ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
+# Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
+js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ 42d542e2-e359-4698-ba11-57bea0f75242
 md"""
@@ -91,16 +98,12 @@ if run_common_times
 	@mdx """$(@bind run_matches Button("Match")) (Click to re-download data)"""
 end
 
-# ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
-# Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
-js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
-
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
-function match_tutor(df_tutor, df_student, tutor_name, student_name)
-	df_common = innerjoin(df_tutor, df_student; on=:DayTime)
-	N = nrow(df_common)
+function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
+	dt_common = dt_tutor ∩ dt_student
+	N = length(dt_common)
 	iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
-	return df_common.DayTime, N, df_common
+	return dt_common, N
 end
 
 # ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
@@ -110,6 +113,23 @@ function save_df(df, tutor_name, student_name)
 	mkpath(dirpath)
 	@info "Saving to $(fpath)"
 	CSV.write(fpath, df)
+end
+
+# ╔═╡ fa087248-6914-4ebd-81f4-3d580e4f403d
+function split_by_day(dt)
+	gdf = @chain DataFrame([dt], [:daytime]) begin
+		@rselect $[:day, :time, :period] = split(:daytime)
+		groupby(:day)
+	end
+	
+	return join(
+		[
+			join(
+				["$(r.day) $(r.time) $(r.period)" for r ∈ eachrow(df)], "<br>"
+			)
+			for df ∈ gdf
+		], "<br>-----------<br>"
+	)
 end
 
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
@@ -122,45 +142,45 @@ md"""
 ## Script
 """
 
+# ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
+# Markdown.parse("""
+# Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just grab the available times for a single user.
+
+# ```javascript
+# $(js)
+# ```
+# """)
+
 # ╔═╡ 9c57fcc6-06ed-4bab-934f-beef92a8cc50
-md"""
-!!! note
-	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver).
-"""
+# md"""
+# !!! note
+# 	It turns out that `$x()` is not defined in vanilla javascript, so `getElementByXpath` is a [workaround](https://stackoverflow.com/questions/10596417/is-there-a-way-to-get-element-by-xpath-using-javascript-in-selenium-webdriver).
+# """
 
 # ╔═╡ 3ea5ad8e-6e77-45da-a320-686575189751
-js = raw"""
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
+# js = raw"""
+# function getElementByXpath(path) {
+#   return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+# }
 
-function getCSV() {
-	result = "DayTime"+"\n"; 
+# function getCSV() {
+# 	result = "DayTime"+"\n"; 
   
-	for(let i = 0; i < AvailableAtSlot.length; i++) {
-  		if (AvailableAtSlot[i].length == 1) {
+# 	for(let i = 0; i < AvailableAtSlot.length; i++) {
+#   		if (AvailableAtSlot[i].length == 1) {
 			
-			let slot = getElementByXpath(
-				`//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover`
-			).nodeValue;
+# 			let slot = getElementByXpath(
+# 				`//div[@id="GroupTime${TimeOfSlot[i]}"]/@onmouseover`
+# 			).nodeValue;
 		
-			slot = slot.match(/.*"(.*)".*/)[1];
-			result += slot + "\n";
-		}
-  	}
-	return result
-}
+# 			slot = slot.match(/.*"(.*)".*/)[1];
+# 			result += slot + "\n";
+# 		}
+#   	}
+# 	return result
+# }
 
-return getCSV()"""
-
-# ╔═╡ bdb1b78c-603c-4f16-8ed3-51ca448c1233
-Markdown.parse("""
-Modified from the [discusson here](https://gist.github.com/camtheman256/3125e18ba20e90b6252678714e5102fd) to just grab the available times for a single user.
-
-```javascript
-$(js)
-```
-""")
+# return getCSV()"""
 
 # ╔═╡ 0ccd4b3d-2469-4618-a56d-c39fbee799e5
 md"""
@@ -169,75 +189,99 @@ md"""
 Here we spin up a browser for a tutor and student, and send over the javascript. The result is returned as a `DataFrame` that we can use to perform the schedule matching.
 """
 
-# ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
-function get_times(id, js, driver)
-	url = "https://www.when2meet.com/?$(id)"
-	driver.get(url)
-	df = let
-		s = pyconvert(String, driver.execute_script(js))
-		CSV.read(IOBuffer(s), DataFrame)
-	end
-	return df
-end
-
-# ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
-md"""
-# Packages 📦
-
-!!! todo
-	Migrate from selenium + PythonCall.jl to Webdriver.jl?
-"""
-
-# ╔═╡ 2ab28351-7e59-4988-a836-2396e99977ed
-md"""
-## Python
-"""
-
-# ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
-@pyexec """
-from selenium import webdriver
-"""
-
-# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
-@py begin
-	import selenium: webdriver
-	import selenium.webdriver.common.by: By
-	import selenium.webdriver.firefox.options: Options
-end
-
 # ╔═╡ aff4a417-a86b-4397-8415-02f686756a1a
-begin
-	options = Options()
-	options.headless = true
-	driver_tutor = webdriver.Firefox(; options)
-	driver_student = webdriver.Firefox(; options)
+# begin
+# 	options = Options()
+# 	options.headless = true
+# 	driver_tutor = webdriver.Firefox(; options)
+# 	driver_student = webdriver.Firefox(; options)
+# end
+
+# ╔═╡ e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# function get_times(id, js, driver)
+# 	url = "https://www.when2meet.com/?$(id)"
+# 	driver.get(url)
+# 	df = let
+# 		s = pyconvert(String, driver.execute_script(js))
+# 		CSV.read(IOBuffer(s), DataFrame)
+# 	end
+# 	return df
+# end
+
+# ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
+function download_schedule(id)
+	url = "https://www.when2meet.com/?$(id)"
+	r = HTTP.get(url)
+	h = parsehtml(String(r.body))
+end
+
+# ╔═╡ 76911411-e5b2-4992-9f1c-7d432a141fdf
+function day_compare(d1, d2)
+	day_num = Dict((
+		("Monday", 1),
+		("Tuesday", 2),
+		("Wednesday", 3),
+		("Thursday", 4),
+		("Friday", 5),
+		("Saturday", 6),
+		("Sunday", 7)
+	))
+	return day_num[d1] < day_num[d2]
+end
+
+# ╔═╡ b2eb9edd-78f8-46fe-8290-bb601fcb83e0
+function extract_times(h; lt=day_compare)
+	# Select available "green" cells from the site
+	avail_times = eachmatch(
+		Selector("""[id*=GroupTime][style*="background: #339900"]"""),
+		h.root
+	)
+	
+	# Pull out the plain-text day-time
+	dt = [
+		split(avail_time.attributes["onmouseover"], '"')[2]
+		for avail_time ∈ avail_times
+	]
+	
+	# These are ordered row-wise in the html body, so need to flip
+	# to column-wise to order by day instead of time
+	sort!(dt; by=x -> first(split(x)), lt)
+	
+	return dt
+end
+
+# ╔═╡ 0c739ea8-29d0-4183-af5f-d407fe2040af
+function get_times(id)
+	url = "https://www.when2meet.com/?$(id)"
+	h = download_schedule(id)
+	dt = extract_times(h)
 end
 
 # ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
 if run_common_times
 	run_matches
 	
-	N_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-	daytimes_matrix =  Matrix(undef, length.((students, tutors))...)
+	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
 	
 	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
 		for (i, (student_name, student_id)) ∈ enumerate(students)
 			# Download schedules
-			df_tutor = get_times(tutor_id, js, driver_tutor)
-			df_student = get_times(student_id, js, driver_student)		
+			dt_tutor = get_times(tutor_id)
+			dt_student = get_times(student_id)		
 			
 			# Find overlap
-			daytimes, N, df_common = match_tutor(
-				df_tutor, df_student, tutor_name, student_name
+			dt_common, N_common = match_tutor(
+				dt_tutor, dt_student, tutor_name, student_name
 			)
 
 			# Store matches for plotting
-			N_matrix[i, j] = N
-			daytimes_matrix[i, j] = join(daytimes, "<br>")
+			N_common_matrix[i, j] = N_common
+			dt_common_matrix[i, j] = split_by_day(dt_common)
 			
 			# Show link to schedule
 			@debug Markdown.parse("""
-			**Fouund $(N) matches** \\
+			**Found $(N_common) matches** \\
 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
 			$(student_name): <https://www.when2meet.com/?$(student_id)>
 			""")
@@ -250,14 +294,14 @@ end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 if run_common_times
-	N_all = NamedArray(N_matrix, (student_names_all, tutor_names_all))
+	N_all = NamedArray(N_common_matrix, (student_names_all, tutor_names_all))
 	N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
 	
-	daytimes_all = NamedArray(daytimes_matrix, (student_names_all, tutor_names_all))
-	daytimes_selected = @view(
-		daytimes_all[student_names_selected, tutor_names_selected]
+	dt_all = NamedArray(dt_common_matrix, (student_names_all, tutor_names_all))
+	dt_selected = @view(
+		dt_all[student_names_selected, tutor_names_selected]
 	).array
-	customdata = js_transform(daytimes_selected)
+	customdata = js_transform(dt_selected)
 	
 	fig = Plot(Layout(
 		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
@@ -292,6 +336,31 @@ if run_common_times
 	")
 end
 
+# ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
+md"""
+# Packages 📦
+
+!!! todo
+	Migrate from selenium + PythonCall.jl to Webdriver.jl?
+"""
+
+# ╔═╡ 2ab28351-7e59-4988-a836-2396e99977ed
+md"""
+## Python
+"""
+
+# ╔═╡ 90830035-c25b-489a-92e2-456c362a8d2f
+# @pyexec """
+# from selenium import webdriver
+# """
+
+# ╔═╡ dcd57276-5143-4337-b9f3-f2b65e9409a9
+# @py begin
+# 	import selenium: webdriver
+# 	import selenium.webdriver.common.by: By
+# 	import selenium.webdriver.firefox.options: Options
+# end
+
 # ╔═╡ ec425767-6918-49d4-aa30-69fc7cdef76a
 md"""
 ## Julia
@@ -304,25 +373,27 @@ TableOfContents()
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
+Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 
 [compat]
 CSV = "~0.10.9"
-CondaPkg = "~0.2.15"
+Cascadia = "~1.0.2"
 DataFramesMeta = "~0.12.0"
+Gumbo = "~0.8.2"
+HTTP = "~1.7.3"
 MarkdownLiteral = "~0.1.1"
 NamedArrays = "~0.9.6"
 OrderedCollections = "~1.4.1"
 PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
-PythonCall = "~0.9.10"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -331,13 +402,18 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "9bf5f781ddb377034d5f4d1ac6097738129ec3eb"
+project_hash = "cd11a808a870773fd388a74d2a70d06a0dc1e2d1"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
 git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.1.4"
+
+[[deps.AbstractTrees]]
+git-tree-sha1 = "faa260e4cb5aba097a73fab382dd4b5819d8ec8c"
+uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
+version = "0.4.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -349,11 +425,22 @@ uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
+[[deps.BitFlags]]
+git-tree-sha1 = "43b1a4a8f797c1cddadf60499a8a077d4af2cd2d"
+uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
+version = "0.1.7"
+
 [[deps.CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "SnoopPrecompile", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
 git-tree-sha1 = "c700cce799b51c9045473de751e9319bdd1c6e94"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.9"
+
+[[deps.Cascadia]]
+deps = ["AbstractTrees", "Gumbo"]
+git-tree-sha1 = "c0769cbd930aea932c0912c4d2749c619a263fc1"
+uuid = "54eefc05-d75b-58de-a785-1a3403f0919f"
+version = "1.0.2"
 
 [[deps.Chain]]
 git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
@@ -423,12 +510,6 @@ version = "4.5.0"
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.0.1+0"
-
-[[deps.CondaPkg]]
-deps = ["JSON3", "Markdown", "MicroMamba", "Pidfile", "Pkg", "TOML"]
-git-tree-sha1 = "64dd885fa25c61fdf6b27e90d6adedf564ae363a"
-uuid = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
-version = "0.2.15"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -507,6 +588,24 @@ version = "0.4.2"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[deps.Gumbo]]
+deps = ["AbstractTrees", "Gumbo_jll", "Libdl"]
+git-tree-sha1 = "a1a138dfbf9df5bace489c7a9d5196d6afdfa140"
+uuid = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
+version = "0.8.2"
+
+[[deps.Gumbo_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "29070dee9df18d9565276d68a596854b1764aa38"
+uuid = "528830af-5a63-567c-a44a-034ed33b8444"
+version = "0.10.2+0"
+
+[[deps.HTTP]]
+deps = ["Base64", "CodecZlib", "Dates", "IniFile", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "eb5aa5e3b500e191763d35198f859e4b40fff4a6"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "1.7.3"
+
 [[deps.Hyperscript]]
 deps = ["Test"]
 git-tree-sha1 = "8d511d5b81240fc8e6802386302675bdf47737b9"
@@ -524,6 +623,11 @@ deps = ["Logging", "Random"]
 git-tree-sha1 = "f7be53659ab06ddc986428d3a9dcc95f6fa6705a"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.2"
+
+[[deps.IniFile]]
+git-tree-sha1 = "f550e6e32074c939295eb5ea6de31849ac2c9625"
+uuid = "83e8ac13-25f8-5344-8a64-a9f2b223428f"
+version = "0.5.1"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
@@ -568,20 +672,10 @@ git-tree-sha1 = "3c837543ddb02250ef42f4738347454f95079d4e"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.21.3"
 
-[[deps.JSON3]]
-deps = ["Dates", "Mmap", "Parsers", "SnoopPrecompile", "StructTypes", "UUIDs"]
-git-tree-sha1 = "84b10656a41ef564c39d2d477d7236966d2b5683"
-uuid = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-version = "1.12.0"
-
 [[deps.LaTeXStrings]]
 git-tree-sha1 = "f2355693d6778a178ade15952b7ac47a4ff97996"
 uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 version = "1.3.0"
-
-[[deps.LazyArtifacts]]
-deps = ["Artifacts", "Pkg"]
-uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -618,6 +712,12 @@ version = "0.3.19"
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
+[[deps.LoggingExtras]]
+deps = ["Dates", "Logging"]
+git-tree-sha1 = "cedb76b37bc5a6c702ade66be44f831fa23c681e"
+uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+version = "1.0.0"
+
 [[deps.MIMEs]]
 git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
@@ -639,16 +739,16 @@ git-tree-sha1 = "0d3fa2dd374934b62ee16a4721fe68c418b92899"
 uuid = "736d6165-7244-6769-4267-6b50796e6954"
 version = "0.1.1"
 
+[[deps.MbedTLS]]
+deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "Random", "Sockets"]
+git-tree-sha1 = "03a9b9718f5682ecb107ac9f7308991db4ce395b"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "1.1.7"
+
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.0+0"
-
-[[deps.MicroMamba]]
-deps = ["Pkg", "Scratch", "micromamba_jll"]
-git-tree-sha1 = "a6a4771aba1dc8942bc0f44ff9f8ee0f893ef888"
-uuid = "0b3b1443-0f03-428d-bdfb-f27f9c1191ea"
-version = "0.1.12"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
@@ -683,6 +783,18 @@ deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
 version = "0.8.1+0"
 
+[[deps.OpenSSL]]
+deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
+git-tree-sha1 = "6503b77492fd7fcb9379bf73cd31035670e3c509"
+uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+version = "1.3.3"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "f6e9dba33f9f2c44e08a020b0caf6903be540004"
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "1.1.19+0"
+
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
@@ -705,12 +817,6 @@ deps = ["Dates", "SnoopPrecompile"]
 git-tree-sha1 = "8175fc2b118a3755113c8e68084dc1a9e63c61ee"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.5.3"
-
-[[deps.Pidfile]]
-deps = ["FileWatching", "Test"]
-git-tree-sha1 = "2d8aaf8ee10df53d0dfb9b8ee44ae7c04ced2b03"
-uuid = "fa939f87-e72e-5be4-a000-7fc836dbe307"
-version = "1.3.0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -757,12 +863,6 @@ version = "2.2.2"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
-[[deps.PythonCall]]
-deps = ["CondaPkg", "Dates", "Libdl", "MacroTools", "Markdown", "Pkg", "REPL", "Requires", "Serialization", "Tables", "UnsafePointers"]
-git-tree-sha1 = "1052188e0a017d4f4f261f12307e1fa1b5b48588"
-uuid = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
-version = "0.9.10"
-
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -786,12 +886,6 @@ version = "1.3.0"
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
 
-[[deps.Scratch]]
-deps = ["Dates"]
-git-tree-sha1 = "f94f779c94e58bf9ea243e77a37e16d9de9126bd"
-uuid = "6c6a2e73-6563-6170-7368-637461726353"
-version = "1.1.1"
-
 [[deps.SentinelArrays]]
 deps = ["Dates", "Random"]
 git-tree-sha1 = "c02bd3c9c3fc8463d3591a62a378f90d2d8ab0f3"
@@ -800,6 +894,11 @@ version = "1.3.17"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+
+[[deps.SimpleBufferStream]]
+git-tree-sha1 = "874e8867b33a00e784c8a7e4b60afe9e037b74e1"
+uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
+version = "1.1.0"
 
 [[deps.SnoopPrecompile]]
 deps = ["Preferences"]
@@ -834,12 +933,6 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 git-tree-sha1 = "46da2434b41f41ac3594ee9816ce5541c6096123"
 uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
 version = "0.3.0"
-
-[[deps.StructTypes]]
-deps = ["Dates", "UUIDs"]
-git-tree-sha1 = "ca4bccb03acf9faaf4137a9abc1881ed1841aa70"
-uuid = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
-version = "1.10.0"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -901,11 +994,6 @@ version = "1.0.2"
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
-[[deps.UnsafePointers]]
-git-tree-sha1 = "c81331b3b2e60a982be57c046ec91f599ede674a"
-uuid = "e17b2a0c-0bdf-430a-bd0c-3a23cae4ff39"
-version = "1.0.0"
-
 [[deps.WeakRefStrings]]
 deps = ["DataAPI", "InlineStrings", "Parsers"]
 git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
@@ -927,12 +1015,6 @@ deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
 version = "5.1.1+0"
 
-[[deps.micromamba_jll]]
-deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
-git-tree-sha1 = "80ddb5f510c650de288ecd548ebc3de557ffb3e2"
-uuid = "f8abcde7-e9b7-5caa-b8af-a437887ae8e4"
-version = "1.2.0+0"
-
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
@@ -950,6 +1032,7 @@ version = "17.4.0+0"
 # ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
+# ╠═d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─42d542e2-e359-4698-ba11-57bea0f75242
 # ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
 # ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
@@ -957,23 +1040,28 @@ version = "17.4.0+0"
 # ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─7de6d079-b290-4cc6-8729-2de59c1506b6
+# ╠═7de6d079-b290-4cc6-8729-2de59c1506b6
+# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─4706cdf8-5aea-433f-a8d7-c81272e17c3d
-# ╟─bdb1b78c-603c-4f16-8ed3-51ca448c1233
-# ╟─9c57fcc6-06ed-4bab-934f-beef92a8cc50
-# ╟─3ea5ad8e-6e77-45da-a320-686575189751
+# ╠═bdb1b78c-603c-4f16-8ed3-51ca448c1233
+# ╠═9c57fcc6-06ed-4bab-934f-beef92a8cc50
+# ╠═3ea5ad8e-6e77-45da-a320-686575189751
 # ╟─0ccd4b3d-2469-4618-a56d-c39fbee799e5
 # ╟─aff4a417-a86b-4397-8415-02f686756a1a
 # ╠═e0684ec1-7485-4cf6-b69a-03e8e6fedca1
+# ╠═0c739ea8-29d0-4183-af5f-d407fe2040af
+# ╠═97e212ea-9425-481a-add6-8fd09f00e4a2
+# ╠═b2eb9edd-78f8-46fe-8290-bb601fcb83e0
+# ╠═76911411-e5b2-4992-9f1c-7d432a141fdf
+# ╠═afdf8616-5ee9-47d4-bf77-30e25b15beb4
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╟─2ab28351-7e59-4988-a836-2396e99977ed
 # ╠═90830035-c25b-489a-92e2-456c362a8d2f
 # ╠═dcd57276-5143-4337-b9f3-f2b65e9409a9
 # ╟─ec425767-6918-49d4-aa30-69fc7cdef76a
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
-# ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
+# ╠═168567e7-5c80-4ff3-b094-8e58f6b3ce58
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
