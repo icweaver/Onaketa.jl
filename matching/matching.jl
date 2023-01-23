@@ -104,7 +104,9 @@ end
 # ╔═╡ fa087248-6914-4ebd-81f4-3d580e4f403d
 function split_by_day(dt)
 	gdf = @chain DataFrame([dt], [:daytime]) begin
-		@rselect $[:day, :time, :period] = split(:daytime)
+		# Pluto ExpressionExplorer workaround
+		select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period])
+		# @rselect $[:day, :time, :period] = split(:daytime)
 		groupby(:day)
 	end
 	
@@ -305,7 +307,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "cd11a808a870773fd388a74d2a70d06a0dc1e2d1"
+project_hash = "863f0ce7ec95d5d1da29530529ab7b2352d693da"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
