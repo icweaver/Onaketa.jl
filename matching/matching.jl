@@ -137,8 +137,7 @@ Fun with HTML ...
 """
 
 # ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
-function download_schedule(id)
-	url = "https://www.when2meet.com/?$(id)"
+function download_schedule(url)
 	r = HTTP.get(url)
 	h = parsehtml(String(r.body))
 end
@@ -181,7 +180,7 @@ end
 # ╔═╡ 0c739ea8-29d0-4183-af5f-d407fe2040af
 function get_times(id)
 	url = "https://www.when2meet.com/?$(id)"
-	h = download_schedule(id)
+	h = download_schedule(url)
 	dt = extract_times(h)
 end
 
@@ -265,6 +264,48 @@ if run_common_times
 	}
 	")
 end
+
+# ╔═╡ ad479dd5-5a99-499f-81e4-567e4cbdd7d2
+md"""
+# WhenIsGood
+"""
+
+# ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
+md"""
+Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
+"""
+
+# ╔═╡ 30577756-5aec-4a30-ae61-5f8c52410fa0
+h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
+
+# ╔═╡ 44f70398-f7e2-4730-8686-11dac31f98c1
+h.root.children[end].children[end-1]
+
+# ╔═╡ 98148a55-3812-4e6f-9d5c-f9fca585d975
+function extract_times2(h; lt=day_compare)
+	# Select available "green" cells from the site
+	avail_times = eachmatch(
+		Selector("""div :matches(<script>)"""),
+		h.root
+	)
+
+	foreach(println, avail_times)
+	
+	# # Pull out the plain-text day-time
+	# dt = [
+	# 	split(avail_time.attributes["onmouseover"], '"')[2]
+	# 	for avail_time ∈ avail_times
+	# ]
+	
+	# # These are ordered row-wise in the html body, so need to flip
+	# # to column-wise to order by day instead of time
+	# sort!(dt; by=x -> first(split(x)), lt)
+	
+	# return dt
+end
+
+# ╔═╡ 6a346407-8de7-49e7-9bb1-591f699576b6
+extract_times2(h)
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -954,6 +995,12 @@ version = "17.4.0+0"
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─b2eb9edd-78f8-46fe-8290-bb601fcb83e0
 # ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
+# ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
+# ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
+# ╠═30577756-5aec-4a30-ae61-5f8c52410fa0
+# ╠═44f70398-f7e2-4730-8686-11dac31f98c1
+# ╠═6a346407-8de7-49e7-9bb1-591f699576b6
+# ╠═98148a55-3812-4e6f-9d5c-f9fca585d975
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
