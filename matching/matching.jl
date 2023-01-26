@@ -34,7 +34,7 @@ Below is a top-level overview of all of the common times between tutors and stud
 
 # ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
 md"""
-## Heatmap
+## Heatmap $(@bind run_common_times CheckBox())
 """
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
@@ -85,13 +85,48 @@ end
 
 # ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
 md"""
-# Common Times $(@bind run_common_times CheckBox()) 
+# Common Times 
 
 Performs the following operations:
 * Pulls HTML When2meet schedules for all tutors and students
 * Parses and extracts the day-time data (`dt`)
 * Computes overlap between all tutor-student pairs
 """
+
+# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
+# if run_common_times
+# 	run_matches
+	
+# 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+# 	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
+	
+# 	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
+# 		for (i, (student_name, student_id)) ∈ enumerate(students)
+# 			# Download schedules
+# 			dt_tutor = get_times(tutor_id)
+# 			dt_student = get_times(student_id)		
+			
+# 			# Find overlap
+# 			dt_common, N_common = match_tutor(
+# 				dt_tutor, dt_student, tutor_name, student_name
+# 			)
+
+# 			# Store matches for plotting
+# 			N_common_matrix[i, j] = N_common
+# 			dt_common_matrix[i, j] = group_by_day(dt_common)
+			
+# 			# Show link to schedule
+# 			@debug Markdown.parse("""
+# 			**Found $(N_common) matches** \\
+# 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
+# 			$(student_name): <https://www.when2meet.com/?$(student_id)>
+# 			""")
+
+# 			# Save to file for debugging
+# 			# save_df(df_common, tutor_name, student_name)
+# 		end
+# 	end
+# end
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -184,18 +219,23 @@ function get_times(id)
 	dt = extract_times(h)
 end
 
-# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
-if run_common_times
-	run_matches
-	
+# ╔═╡ ad479dd5-5a99-499f-81e4-567e4cbdd7d2
+md"""
+# WhenIsGood
+"""
+
+# ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
+md"""
+Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
+"""
+
+# ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
+function compute_matches(user_info, tutors, students)
 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
+	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
 	
-	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
-		for (i, (student_name, student_id)) ∈ enumerate(students)
-			# Download schedules
-			dt_tutor = get_times(tutor_id)
-			dt_student = get_times(student_id)		
+	for (j, (tutor_name, dt_tutor)) ∈ enumerate(tutors)
+		for (i, (student_name, dt_student)) ∈ enumerate(students)
 			
 			# Find overlap
 			dt_common, N_common = match_tutor(
@@ -204,20 +244,85 @@ if run_common_times
 
 			# Store matches for plotting
 			N_common_matrix[i, j] = N_common
-			dt_common_matrix[i, j] = split_by_day(dt_common)
+			dt_common_matrix[i, j] = group_by_day(dt_common)
 			
 			# Show link to schedule
 			@debug Markdown.parse("""
 			**Found $(N_common) matches** \\
-			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
-			$(student_name): <https://www.when2meet.com/?$(student_id)>
+			$(tutor_name) and $(student_name)
 			""")
 
 			# Save to file for debugging
 			# save_df(df_common, tutor_name, student_name)
 		end
 	end
+
+	return N_common_matrix, dt_common_matrix
 end
+
+# ╔═╡ f2c6ad3b-98f3-424d-8e6c-df990003ac4e
+h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
+
+# ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
+tutor_names = ("Ian", "Reza", "Haley", "Greg")
+
+# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
+student_names = ("Alice", "Bob", "Charlie", "Dee")
+
+# ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
+get_name(s) = split(s, "\"")[end-1]
+
+# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
+get_time_codes(s) = split(s, "\"")[begin+1]
+
+# ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+function to_utc(s)
+	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
+end
+
+# ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+const DAY_TIME_FMT = dateformat"e II:MM p"
+
+# ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+function extract_times2(h)
+	# Get contents of users/times stored in javascript tag
+	script = eachmatch(
+		sel"""script:containsOwn("respondents")""",
+		h.root
+	) |> first |> nodeText
+
+	# Store in [Name: Availability] pairs.
+	# This is just stacked like user1, user1_availability, user2, etc.
+	# so we step through line-by-line
+	user_info = Dict{String, Vector{String}}()
+	name_buffer = String[]
+	for l ∈ split(script, "\n")
+		if occursin(".name", l)
+			name = get_name(l)
+			push!(name_buffer, name)
+		end
+		if occursin(".myCanDosAll", l)
+			t_unix = get_time_codes(l)
+			t = t_unix .|> to_utc
+			dt = Dates.format.(t, DAY_TIME_FMT)
+			user_info[pop!(name_buffer)] = dt
+		end
+	end
+
+	return user_info
+end
+
+# ╔═╡ 14388449-546b-40f1-a4e6-13e868f84574
+user_info = extract_times2(h)
+
+# ╔═╡ f0007ff1-9cd2-41f1-bfde-38ce66d2598c
+tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
+
+# ╔═╡ d8b878b2-7272-46dc-bf79-e1e85060272d
+student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
+
+# ╔═╡ 55d73a52-dd37-4ac1-9ba3-33d0ac5bc87b
+N_common_matrix, dt_common_matrix = compute_matches(user_info, tutor_info, student_info)
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 if run_common_times
@@ -263,92 +368,6 @@ if run_common_times
 		navigator.clipboard.writeText(dt.replaceAll('<br>', '\\n'))
 	}
 	")
-end
-
-# ╔═╡ ad479dd5-5a99-499f-81e4-567e4cbdd7d2
-md"""
-# WhenIsGood
-"""
-
-# ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
-md"""
-Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
-"""
-
-# ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
-function compute_matches(user_info, tutors, students)
-	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
-	
-	for (j, (tutor_name, tutor_dt)) ∈ enumerate(tutors)
-		for (i, (student_name, student_id)) ∈ enumerate(students)
-			# Download schedules
-			dt_tutor = get_times2(tutor_id)
-			dt_student = get_times2(student_id)		
-			
-			# Find overlap
-			dt_common, N_common = match_tutor(
-				dt_tutor, dt_student, tutor_name, student_name
-			)
-
-			# Store matches for plotting
-			N_common_matrix[i, j] = N_common
-			dt_common_matrix[i, j] = split_by_day(dt_common)
-			
-			# Show link to schedule
-			@debug Markdown.parse("""
-			**Found $(N_common) matches** \\
-			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
-			$(student_name): <https://www.when2meet.com/?$(student_id)>
-			""")
-
-			# Save to file for debugging
-			# save_df(df_common, tutor_name, student_name)
-		end
-	end
-end
-
-# ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
-get_name(s) = split(s, "\"")[end-1]
-
-# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
-get_time_codes(s) = split(s, "\"")[begin+1]
-
-# ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
-function to_utc(s)
-	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
-end
-
-# ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-const DAY_TIME_FMT = dateformat"e II:MM p"
-
-# ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
-function extract_times2(h)
-	# Get contents of users/times stored in javascript tag
-	script = eachmatch(
-		sel"""script:containsOwn("respondents")""",
-		h.root
-	) |> first |> nodeText
-
-	# Store in [Name: Availability] pairs.
-	# This is just stacked like user1, user1_availability, user2, etc.
-	# so we step through line-by-line
-	user_info = Dict{String, Vector{String}}()
-	name_buffer = String[]
-	for l ∈ split(script, "\n")
-		if occursin(".name", l)
-			name = get_name(l)
-			push!(name_buffer, name)
-		end
-		if occursin(".myCanDosAll", l)
-			t_unix = get_time_codes(l)
-			t = t_unix .|> to_utc
-			dt = Dates.format.(t, DAY_TIME_FMT)
-			user_info[pop!(name_buffer)] = dt
-		end
-	end
-
-	return user_info
 end
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
@@ -1042,7 +1061,14 @@ version = "17.4.0+0"
 # ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
 # ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
+# ╠═55d73a52-dd37-4ac1-9ba3-33d0ac5bc87b
 # ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
+# ╠═f2c6ad3b-98f3-424d-8e6c-df990003ac4e
+# ╠═14388449-546b-40f1-a4e6-13e868f84574
+# ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
+# ╟─f0007ff1-9cd2-41f1-bfde-38ce66d2598c
+# ╟─d8b878b2-7272-46dc-bf79-e1e85060272d
 # ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
