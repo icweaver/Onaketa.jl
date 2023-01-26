@@ -14,6 +14,9 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ 3a5646ca-1722-4f7e-a98c-97f029a07b8a
+using Dates
+
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
 	using HTTP, Gumbo, Cascadia
@@ -278,36 +281,42 @@ Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
 # ╔═╡ 30577756-5aec-4a30-ae61-5f8c52410fa0
 h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
 
-# ╔═╡ 5ba5ffdb-3163-4a7f-8bb7-aeee63c815c8
-@bind Y @mdx """
-<span>
-<script>
-	const span = currentScript.parentElement
-	var respondents = new Array();
-	var r17617177 = {};
-	r17617177.id = "17617177";
-	r17617177.name = "alice";
-	r17617177.myCanDos = "1672588800000,1672585200000".split(",");
-	respondents["ok"] = r17617177;
-	span.value = respondents
-</script>
-</span>
-"""
+# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
+get_time_codes(s) = split(s, "\"")[begin+1]
 
-# ╔═╡ 1a6167b5-7da8-4280-9f2d-cfa5866d5951
-Y
+# ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
+get_name(s) = split(s, "\"")[end-1]
+
+# ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+function to_utc(s)
+	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
+end
+
+# ╔═╡ 3ddd6ef2-b7ae-44ce-9f3e-0abc2ade33b6
+dt = unix2datetime(1672588800000 ÷ 1000)
+
+# ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+const DAY_TIME_FMT = dateformat"e HH:MM p"
+
+# ╔═╡ dceb7e06-de64-480b-9f81-76d1a3c193b7
+Dates.format(dt, DAY_TIME_FMT)
 
 # ╔═╡ 98148a55-3812-4e6f-9d5c-f9fca585d975
 function extract_times2(h; lt=day_compare)
 	# Select available "green" cells from the site
 	avail_times = eachmatch(
-		Selector("""script:containsOwn("respondents")"""),
+		sel"""script:containsOwn("respondents")""",
 		h.root
-	)
+	) |> first
 
-	for t ∈ avail_times
-		println(t)
-	end
+	# for l in avail_times
+	# 	if occursin("CanDos", l)
+	# 		println(l)
+	# 	end
+	# end
+	# for t ∈ avail_times
+	# 	println(t)
+	# end
 	
 	# # Pull out the plain-text day-time
 	# dt = [
@@ -323,7 +332,19 @@ function extract_times2(h; lt=day_compare)
 end
 
 # ╔═╡ 6a346407-8de7-49e7-9bb1-591f699576b6
-extract_times2(h)
+y = extract_times2(h) |> nodeText
+
+# ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+for l ∈ split(y, "\n")
+	if occursin(".name", l)
+		@info get_name(l)
+	end
+	if occursin(".myCanDosAll", l)
+		t_unix = get_time_codes(l)
+		t = t_unix .|> to_utc
+		@info Dates.format.(t, DAY_TIME_FMT)
+	end
+end
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -339,6 +360,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
@@ -366,7 +388,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "863f0ce7ec95d5d1da29530529ab7b2352d693da"
+project_hash = "fc19431d30353fc576b26593e82a7f0c48e61611"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1017,8 +1039,14 @@ version = "17.4.0+0"
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
 # ╠═30577756-5aec-4a30-ae61-5f8c52410fa0
 # ╠═6a346407-8de7-49e7-9bb1-591f699576b6
-# ╠═5ba5ffdb-3163-4a7f-8bb7-aeee63c815c8
-# ╠═1a6167b5-7da8-4280-9f2d-cfa5866d5951
+# ╠═682d139a-9a6e-4973-b55a-aeebe465ad1d
+# ╠═6db3afa9-bafd-4cee-b2e5-853daa80eb08
+# ╠═3a5646ca-1722-4f7e-a98c-97f029a07b8a
+# ╠═c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+# ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╠═3ddd6ef2-b7ae-44ce-9f3e-0abc2ade33b6
+# ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+# ╠═dceb7e06-de64-480b-9f81-76d1a3c193b7
 # ╠═98148a55-3812-4e6f-9d5c-f9fca585d975
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
