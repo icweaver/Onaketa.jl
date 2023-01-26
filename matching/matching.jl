@@ -278,18 +278,36 @@ Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
 # ╔═╡ 30577756-5aec-4a30-ae61-5f8c52410fa0
 h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
 
-# ╔═╡ 44f70398-f7e2-4730-8686-11dac31f98c1
-h.root.children[end].children[end-1]
+# ╔═╡ 5ba5ffdb-3163-4a7f-8bb7-aeee63c815c8
+@bind Y @mdx """
+<span>
+<script>
+	const span = currentScript.parentElement
+	var respondents = new Array();
+	var r17617177 = {};
+	r17617177.id = "17617177";
+	r17617177.name = "alice";
+	r17617177.myCanDos = "1672588800000,1672585200000".split(",");
+	respondents["ok"] = r17617177;
+	span.value = respondents
+</script>
+</span>
+"""
+
+# ╔═╡ 1a6167b5-7da8-4280-9f2d-cfa5866d5951
+Y
 
 # ╔═╡ 98148a55-3812-4e6f-9d5c-f9fca585d975
 function extract_times2(h; lt=day_compare)
 	# Select available "green" cells from the site
 	avail_times = eachmatch(
-		Selector("""div :matches(<script>)"""),
+		Selector("""script:containsOwn("respondents")"""),
 		h.root
 	)
 
-	foreach(println, avail_times)
+	for t ∈ avail_times
+		println(t)
+	end
 	
 	# # Pull out the plain-text day-time
 	# dt = [
@@ -998,8 +1016,9 @@ version = "17.4.0+0"
 # ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
 # ╠═30577756-5aec-4a30-ae61-5f8c52410fa0
-# ╠═44f70398-f7e2-4730-8686-11dac31f98c1
 # ╠═6a346407-8de7-49e7-9bb1-591f699576b6
+# ╠═5ba5ffdb-3163-4a7f-8bb7-aeee63c815c8
+# ╠═1a6167b5-7da8-4280-9f2d-cfa5866d5951
 # ╠═98148a55-3812-4e6f-9d5c-f9fca585d975
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
