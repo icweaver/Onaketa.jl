@@ -261,7 +261,12 @@ function compute_matches(user_info, tutors, students)
 end
 
 # ╔═╡ f2c6ad3b-98f3-424d-8e6c-df990003ac4e
-h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
+begin
+	run_matches
+	
+	h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg"
+	)
+end
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
 tutor_names = ("Ian", "Reza", "Haley", "Greg")
