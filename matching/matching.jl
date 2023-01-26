@@ -34,7 +34,7 @@ Below is a top-level overview of all of the common times between tutors and stud
 
 # ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
 md"""
-## Heatmap $(@bind run_common_times CheckBox())
+## Heatmap
 """
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
@@ -92,41 +92,6 @@ Performs the following operations:
 * Parses and extracts the day-time data (`dt`)
 * Computes overlap between all tutor-student pairs
 """
-
-# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
-# if run_common_times
-# 	run_matches
-	
-# 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-# 	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
-	
-# 	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
-# 		for (i, (student_name, student_id)) ∈ enumerate(students)
-# 			# Download schedules
-# 			dt_tutor = get_times(tutor_id)
-# 			dt_student = get_times(student_id)		
-			
-# 			# Find overlap
-# 			dt_common, N_common = match_tutor(
-# 				dt_tutor, dt_student, tutor_name, student_name
-# 			)
-
-# 			# Store matches for plotting
-# 			N_common_matrix[i, j] = N_common
-# 			dt_common_matrix[i, j] = group_by_day(dt_common)
-			
-# 			# Show link to schedule
-# 			@debug Markdown.parse("""
-# 			**Found $(N_common) matches** \\
-# 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
-# 			$(student_name): <https://www.when2meet.com/?$(student_id)>
-# 			""")
-
-# 			# Save to file for debugging
-# 			# save_df(df_common, tutor_name, student_name)
-# 		end
-# 	end
-# end
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -219,9 +184,59 @@ function get_times(id)
 	dt = extract_times(h)
 end
 
+# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
+function yee()
+# if run_common_times
+# 	run_matches
+	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
+	student_buffer = Dict()
+	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
+		dt_tutor = get_times(tutor_id)
+		@debug Markdown.parse("$(tutor_name): <https://www.when2meet.com/?$(tutor_id)>") dt_tutor
+		for (i, (student_name, student_id)) ∈ enumerate(students)
+			if haskey(student_buffer, student_name)
+				dt_student = student_buffer[student_name]
+			else
+				# Download schedules
+				dt_student = get_times(student_id)
+				student_buffer[student_name] = dt_student
+				@debug Markdown.parse("$(student_name) <https://www.when2meet.com/?$(student_id)>") dt_student
+			end
+			
+			# Find overlap
+			dt_common, N_common = match_tutor(
+				dt_tutor, dt_student, tutor_name, student_name
+			)
+
+			# Store matches for plotting
+			N_common_matrix[i, j] = N_common
+			dt_common_matrix[i, j] = group_by_day(dt_common)
+			
+			# Show link to schedule
+			# @debug @mdx """
+			# **Found $(N_common) matches** \\
+			# $(tutor_name):  \\
+			# $(dt_tutor) \\
+			# $(student_name):  \\
+			# $(group_by_day(dt_student) |> Docs.HTML)
+			# """
+
+			# Save to file for debugging
+			# save_df(df_common, tutor_name, student_name)
+		end
+	end
+end
+
+# ╔═╡ d8e6eb44-db3a-4b02-b4fe-9f046db0613a
+yee()
+
+# ╔═╡ 5caa2699-bf77-492a-b3a3-749685a7ee9a
+yeee = get_times("18376577-X5PlH")
+
 # ╔═╡ ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 md"""
-# WhenIsGood
+# WhenIsGood $(@bind run_common_times CheckBox())
 """
 
 # ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
@@ -258,14 +273,6 @@ function compute_matches(user_info, tutors, students)
 	end
 
 	return N_common_matrix, dt_common_matrix
-end
-
-# ╔═╡ f2c6ad3b-98f3-424d-8e6c-df990003ac4e
-begin
-	run_matches
-	
-	h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg"
-	)
 end
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
@@ -317,17 +324,19 @@ function extract_times2(h)
 	return user_info
 end
 
-# ╔═╡ 14388449-546b-40f1-a4e6-13e868f84574
-user_info = extract_times2(h)
+# ╔═╡ f2c6ad3b-98f3-424d-8e6c-df990003ac4e
+begin
+	run_matches
+	
+	h = download_schedule("https://whenisgood.net/dt2sekn/onaketa_test/results/rm2ep9r")
 
-# ╔═╡ f0007ff1-9cd2-41f1-bfde-38ce66d2598c
-tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
+	user_info = extract_times2(h)
 
-# ╔═╡ d8b878b2-7272-46dc-bf79-e1e85060272d
-student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
+	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
+	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
 
-# ╔═╡ 55d73a52-dd37-4ac1-9ba3-33d0ac5bc87b
-N_common_matrix, dt_common_matrix = compute_matches(user_info, tutor_info, student_info)
+	N_common_matrix, dt_common_matrix = compute_matches(user_info, tutor_info, student_info)
+end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 if run_common_times
@@ -417,7 +426,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "fc19431d30353fc576b26593e82a7f0c48e61611"
+project_hash = "ff39dc19934cc5a3b30d2da3237d048082990c9a"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -470,15 +479,15 @@ version = "1.15.7"
 
 [[deps.ChangesOfVariables]]
 deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
-git-tree-sha1 = "38f7a08f19d8810338d4f5085211c7dfa5d5bdd8"
+git-tree-sha1 = "844b061c104c408b24537482469400af6075aae4"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
-version = "0.1.4"
+version = "0.1.5"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
-git-tree-sha1 = "ded953804d019afa9a3f98981d99b33e3db7b6da"
+git-tree-sha1 = "9c209fb7536406834aa938fb149964b985de6c83"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
-version = "0.7.0"
+version = "0.7.1"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Random", "SnoopPrecompile"]
@@ -511,9 +520,9 @@ version = "1.0.2"
 
 [[deps.CommonMark]]
 deps = ["Crayons", "JSON", "SnoopPrecompile", "URIs"]
-git-tree-sha1 = "483cb3fb9c159226e9f61d66a32fb3c8bf34e503"
+git-tree-sha1 = "e2f4627b0d3f2c1876360e0b242a7c23923b469d"
 uuid = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
-version = "0.8.9"
+version = "0.8.10"
 
 [[deps.Compat]]
 deps = ["Dates", "LinearAlgebra", "UUIDs"]
@@ -617,9 +626,9 @@ version = "0.10.2+0"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "Dates", "IniFile", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "eb5aa5e3b500e191763d35198f859e4b40fff4a6"
+git-tree-sha1 = "37e4657cd56b11abe3d10cd4a1ec5fbdb4180263"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.7.3"
+version = "1.7.4"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -720,9 +729,9 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.LogExpFunctions]]
 deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
-git-tree-sha1 = "946607f84feb96220f480e0422d3484c49c00239"
+git-tree-sha1 = "45b288af6956e67e621c5cbb2d75a261ab58300b"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
-version = "0.3.19"
+version = "0.3.20"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -1055,10 +1064,12 @@ version = "17.4.0+0"
 # ╟─c44cb567-e918-420e-a09f-e0e634207119
 # ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
+# ╠═d8e6eb44-db3a-4b02-b4fe-9f046db0613a
 # ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╠═5caa2699-bf77-492a-b3a3-749685a7ee9a
 # ╟─0c739ea8-29d0-4183-af5f-d407fe2040af
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
@@ -1066,15 +1077,11 @@ version = "17.4.0+0"
 # ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
 # ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
-# ╠═55d73a52-dd37-4ac1-9ba3-33d0ac5bc87b
-# ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
+# ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╠═f2c6ad3b-98f3-424d-8e6c-df990003ac4e
-# ╠═14388449-546b-40f1-a4e6-13e868f84574
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
 # ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
-# ╟─f0007ff1-9cd2-41f1-bfde-38ce66d2598c
-# ╟─d8b878b2-7272-46dc-bf79-e1e85060272d
-# ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
 # ╟─c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
