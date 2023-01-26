@@ -14,12 +14,9 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 3a5646ca-1722-4f7e-a98c-97f029a07b8a
-using Dates
-
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
-	using HTTP, Gumbo, Cascadia
+	using HTTP, Gumbo, Cascadia, Dates
 	using DataFramesMeta, CSV, OrderedCollections, NamedArrays
 	using MarkdownLiteral: @mdx
 	using PlutoPlotly, PlutoUI
@@ -105,7 +102,7 @@ function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
 end
 
 # ╔═╡ fa087248-6914-4ebd-81f4-3d580e4f403d
-function split_by_day(dt)
+function group_by_day(dt)
 	gdf = @chain DataFrame([dt], [:daytime]) begin
 		# Pluto ExpressionExplorer workaround
 		select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period])
@@ -163,7 +160,7 @@ end
 function extract_times(h; lt=day_compare)
 	# Select available "green" cells from the site
 	avail_times = eachmatch(
-		Selector("""[id*=GroupTime][style*="background: #339900"]"""),
+		sel"""[id*=GroupTime][style*="background: #339900"]""",
 		h.root
 	)
 	
@@ -278,73 +275,93 @@ md"""
 Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
 """
 
+# ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
+# if run_common_times2
+# 	run_matches
+	
+# 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+# 	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
+	
+# 	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
+# 		for (i, (student_name, student_id)) ∈ enumerate(students)
+# 			# Download schedules
+# 			dt_tutor = get_times2(tutor_id)
+# 			dt_student = get_times2(student_id)		
+			
+# 			# Find overlap
+# 			dt_common, N_common = match_tutor(
+# 				dt_tutor, dt_student, tutor_name, student_name
+# 			)
+
+# 			# Store matches for plotting
+# 			N_common_matrix[i, j] = N_common
+# 			dt_common_matrix[i, j] = split_by_day(dt_common)
+			
+# 			# Show link to schedule
+# 			@debug Markdown.parse("""
+# 			**Found $(N_common) matches** \\
+# 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
+# 			$(student_name): <https://www.when2meet.com/?$(student_id)>
+# 			""")
+
+# 			# Save to file for debugging
+# 			# save_df(df_common, tutor_name, student_name)
+# 		end
+# 	end
+# end
+
 # ╔═╡ 30577756-5aec-4a30-ae61-5f8c52410fa0
 h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
 
-# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
-get_time_codes(s) = split(s, "\"")[begin+1]
-
 # ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
 get_name(s) = split(s, "\"")[end-1]
+
+# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
+get_time_codes(s) = split(s, "\"")[begin+1]
 
 # ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
 function to_utc(s)
 	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
 end
 
-# ╔═╡ 3ddd6ef2-b7ae-44ce-9f3e-0abc2ade33b6
-dt = unix2datetime(1672588800000 ÷ 1000)
-
 # ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-const DAY_TIME_FMT = dateformat"e HH:MM p"
-
-# ╔═╡ dceb7e06-de64-480b-9f81-76d1a3c193b7
-Dates.format(dt, DAY_TIME_FMT)
-
-# ╔═╡ 98148a55-3812-4e6f-9d5c-f9fca585d975
-function extract_times2(h; lt=day_compare)
-	# Select available "green" cells from the site
-	avail_times = eachmatch(
-		sel"""script:containsOwn("respondents")""",
-		h.root
-	) |> first
-
-	# for l in avail_times
-	# 	if occursin("CanDos", l)
-	# 		println(l)
-	# 	end
-	# end
-	# for t ∈ avail_times
-	# 	println(t)
-	# end
-	
-	# # Pull out the plain-text day-time
-	# dt = [
-	# 	split(avail_time.attributes["onmouseover"], '"')[2]
-	# 	for avail_time ∈ avail_times
-	# ]
-	
-	# # These are ordered row-wise in the html body, so need to flip
-	# # to column-wise to order by day instead of time
-	# sort!(dt; by=x -> first(split(x)), lt)
-	
-	# return dt
-end
-
-# ╔═╡ 6a346407-8de7-49e7-9bb1-591f699576b6
-y = extract_times2(h) |> nodeText
+const DAY_TIME_FMT = dateformat"e II:MM p"
 
 # ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
-for l ∈ split(y, "\n")
-	if occursin(".name", l)
-		@info get_name(l)
+function extract_times2(h)
+	# Get contents of users/times stored in javascript tag
+	script = eachmatch(
+		sel"""script:containsOwn("respondents")""",
+		h.root
+	) |> first |> nodeText
+
+	# Store in [Name: Availability] pairs.
+	# This is just stacked like user1, user1_availability, user2, etc.
+	# so we step through line-by-line
+	user_info = Dict{String, Vector{String}}()
+	@info script
+	for l ∈ split(script, "\n")
+		if occursin(".name", l)
+			name = get_name(l)
+		else
+			continue
+		end
+		if occursin(".myCanDosAll", l)
+			t_unix = get_time_codes(l)
+			t = t_unix .|> to_utc
+			dt = Dates.format.(t, DAY_TIME_FMT)
+		else
+			continue
+		end
+		@info name
+		user_info[name] = dt
 	end
-	if occursin(".myCanDosAll", l)
-		t_unix = get_time_codes(l)
-		t = t_unix .|> to_utc
-		@info Dates.format.(t, DAY_TIME_FMT)
-	end
+
+	return user_info
 end
+
+# ╔═╡ 630b3eb6-7fee-452f-a120-7dc86c5478f4
+extract_times2(h)
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -1026,7 +1043,7 @@ version = "17.4.0+0"
 # ╟─c44cb567-e918-420e-a09f-e0e634207119
 # ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
 # ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╟─be8822a5-8871-44bf-bf02-22b03ab950ea
+# ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
 # ╟─0c739ea8-29d0-4183-af5f-d407fe2040af
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
@@ -1037,17 +1054,14 @@ version = "17.4.0+0"
 # ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
 # ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
+# ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╠═30577756-5aec-4a30-ae61-5f8c52410fa0
-# ╠═6a346407-8de7-49e7-9bb1-591f699576b6
-# ╠═682d139a-9a6e-4973-b55a-aeebe465ad1d
-# ╠═6db3afa9-bafd-4cee-b2e5-853daa80eb08
-# ╠═3a5646ca-1722-4f7e-a98c-97f029a07b8a
-# ╠═c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+# ╠═630b3eb6-7fee-452f-a120-7dc86c5478f4
 # ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
-# ╠═3ddd6ef2-b7ae-44ce-9f3e-0abc2ade33b6
-# ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-# ╠═dceb7e06-de64-480b-9f81-76d1a3c193b7
-# ╠═98148a55-3812-4e6f-9d5c-f9fca585d975
+# ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
+# ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
+# ╟─c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+# ╟─99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
