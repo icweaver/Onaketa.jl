@@ -276,42 +276,37 @@ Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
 """
 
 # ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
-# if run_common_times2
-# 	run_matches
+function compute_matches(user_info, tutors, students)
+	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
+	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
 	
-# 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-# 	dt_common_matrix =  Matrix(undef, length.((students, tutors))...)
-	
-# 	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
-# 		for (i, (student_name, student_id)) ∈ enumerate(students)
-# 			# Download schedules
-# 			dt_tutor = get_times2(tutor_id)
-# 			dt_student = get_times2(student_id)		
+	for (j, (tutor_name, tutor_dt)) ∈ enumerate(tutors)
+		for (i, (student_name, student_id)) ∈ enumerate(students)
+			# Download schedules
+			dt_tutor = get_times2(tutor_id)
+			dt_student = get_times2(student_id)		
 			
-# 			# Find overlap
-# 			dt_common, N_common = match_tutor(
-# 				dt_tutor, dt_student, tutor_name, student_name
-# 			)
+			# Find overlap
+			dt_common, N_common = match_tutor(
+				dt_tutor, dt_student, tutor_name, student_name
+			)
 
-# 			# Store matches for plotting
-# 			N_common_matrix[i, j] = N_common
-# 			dt_common_matrix[i, j] = split_by_day(dt_common)
+			# Store matches for plotting
+			N_common_matrix[i, j] = N_common
+			dt_common_matrix[i, j] = split_by_day(dt_common)
 			
-# 			# Show link to schedule
-# 			@debug Markdown.parse("""
-# 			**Found $(N_common) matches** \\
-# 			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
-# 			$(student_name): <https://www.when2meet.com/?$(student_id)>
-# 			""")
+			# Show link to schedule
+			@debug Markdown.parse("""
+			**Found $(N_common) matches** \\
+			$(tutor_name): <https://www.when2meet.com/?$(tutor_id)> \\
+			$(student_name): <https://www.when2meet.com/?$(student_id)>
+			""")
 
-# 			# Save to file for debugging
-# 			# save_df(df_common, tutor_name, student_name)
-# 		end
-# 	end
-# end
-
-# ╔═╡ 30577756-5aec-4a30-ae61-5f8c52410fa0
-h = download_schedule("https://whenisgood.net/yt5xg8c/onaketa_test/results/3tkbhxg")
+			# Save to file for debugging
+			# save_df(df_common, tutor_name, student_name)
+		end
+	end
+end
 
 # ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
 get_name(s) = split(s, "\"")[end-1]
@@ -339,29 +334,22 @@ function extract_times2(h)
 	# This is just stacked like user1, user1_availability, user2, etc.
 	# so we step through line-by-line
 	user_info = Dict{String, Vector{String}}()
-	@info script
+	name_buffer = String[]
 	for l ∈ split(script, "\n")
 		if occursin(".name", l)
 			name = get_name(l)
-		else
-			continue
+			push!(name_buffer, name)
 		end
 		if occursin(".myCanDosAll", l)
 			t_unix = get_time_codes(l)
 			t = t_unix .|> to_utc
 			dt = Dates.format.(t, DAY_TIME_FMT)
-		else
-			continue
+			user_info[pop!(name_buffer)] = dt
 		end
-		@info name
-		user_info[name] = dt
 	end
 
 	return user_info
 end
-
-# ╔═╡ 630b3eb6-7fee-452f-a120-7dc86c5478f4
-extract_times2(h)
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -1055,8 +1043,6 @@ version = "17.4.0+0"
 # ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
 # ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
-# ╠═30577756-5aec-4a30-ae61-5f8c52410fa0
-# ╠═630b3eb6-7fee-452f-a120-7dc86c5478f4
 # ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
