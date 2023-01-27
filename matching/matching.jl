@@ -22,9 +22,9 @@ begin
 	using PlutoPlotly, PlutoUI
 end
 
-# ╔═╡ e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
+# ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
 md"""
-# Summary 📊
+# Heatmap 🔥
 
 Below is a top-level overview of all of the common times between tutors and students. 
 * Use the controls below to filter for different tutor-student pairs.
@@ -32,13 +32,8 @@ Below is a top-level overview of all of the common times between tutors and stud
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 """
 
-# ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
-md"""
-## Heatmap
-"""
-
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
-@mdx """$(@bind run_matches Button("Match")) (Click to re-download data)"""
+@mdx """$(@bind run_matches Button("Match")) (Click to redownload data)"""
 
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
 @bind reset_matrix Button("Reset")
@@ -47,48 +42,11 @@ md"""
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
 js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
-# ╔═╡ 7b21849b-5952-4d08-8158-f70679f8d0ae
+# ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
 md"""
-## Tutor - student IDs
-"""
-
-# ╔═╡ 5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-tutors = OrderedDict(
-	"Ian"   => "18376577-X5PlH",
-	"Reza"  => "18412723-MdMz3",
-	"Haley" => "18417153-eBdus",
-	"Greg"  => "18417148-YEnZO",
-)
-
-# ╔═╡ 4d1afb9e-f98a-4945-9c6e-5925e4439f34
-students = OrderedDict(
-	"Alice" => "18377800-3D5I4",
-	"Bob" => "18376613-r2r2c",
-	"Charlie" => "18377974-jYazr",
-	"Dee" => "18415463-WVm2u",
-)
-
-# ╔═╡ c44cb567-e918-420e-a09f-e0e634207119
-const tutor_names_all = String.(keys(tutors))
-
-# ╔═╡ 2924b351-8f60-4d49-bceb-0c9137cc08eb
-const student_names_all = String.(keys(students))
-
-# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
-begin
-	reset_matrix
-	@mdx """
-	$(@bind tutor_names_selected MultiSelect(tutor_names_all; default=tutor_names_all))
-	$(@bind student_names_selected MultiSelect(student_names_all; default=student_names_all))
-	"""
-end
-
-# ╔═╡ d2d94814-41ef-47d6-ae2c-ce10dbe984be
-md"""
-# Common Times 
-
+# ETL 🤸
 Performs the following operations:
-* Pulls HTML When2meet schedules for all tutors and students
+* Pulls HTML WhenIsGood entries for all tutors and students
 * Parses and extracts the day-time data (`dt`)
 * Computes overlap between all tutor-student pairs
 """
@@ -120,124 +78,11 @@ function group_by_day(dt)
 	)
 end
 
-# ╔═╡ 7de6d079-b290-4cc6-8729-2de59c1506b6
-function save_df(df, tutor_name, student_name)
-	dirpath = "./$(tutor_name)"
-	fpath = joinpath(dirpath, "$(tutor_name)_$(student_name).csv")
-	mkpath(dirpath)
-	@info "Saving to $(fpath)"
-	CSV.write(fpath, df)
-end
-
-# ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
-md"""
-## ETL
-
-Fun with HTML ...
-"""
-
 # ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
 function download_schedule(url)
 	r = HTTP.get(url)
 	h = parsehtml(String(r.body))
 end
-
-# ╔═╡ 76911411-e5b2-4992-9f1c-7d432a141fdf
-function day_compare(d1, d2)
-	day_num = Dict((
-		("Monday", 1),
-		("Tuesday", 2),
-		("Wednesday", 3),
-		("Thursday", 4),
-		("Friday", 5),
-		("Saturday", 6),
-		("Sunday", 7)
-	))
-	return day_num[d1] < day_num[d2]
-end
-
-# ╔═╡ b2eb9edd-78f8-46fe-8290-bb601fcb83e0
-function extract_times(h; lt=day_compare)
-	# Select available "green" cells from the site
-	avail_times = eachmatch(
-		sel"""[id*=GroupTime][style*="background: #339900"]""",
-		h.root
-	)
-	
-	# Pull out the plain-text day-time
-	dt = [
-		split(avail_time.attributes["onmouseover"], '"')[2]
-		for avail_time ∈ avail_times
-	]
-	
-	# These are ordered row-wise in the html body, so need to flip
-	# to column-wise to order by day instead of time
-	sort!(dt; by=x -> first(split(x)), lt)
-	
-	return dt
-end
-
-# ╔═╡ 0c739ea8-29d0-4183-af5f-d407fe2040af
-function get_times(id)
-	url = "https://www.when2meet.com/?$(id)"
-	h = download_schedule(url)
-	dt = extract_times(h)
-end
-
-# ╔═╡ be8822a5-8871-44bf-bf02-22b03ab950ea
-function yee()
-# if run_common_times
-# 	run_matches
-	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
-	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
-	student_buffer = Dict()
-	for (j, (tutor_name, tutor_id)) ∈ enumerate(tutors)
-		dt_tutor = get_times(tutor_id)
-		@debug Markdown.parse("$(tutor_name): <https://www.when2meet.com/?$(tutor_id)>") dt_tutor
-		for (i, (student_name, student_id)) ∈ enumerate(students)
-			if haskey(student_buffer, student_name)
-				dt_student = student_buffer[student_name]
-			else
-				# Download schedules
-				dt_student = get_times(student_id)
-				student_buffer[student_name] = dt_student
-				@debug Markdown.parse("$(student_name) <https://www.when2meet.com/?$(student_id)>") dt_student
-			end
-			
-			# Find overlap
-			dt_common, N_common = match_tutor(
-				dt_tutor, dt_student, tutor_name, student_name
-			)
-
-			# Store matches for plotting
-			N_common_matrix[i, j] = N_common
-			dt_common_matrix[i, j] = group_by_day(dt_common)
-			
-			# Show link to schedule
-			# @debug @mdx """
-			# **Found $(N_common) matches** \\
-			# $(tutor_name):  \\
-			# $(dt_tutor) \\
-			# $(student_name):  \\
-			# $(group_by_day(dt_student) |> Docs.HTML)
-			# """
-
-			# Save to file for debugging
-			# save_df(df_common, tutor_name, student_name)
-		end
-	end
-end
-
-# ╔═╡ d8e6eb44-db3a-4b02-b4fe-9f046db0613a
-yee()
-
-# ╔═╡ 5caa2699-bf77-492a-b3a3-749685a7ee9a
-yeee = get_times("18376577-X5PlH")
-
-# ╔═╡ ad479dd5-5a99-499f-81e4-567e4cbdd7d2
-md"""
-# WhenIsGood $(@bind run_common_times CheckBox())
-"""
 
 # ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
 md"""
@@ -276,10 +121,19 @@ function compute_matches(user_info, tutors, students)
 end
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ("Ian", "Reza", "Haley", "Greg")
+tutor_names = ["Ian", "Reza", "Haley", "Greg"]
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ("Alice", "Bob", "Charlie", "Dee")
+student_names = ["Alice", "Bob", "Charlie", "Dee"]
+
+# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
+begin
+	reset_matrix
+	@mdx """
+	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
+	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
+	"""
+end
 
 # ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
 get_name(s) = split(s, "\"")[end-1]
@@ -339,11 +193,11 @@ begin
 end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
-if run_common_times
-	N_all = NamedArray(N_common_matrix, (student_names_all, tutor_names_all))
+function show_matches()
+	N_all = NamedArray(N_common_matrix, (student_names, tutor_names))
 	N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
 	
-	dt_all = NamedArray(dt_common_matrix, (student_names_all, tutor_names_all))
+	dt_all = NamedArray(dt_common_matrix, (student_names, tutor_names))
 	dt_selected = @view(
 		dt_all[student_names_selected, tutor_names_selected]
 	).array
@@ -384,13 +238,16 @@ if run_common_times
 	")
 end
 
+# ╔═╡ 70e8e966-24f0-4e9e-8480-43fa7a792a61
+show_matches()
+
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
 # Packages 📦
 """
 
 # ╔═╡ 168567e7-5c80-4ff3-b094-8e58f6b3ce58
-TableOfContents()
+TableOfContents(title="Tutor-student matching")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1051,31 +908,17 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─e0721e5a-03e3-4cf8-aa79-88f3fc0f7a72
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
+# ╟─70e8e966-24f0-4e9e-8480-43fa7a792a61
 # ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
-# ╟─7b21849b-5952-4d08-8158-f70679f8d0ae
-# ╠═5dc9e673-ffe6-4048-9b57-0e073c5ff8db
-# ╠═4d1afb9e-f98a-4945-9c6e-5925e4439f34
-# ╟─c44cb567-e918-420e-a09f-e0e634207119
-# ╟─2924b351-8f60-4d49-bceb-0c9137cc08eb
-# ╟─d2d94814-41ef-47d6-ae2c-ce10dbe984be
-# ╠═d8e6eb44-db3a-4b02-b4fe-9f046db0613a
-# ╠═be8822a5-8871-44bf-bf02-22b03ab950ea
-# ╠═5caa2699-bf77-492a-b3a3-749685a7ee9a
-# ╟─0c739ea8-29d0-4183-af5f-d407fe2040af
-# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
-# ╟─7de6d079-b290-4cc6-8729-2de59c1506b6
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
-# ╟─b2eb9edd-78f8-46fe-8290-bb601fcb83e0
-# ╟─76911411-e5b2-4992-9f1c-7d432a141fdf
-# ╟─ad479dd5-5a99-499f-81e4-567e4cbdd7d2
 # ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
 # ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╠═f2c6ad3b-98f3-424d-8e6c-df990003ac4e
