@@ -32,11 +32,31 @@ Below is a top-level overview of all of the common times between tutors and stud
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 """
 
+# ╔═╡ 3e4f0e2d-880b-4e4f-95d7-e869ed8a9157
+md"""
+The tutor and student availability is all shared in the same calendar, so we just split these up and set the order for each here:
+"""
+
+# ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
+tutor_names = ["Ian", "Reza", "Haley", "Greg"]
+
+# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
+student_names = ["Alice", "Bob", "Charlie", "Dee"]
+
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
 @mdx """$(@bind run_matches Button("Match")) (Click to redownload data)"""
 
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
 @bind reset_matrix Button("Reset")
+
+# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
+begin
+	reset_matrix
+	@mdx """
+	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
+	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
+	"""
+end
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
@@ -49,7 +69,15 @@ Performs the following operations:
 * Pulls HTML WhenIsGood entries for all tutors and students
 * Parses and extracts the day-time data (`dt`)
 * Computes overlap between all tutor-student pairs
+
+The first step is inspired from [here](https://github.com/yknot/WhenIsGoodScraper), which pointed out that all of the data we need is just squirrelled away in some javascript at the bottom. 🐿️
 """
+
+# ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
+function download_schedule(url)
+	r = HTTP.get(url)
+	h = parsehtml(String(r.body))
+end
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -78,19 +106,8 @@ function group_by_day(dt)
 	)
 end
 
-# ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
-function download_schedule(url)
-	r = HTTP.get(url)
-	h = parsehtml(String(r.body))
-end
-
-# ╔═╡ d43a7486-e568-433b-bdbc-e68716ef61c0
-md"""
-Inspired from [here](https://github.com/yknot/WhenIsGoodScraper)
-"""
-
 # ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
-function compute_matches(user_info, tutors, students)
+function store_matches(user_info, tutors, students)
 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
 	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
 	
@@ -118,21 +135,6 @@ function compute_matches(user_info, tutors, students)
 	end
 
 	return N_common_matrix, dt_common_matrix
-end
-
-# ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ["Ian", "Reza", "Haley", "Greg"]
-
-# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Alice", "Bob", "Charlie", "Dee"]
-
-# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
-begin
-	reset_matrix
-	@mdx """
-	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
-	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
-	"""
 end
 
 # ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
@@ -189,11 +191,11 @@ begin
 	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
 	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
 
-	N_common_matrix, dt_common_matrix = compute_matches(user_info, tutor_info, student_info)
+	N_common_matrix, dt_common_matrix = store_matches(user_info, tutor_info, student_info)
 end
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
-function show_matches()
+begin
 	N_all = NamedArray(N_common_matrix, (student_names, tutor_names))
 	N_selected = @view(N_all[student_names_selected, tutor_names_selected]).array
 	
@@ -237,9 +239,6 @@ function show_matches()
 	}
 	")
 end
-
-# ╔═╡ 70e8e966-24f0-4e9e-8480-43fa7a792a61
-show_matches()
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -909,21 +908,20 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
+# ╟─3e4f0e2d-880b-4e4f-95d7-e869ed8a9157
+# ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
-# ╟─70e8e966-24f0-4e9e-8480-43fa7a792a61
 # ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
+# ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
-# ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
-# ╟─d43a7486-e568-433b-bdbc-e68716ef61c0
 # ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╠═f2c6ad3b-98f3-424d-8e6c-df990003ac4e
-# ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
-# ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
