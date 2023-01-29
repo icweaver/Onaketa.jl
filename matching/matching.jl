@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.20
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -31,10 +31,7 @@ Below is a top-level overview of all of the common times between tutors and stud
 * The brighter the cell, the more times in common there are for that pair.
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
 * Select subsets of tutor-student pairs from the menus below.
-"""
 
-# ╔═╡ 3e4f0e2d-880b-4e4f-95d7-e869ed8a9157
-md"""
 The tutor and student availability is all shared in the same calendar, so we just split these up and set the order for each here:
 """
 
@@ -922,7 +919,6 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
-# ╟─3e4f0e2d-880b-4e4f-95d7-e869ed8a9157
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
 # ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─16f5b0df-3b16-4e47-a88f-3a583d446e2e
