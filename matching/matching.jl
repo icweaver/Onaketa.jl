@@ -30,6 +30,7 @@ Below is a top-level overview of all of the common times between tutors and stud
 * Use the controls below to filter for different tutor-student pairs.
 * The brighter the cell, the more times in common there are for that pair.
 * Hover over each cell to see a list of the corresponding times, and click on the cell to copy the times to your clipboard.
+* Select subsets of tutor-student pairs from the menus below.
 """
 
 # ╔═╡ 3e4f0e2d-880b-4e4f-95d7-e869ed8a9157
@@ -44,7 +45,7 @@ tutor_names = ["Ian", "Reza", "Haley", "Greg"]
 student_names = ["Alice", "Bob", "Charlie", "Dee"]
 
 # ╔═╡ 16f5b0df-3b16-4e47-a88f-3a583d446e2e
-@mdx """$(@bind run_matches Button("Match")) (Click to redownload data)"""
+@mdx """$(@bind download_data Button("Match")) (Click to redownload data)"""
 
 # ╔═╡ daa047a4-cdac-4913-bca3-964a8a84dd84
 @bind reset_matrix Button("Reset")
@@ -64,7 +65,7 @@ js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ 6166ca3f-13da-48ba-8944-7d9b70bf1adf
 md"""
-# ETL 🤸
+# ETL ⬇
 Performs the following operations:
 * Pulls HTML WhenIsGood entries for all tutors and students
 * Parses and extracts the day-time data (`dt`)
@@ -73,11 +74,73 @@ Performs the following operations:
 The first step is inspired from [here](https://github.com/yknot/WhenIsGoodScraper), which pointed out that all of the data we need is just squirrelled away in some javascript at the bottom. 🐿️
 """
 
+# ╔═╡ aeadea54-6781-4784-861f-dcaeed550711
+md"""
+## Grab schedules
+"""
+
+# ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
+get_name(s) = split(s, "\"")[end-1]
+
+# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
+get_time_codes(s) = split(s, "\"")[begin+1]
+
+# ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+function to_utc(s)
+	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
+end
+
+# ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+const DAY_TIME_FMT = dateformat"e II:MM p"
+
+# ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+function extract_times(h)
+	# Get contents of users/times stored in javascript tag
+	script = eachmatch(
+		sel"""script:containsOwn("respondents")""",
+		h.root
+	) |> first |> nodeText
+
+	# Store in [Name: Availability] pairs.
+	# This is just stacked like user1, user1_availability, user2, etc.
+	# so we step through line-by-line
+	user_info = Dict{String, Vector{String}}()
+	name_buffer = String[]
+	for l ∈ split(script, "\n")
+		if occursin(".name", l)
+			name = get_name(l)
+			push!(name_buffer, name)
+		end
+		if occursin(".myCanDosAll", l)
+			t_unix = get_time_codes(l)
+			t = t_unix .|> to_utc
+			dt = Dates.format.(t, DAY_TIME_FMT)
+			user_info[pop!(name_buffer)] = dt
+		end
+	end
+
+	return user_info
+end
+
 # ╔═╡ 97e212ea-9425-481a-add6-8fd09f00e4a2
 function download_schedule(url)
 	r = HTTP.get(url)
 	h = parsehtml(String(r.body))
 end
+
+# ╔═╡ 3cea2780-5362-4da5-9ac7-f9b01168bb31
+begin
+	download_data
+		
+	h = download_schedule("https://whenisgood.net/dt2sekn/onaketa_test/results/rm2ep9r")
+
+	user_info = extract_times(h)
+end
+
+# ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
+md"""
+## Find matches
+"""
 
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -137,62 +200,13 @@ function store_matches(user_info, tutors, students)
 	return N_common_matrix, dt_common_matrix
 end
 
-# ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
-get_name(s) = split(s, "\"")[end-1]
-
-# ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
-get_time_codes(s) = split(s, "\"")[begin+1]
-
-# ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
-function to_utc(s)
-	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
-end
-
-# ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-const DAY_TIME_FMT = dateformat"e II:MM p"
-
-# ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
-function extract_times2(h)
-	# Get contents of users/times stored in javascript tag
-	script = eachmatch(
-		sel"""script:containsOwn("respondents")""",
-		h.root
-	) |> first |> nodeText
-
-	# Store in [Name: Availability] pairs.
-	# This is just stacked like user1, user1_availability, user2, etc.
-	# so we step through line-by-line
-	user_info = Dict{String, Vector{String}}()
-	name_buffer = String[]
-	for l ∈ split(script, "\n")
-		if occursin(".name", l)
-			name = get_name(l)
-			push!(name_buffer, name)
-		end
-		if occursin(".myCanDosAll", l)
-			t_unix = get_time_codes(l)
-			t = t_unix .|> to_utc
-			dt = Dates.format.(t, DAY_TIME_FMT)
-			user_info[pop!(name_buffer)] = dt
-		end
-	end
-
-	return user_info
-end
-
-# ╔═╡ f2c6ad3b-98f3-424d-8e6c-df990003ac4e
+# ╔═╡ 24b79620-2d48-4946-862e-a7d17cbfd482
 begin
-	run_matches
-	
-	h = download_schedule("https://whenisgood.net/dt2sekn/onaketa_test/results/rm2ep9r")
-
-	user_info = extract_times2(h)
-
 	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
 	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
 
 	N_common_matrix, dt_common_matrix = store_matches(user_info, tutor_info, student_info)
-end
+end;
 
 # ╔═╡ e077cacc-e638-49bc-9e50-62a43a7af574
 begin
@@ -917,16 +931,19 @@ version = "17.4.0+0"
 # ╟─daa047a4-cdac-4913-bca3-964a8a84dd84
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
-# ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
-# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
-# ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
-# ╠═f2c6ad3b-98f3-424d-8e6c-df990003ac4e
-# ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╟─aeadea54-6781-4784-861f-dcaeed550711
+# ╟─3cea2780-5362-4da5-9ac7-f9b01168bb31
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
 # ╟─c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
 # ╟─99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+# ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
+# ╟─43232ad3-a833-4e02-8c54-026d77011434
+# ╠═24b79620-2d48-4946-862e-a7d17cbfd482
+# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
