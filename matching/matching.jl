@@ -42,10 +42,10 @@ The tutor and student availability is all shared in the same calendar, so we jus
 @bind reset_matrix Button("Reset")
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ["Reza"]
+tutor_names = ["Ian", "Reza", "Haley", "Greg"]
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Kayla"]
+student_names = ["Alice", "Bob", "Charlie", "Dee"]
 
 # ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
 begin
@@ -133,9 +133,6 @@ md"""
 ## Find matches
 """
 
-# ╔═╡ ae90715e-43d2-4a77-a452-5a190b3ee7c0
-@info user_info
-
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
 	dt_common = dt_tutor ∩ dt_student
@@ -167,12 +164,6 @@ function group_by_day(dt)
 		)
 	end
 end
-
-# ╔═╡ e5d88cce-ad16-4f2c-a717-1b1939d7e109
-group_by_day(["Tuesday 8:00 PM", "Tuesday 9:00 PM", "Wed 5:00 PM"])
-
-# ╔═╡ ddcb75cd-a723-492e-af6c-fa5fa743afa0
-group_by_day([])
 
 # ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
 function store_matches(user_info, tutors, students)
@@ -945,11 +936,8 @@ version = "17.4.0+0"
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
-# ╠═ae90715e-43d2-4a77-a452-5a190b3ee7c0
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╠═e5d88cce-ad16-4f2c-a717-1b1939d7e109
-# ╠═ddcb75cd-a723-492e-af6c-fa5fa743afa0
-# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
