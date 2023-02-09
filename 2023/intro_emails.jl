@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -166,11 +166,11 @@ function intro(;
 	
 	Dear $(parents_first) and $(student_first),
 
-	It's my pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is $(tutor_position). Their bio is available on our [website](https://www.onaketa.com/about). 
+	It's our pleasure to introduce you to your Onaketa tutor-mentor for $(subject), $(tutor_name) (cc'ed). $(tutor_first) is $(tutor_position). Their bio is available on our [website](https://www.onaketa.com/about). 
 	
 	$(tutor_first) would like to meet with $(student_first) on $(date). If this time does not work for $(student_first)'s schedule, please contact us ASAP. Otherwise, your first session will be on $(date_start).
 	
-	$(tutor_first) will follow up with their Zoom link and the tutor-student agreement. We ask that you read and sign the agreement before your first session.
+	$(tutor_first) will follow up with their meeting link and the tutor-student agreement. We ask that you read and sign the agreement before your first session.
 	
 	Please don't hesitate to reach out if you have questions!
 	
@@ -197,6 +197,16 @@ intro(;
 	subject = "Chemistry and Algebra II",
 	info_filipe...,
 	date_start = "**Saturday, January 21st at 10:00 am PT**",
+)
+
+# ╔═╡ 4ec529af-bb10-4031-abb4-ade9854794d1
+intro(;
+	parent_names = "Kayla",
+	parent_emails = "kaylaaa.mtz11@gmail.com",
+	student_name = "Kayla",
+	subject = "Intro to Statistics",
+	info_reza...,
+	date_start = "**Wednesday, January 15th at 6:00 pm PT**",
 )
 
 # ╔═╡ 189ed825-dc67-40df-b255-cd16a23cfd24
@@ -597,8 +607,9 @@ version = "17.4.0+0"
 # ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
 # ╟─1d50acc7-6640-4c49-a92b-dcbaf8f35b4f
 # ╟─c2cdaabf-b033-4a26-89fa-e5918aa3a093
+# ╠═4ec529af-bb10-4031-abb4-ade9854794d1
 # ╟─e4efd4a2-46a8-4b15-be32-9fef14d68a8e
-# ╠═189ed825-dc67-40df-b255-cd16a23cfd24
+# ╟─189ed825-dc67-40df-b255-cd16a23cfd24
 # ╟─6f33b85b-1b6e-488f-9faf-272214a7601d
 # ╠═adc6f4f1-fc53-4afa-a3e1-12eabe8058ae
 # ╟─189c1c86-a471-4711-b363-ca1832a2d8d3

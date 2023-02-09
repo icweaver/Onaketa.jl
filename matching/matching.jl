@@ -42,10 +42,10 @@ The tutor and student availability is all shared in the same calendar, so we jus
 @bind reset_matrix Button("Reset")
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ["Ian", "Reza", "Haley", "Greg"]
+tutor_names = ["Reza"]
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Alice", "Bob", "Charlie", "Dee"]
+student_names = ["Kayla"]
 
 # ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
 begin
@@ -133,6 +133,9 @@ md"""
 ## Find matches
 """
 
+# ╔═╡ ae90715e-43d2-4a77-a452-5a190b3ee7c0
+@info user_info
+
 # ╔═╡ 5ba6bed0-ae7a-48e2-a373-f4386332df71
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
 	dt_common = dt_tutor ∩ dt_student
@@ -143,22 +146,33 @@ end
 
 # ╔═╡ fa087248-6914-4ebd-81f4-3d580e4f403d
 function group_by_day(dt)
-	gdf = @chain DataFrame([dt], [:daytime]) begin
-		# Pluto ExpressionExplorer workaround
-		select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period])
-		# @rselect $[:day, :time, :period] = split(:daytime)
-		groupby(:day)
-	end
+	if isempty(dt)
+		gdf = DataFrame(day="", time="", period="")
+		return ""
+	else
+		gdf = @chain DataFrame([dt], [:daytime]) begin
+			# Pluto ExpressionExplorer workaround
+			select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period])
+			# @rselect $[:day, :time, :period] = split(:daytime)
+			groupby(:day)
+		end
 	
-	return join(
-		[
-			join(
-				["$(r.day) $(r.time) $(r.period)" for r ∈ eachrow(df)], "<br>"
-			)
-			for df ∈ gdf
-		], "<br>-----------<br>"
-	)
+		return join(
+			[
+				join(
+					["$(r.day) $(r.time) $(r.period)" for r ∈ eachrow(df)], "<br>"
+				)
+				for df ∈ gdf
+			], "<br>-----------<br>"
+		)
+	end
 end
+
+# ╔═╡ e5d88cce-ad16-4f2c-a717-1b1939d7e109
+group_by_day(["Tuesday 8:00 PM", "Tuesday 9:00 PM", "Wed 5:00 PM"])
+
+# ╔═╡ ddcb75cd-a723-492e-af6c-fa5fa743afa0
+group_by_day([])
 
 # ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
 function store_matches(user_info, tutors, students)
@@ -195,7 +209,6 @@ end
 begin
 	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
 	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
-
 	N_common_matrix, dt_common_matrix = store_matches(user_info, tutor_info, student_info)
 end;
 
@@ -918,8 +931,8 @@ version = "17.4.0+0"
 # ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
-# ╟─257cf5ff-7df6-4a23-9905-2fd6c8abe421
-# ╟─7c8f134a-a450-47ac-b923-f07e687f53ae
+# ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─aeadea54-6781-4784-861f-dcaeed550711
@@ -932,8 +945,11 @@ version = "17.4.0+0"
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
+# ╠═ae90715e-43d2-4a77-a452-5a190b3ee7c0
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╠═e5d88cce-ad16-4f2c-a717-1b1939d7e109
+# ╠═ddcb75cd-a723-492e-af6c-fa5fa743afa0
+# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
