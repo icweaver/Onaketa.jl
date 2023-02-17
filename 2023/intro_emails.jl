@@ -70,6 +70,11 @@ md"""
 # Haley
 """
 
+# ╔═╡ 742976d5-6160-4598-8c36-c2de0da1d267
+md"""
+## Danica Martinez
+"""
+
 # ╔═╡ e9cabb05-a421-455f-8491-ea6eb9117def
 info_haley = (
 	tutor_name = "Haley Carrasco",
@@ -160,7 +165,7 @@ function intro(;
 	@mdx """
 	```
 	$(parent_emails)
-	info@onaketa.com, $(tutor_email)
+	$(tutor_email)
 	$(student_first) meet $(tutor_first)
 	```
 	
@@ -247,6 +252,16 @@ intro(;
 	subject = "proofs/algebra/polynomials",
 	info_reza...,
 	date_start = "**Saturday, January 21st at 4:00 pm PT**",
+)
+
+# ╔═╡ 1a64d690-168c-47da-9468-5a81e7b696f4
+intro(;
+	parent_names = "Olisha Hodges",
+	parent_emails = "olishahodges@yahoo.com",
+	student_name = "Danica Martinez ",
+	subject = "Algebra I",
+	info_haley...,
+	date_start = "**Tuesday, February 14th at 5:30 pm PT**",
 )
 
 # ╔═╡ 98e032e7-723b-4d50-913b-a445d662d84e
@@ -617,6 +632,8 @@ version = "17.4.0+0"
 # ╟─06edbec7-94b7-447c-9e4f-fc1d55c7f94f
 # ╠═27284c5b-bbe2-4988-bb92-d722a1b7536e
 # ╟─cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
+# ╟─742976d5-6160-4598-8c36-c2de0da1d267
+# ╠═1a64d690-168c-47da-9468-5a81e7b696f4
 # ╟─e9cabb05-a421-455f-8491-ea6eb9117def
 # ╟─cfb10e2e-41eb-41eb-92f0-63f34f548c11
 # ╠═98e032e7-723b-4d50-913b-a445d662d84e

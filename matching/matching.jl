@@ -42,10 +42,10 @@ The tutor and student availability is all shared in the same calendar, so we jus
 @bind reset_matrix Button("Reset")
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ["Ian", "Reza", "Haley", "Greg"]
+tutor_names = ["Reza", "Haley Carrasco"]
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Alice", "Bob", "Charlie", "Dee"]
+student_names = ["Olisha Hodges", "Kayla Martinez"]
 
 # ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
 begin
