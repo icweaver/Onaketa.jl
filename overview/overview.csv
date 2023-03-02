@@ -1,0 +1,48 @@
+id,tutor_name,student_name,student_grade,subject_cat,student_race_ethnicity,drop_status,active_2021_spring,active_2021_fall,active_2022_spring,active_2022_fall,active_2023_spring
+1,Monica Gallegos-Garcia,Artez Lyles,11,mid-level math,No data,false,true,false,false,false,false
+2,Chima McGruder,Saeed J. Colson-Spikes,8,mid-level math,No data,false,true,false,false,false,false
+3,Abeeha Alam,Princess Hall,8,basic math,No data,true,true,false,false,false,false
+4,Monica Gallegos-Garcia,Kennedy Kelley,8,basic math,No data,false,true,false,false,false,false
+5,Chima McGruder,Najid Smith,No data,No data,No data,false,true,false,false,false,false
+6,LaNell Williams,Samantha Fuentes,13,science,Latinx/Latina/Latino (non-white Hispanic),false,false,true,true,false,false
+7,Chima McGruder,Kevin Michael Ryan Kunze,10,mid-level math,Native American,true,false,true,false,false,false
+8,Tamanna Joshi,Beverly Diaz,13,advanced math,Latinx/Latina/Latino (non-white Hispanic),false,false,true,false,false,false
+9,LaNell Williams,Sayka Greeb,10,mid-level math,Black/African American/African,true,false,false,false,false,false
+10,Filipe Cerqueira,Kingston Lowe,10,science,Black/African American/African,false,false,true,false,false,false
+11,Abeeha Alam,Larry Phillips Jr,8,mid-level math,Black/African American/African,true,false,false,false,false,false
+12,Chima McGruder,Emma Rodriguez ,12,advanced math,Native American,false,false,true,true,false,false
+13,Filipe Cerqueira,Alejandro Guzman,13,advanced math,Afro-Indigenous,false,false,true,false,false,false
+14,Gianni Sims,Nyla Williams,11,mid-level math,Black/African American/African,false,false,false,false,true,true
+15,Gianni Sims,Kennedy Burks,10,mid-level math,Black/African American/African,false,false,false,false,true,true
+16,Gianni Sims,Jesse Rye,9,mid-level math,Black/African American/African,false,false,false,false,true,true
+17,Ian Weaver,Judah Worthy,11,mid-level math,Black/African American/African,false,false,false,false,true,true
+18,Ian Weaver,Savannah Armstard ,11,science,Black/African American/African,true,false,false,false,false,false
+19,none,Terrance Ford Jr,9,reading,Black/African American/African,true,false,false,false,false,false
+20,Ian Weaver,Calvanay Nunley,13,advanced math,Black/African American/African,true,false,false,false,false,false
+21,Filipe Cerqueira,Ava Victoriano ,9,science,Interracial ,false,false,false,false,true,true
+22,Ian Weaver,Imade Okoh,11,mid-level math,Black/African American/African,false,false,false,false,true,true
+23,none,Christian Dal Dosso,8,basic math,Interracial ,true,false,false,false,false,false
+24,Ian Weaver,Jessica Chambers,10,science,Black/African American/African,false,false,false,false,true,true
+25,none,Thabani Siwela,8,basic math,Black/African American/African,true,false,false,false,false,false
+26,Ian Weaver,Esaias Parker,6,basic math,Black/African American/African,false,false,false,false,true,true
+27,none,Clarissa Villacarte,9,mid-level math,Southeast Asian or Pacific Islander,true,false,false,false,false,false
+28,Reza Barghi,Azariya Smith,11,mid-level math,Black/African American/African,false,false,false,false,true,true
+29,none,Aaleyah,3,basic math,Black/African American/African,true,false,false,false,false,false
+30,none,Maya Reddick,12,mid-level math,Black/African American/African,true,false,false,false,false,false
+31,none,Kiptavius Bennett ,8,reading,Black/African American/African,true,false,false,false,false,false
+32,Greg Cunningham,Davion Caron Brown,10,mid-level math,Black/African American/African,false,false,false,false,true,true
+33,none,Marquis Marshall,9,mid-level math,Black/African American/African,true,false,false,false,false,false
+34,Reza Barghi,Elshadi Jahdid,10,mid-level math,Black/African American/African,true,false,false,false,false,false
+35,Filipe Cerqueira,Maya Berhane ,10,mid-level math,Black/African American/African,false,false,false,false,true,true
+36,Filipe Cerqueira,Joëlle Mendy ,8,mid-level math,Black/African American/African,false,false,false,false,true,true
+37,Reza Barghi,Meshack Juma,11,advanced math,Black/African American/African,false,false,false,false,true,true
+38,Reza Barghi,Nadia Juma,9,advanced math,Black/African American/African,false,false,false,false,true,true
+39,Greg Cunningham,Justin Martin,11,advanced math,Black/African American/African,false,false,false,false,true,true
+40,Haley Carrasco,Hailey Lewis,12,mid-level math,Black/African American/African,true,false,false,false,false,false
+41,Greg Cunningham,Nailah Cannon,11,advanced math,Black/African American/African,false,false,false,false,true,true
+42,Greg Cunningham,Dorien Omar Hughes,11,science,Black/African American/African,false,false,false,false,true,true
+43,Reza Barghi,Kayla Martinez ,13,mid-level math,Latinx/Latina/Latino (non-white Hispanic),false,false,false,false,false,true
+44,Haley Carrasco,Danica Martinez ,9,mid-level math,White and Mexican ,false,false,false,false,false,true
+45,pending,Una Mahasin,10,mid-level math,Black/African American/African,false,false,false,false,true,false
+46,Haley Carrasco,Arianna Grillo,13,science,Latinx/Latina/Latino (non-white Hispanic),false,false,false,false,false,true
+47,Haley Carrasco,Andrea Grillo,10,science,Latinx/Latina/Latino (non-white Hispanic),false,false,false,false,false,true
