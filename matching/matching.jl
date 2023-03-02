@@ -45,7 +45,7 @@ The tutor and student availability is all shared in the same calendar, so we jus
 tutor_names = ["Reza", "Haley Carrasco"]
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Olisha Hodges", "Kayla Martinez"]
+student_names = ["Kayla Martinez", "Arianna Grillo", "Andrea Grillo"]
 
 # ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
 begin

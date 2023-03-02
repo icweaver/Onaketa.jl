@@ -70,6 +70,11 @@ md"""
 # Haley
 """
 
+# ╔═╡ 485c5320-2524-4d1f-aa69-b75d30a0d29f
+md"""
+## Andrea
+"""
+
 # ╔═╡ 742976d5-6160-4598-8c36-c2de0da1d267
 md"""
 ## Danica Martinez
@@ -178,9 +183,6 @@ function intro(;
 	$(tutor_first) will follow up with their meeting link and the tutor-student agreement. We ask that you read and sign the agreement before your first session.
 	
 	Please don't hesitate to reach out if you have questions!
-	
-	Best,<br>
-	The Onaketa Team
 	"""
 end
 
@@ -252,6 +254,26 @@ intro(;
 	subject = "proofs/algebra/polynomials",
 	info_reza...,
 	date_start = "**Saturday, January 21st at 4:00 pm PT**",
+)
+
+# ╔═╡ e2dfeddc-91b2-481c-9a60-eb6605c71b2b
+intro(;
+	parent_names = "Ana Torres",
+	parent_emails = "anita_bms@hotmail.com",
+	student_name = "Andrea Grillo",
+	subject = "Chemistry of Earth Systems",
+	info_haley...,
+	date_start = "**Sunday, February 26th at 4:30 pm PT**",
+)
+
+# ╔═╡ 6294771b-a8f5-4663-82f4-1d13f62a6b56
+intro(;
+	parent_names = "Arianna Grillo",
+	parent_emails = "arianna14445@gmail.com",
+	student_name = "Arianna Grillo",
+	subject = "Organic Chemistry 112A",
+	info_haley...,
+	date_start = "**Thursday, February 23rd at 5:00 pm PT**",
 )
 
 # ╔═╡ 1a64d690-168c-47da-9468-5a81e7b696f4
@@ -632,6 +654,9 @@ version = "17.4.0+0"
 # ╟─06edbec7-94b7-447c-9e4f-fc1d55c7f94f
 # ╠═27284c5b-bbe2-4988-bb92-d722a1b7536e
 # ╟─cf6aa82c-633b-4cb9-8f60-cd3513ed20f9
+# ╟─485c5320-2524-4d1f-aa69-b75d30a0d29f
+# ╠═e2dfeddc-91b2-481c-9a60-eb6605c71b2b
+# ╠═6294771b-a8f5-4663-82f4-1d13f62a6b56
 # ╟─742976d5-6160-4598-8c36-c2de0da1d267
 # ╠═1a64d690-168c-47da-9468-5a81e7b696f4
 # ╟─e9cabb05-a421-455f-8491-ea6eb9117def
