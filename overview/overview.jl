@@ -27,7 +27,7 @@ begin
 			BarPlot = (;
 				bar_labels = :y,
 				label_size = 16,
-				label_offset = -26,
+				label_offset = -18,
 				label_color = :lightgrey,
 				label_formatter = Int,
 				label_font = firasans("Light"),
@@ -45,7 +45,7 @@ Below are some general insights into the anonymized data collected about our stu
 
 # ╔═╡ 4b64ccc5-b606-4ae2-9764-73529be867f6
 md"""
-## Raw data overview
+## Raw data overview 📖
 """
 
 # ╔═╡ 5b59617c-c17c-41d3-94b4-2022ec56b00c
@@ -66,7 +66,7 @@ first(df_raw, 3)
 
 # ╔═╡ ba212dde-6e19-42bb-861e-0f077ffea347
 md"""
-We describe each column below:
+where each row is for an individual student. We describe each column below:
 """
 
 # ╔═╡ a86bc0dc-a61d-4f71-8547-9e9b732ef683
@@ -79,6 +79,51 @@ md"""
 * `student_grade`: Current grade student is in school
 * `student_race_ethnicity`: Self-reported race/ethnicity of student
 * `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
+* `active_X`: A flag indicating whether the student was active in our program during semester X. We define fall to be the first semester of the year and spring to be the second.
+* `drop_status`: A flag indicating whether the student was unable to join or remain in our program
+"""
+
+# ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
+md"""
+## Insights 🔎
+
+With these definitions made, we go on to visualize different aspects of the data.
+
+!!! todo
+	Do we want to include dropped student data in some way? For now, just omitting this by default.
+"""
+
+# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
+md"""
+### Semester
+
+Cumulative number of students served by our program each year. Given the explosive growth from 2021 - 2022, we expect to see at least 48 total students served by the end of this year.
+"""
+
+# ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
+md"""
+### Subject
+
+Total number of students supported in each academic subject. We categorize these by "basic math" (e.g., multiplication, fractions), "mid-level math" (e.g., Geometry, Algebra I/II, Trigonometry), "advanced math" (e.g., Precalculus, Calculus), and "science" (e.g., Biology, Chemistry, Physics). The subject that we have received the most requests for support in was for mid-level math, followed by an even split in science and advanced math.
+"""
+
+# ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
+md"""
+### Grade
+
+Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 12th grade, with the largest representation being for students in 10th grade.
+"""
+
+# ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
+md"""
+### Race/ethnicity
+
+Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
+"""
+
+# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
+md"""
+## Notebook setup 🔧
 """
 
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
@@ -102,20 +147,6 @@ function barplot_groups(df_countmap, labels; title, subtitle, xticklabelrotation
 	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
 end
 
-# ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
-function group_counts(df, cat)
-	@chain df begin
-		groupby(cat)
-		combine(nrow)
-		rename!(cat => :variable)
-	end
-end
-
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-## Semester
-"""
-
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
 let
 	df_processed = @chain df begin
@@ -138,10 +169,14 @@ let
 	)
 end
 
-# ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
-md"""
-## Subject
-"""
+# ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
+function group_counts(df, cat)
+	@chain df begin
+		groupby(cat)
+		combine(nrow)
+		rename!(cat => :variable)
+	end
+end
 
 # ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
 barplot_groups(group_counts(df, :subject_cat);
@@ -149,11 +184,6 @@ barplot_groups(group_counts(df, :subject_cat);
 	title = "Course subject",
 	subtitle = "Cumulative total by category",
 )
-
-# ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
-md"""
-## Grade
-"""
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
 let
@@ -168,11 +198,6 @@ let
 	)
 end
 
-# ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
-md"""
-## Race/ethnicity
-"""
-
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 barplot_groups(group_counts(df, :us_census), [
 		"Black or African American" => "Black or\nAfrican American",
@@ -185,11 +210,6 @@ barplot_groups(group_counts(df, :us_census), [
 	subtitle = "Cumulative total by self-reported identity",
 	xticklabelrotation = π/8,
 )
-
-# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
-md"""
-## Notebook setup 🔧
-"""
 
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 TableOfContents()
@@ -1677,11 +1697,8 @@ version = "3.5.0+0"
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
-# ╠═3d551209-6a0c-4f35-885d-63a5a7c6a320
-# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
-# ╟─cbd3174d-a509-4a86-862a-7fdd76a2367f
-# ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
+# ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
+# ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
@@ -1691,6 +1708,10 @@ version = "3.5.0+0"
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
+# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
+# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
+# ╟─cbd3174d-a509-4a86-862a-7fdd76a2367f
+# ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─00000000-0000-0000-0000-000000000001
