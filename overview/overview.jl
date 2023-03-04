@@ -22,6 +22,7 @@ begin
 				subtitlesize = 20,
 				subtitlecolor = :grey,
 				subtitlefont = firasans("Light"),
+				labelsize = 8,
 			),
 			BarPlot = (;
 				bar_labels = :y,
@@ -49,6 +50,15 @@ df = @rsubset df_raw !(:drop_status);
 function barplot_groups(df_countmap; labels=[], title, subtitle, xticklabelrotation=0)
 	plt = data(df_countmap) * mapping(
 		:variable => sorter(labels) => "",
+		:nrow => "",
+	) * visual(BarPlot)
+	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
+end
+
+# ╔═╡ cbd3174d-a509-4a86-862a-7fdd76a2367f
+function barplot_groups(df_countmap, labels; title, subtitle, xticklabelrotation=0)
+	plt = data(df_countmap) * mapping(
+		:variable => renamer(labels) => "",
 		:nrow => "",
 	) * visual(BarPlot)
 	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
@@ -124,32 +134,17 @@ md"""
 x_order = sort(x.variable; lt=natural)
 
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-barplot_groups(x;
-	labels = x_order,
+barplot_groups(x, [
+		"Black or African American" => "Black or\nAfrican American",
+		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
+		"Multiracial" => "Multiracial",
+		"Native American" => "Native American",
+		"Not reported" => "Not reported",
+	],
 	title = "Race/ethnicity",
 	subtitle = "Cumulative total by self-reported identity",
-	xticklabelrotation = π/4,
+	xticklabelrotation = π/8,
 )
-
-# ╔═╡ 1e3409e2-5450-45d9-9ad0-cd2e7049666e
-let
-	plt = data(x) * mapping(
-		# :variable => renamer([
-		# 	"Black or African American" => "Black or\nAfrican American",
-		# 	"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
-		# 	"Multiracial" => "Multiracial",
-		# 	"Native American" => "Native American",
-		# 	"Not reported" => "Not reported",
-		# ]),
-		:variable => sorter(x_order),
-		:nrow
-	) * visual(BarPlot)
-
-	draw(plt)
-end
-
-# ╔═╡ db5244f6-3aba-4ead-84c9-506f74f458a8
-sorter(x_order)
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
@@ -1639,6 +1634,7 @@ version = "3.5.0+0"
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╠═dcedd578-486a-4fc4-a2d0-5524a8126393
+# ╠═cbd3174d-a509-4a86-862a-7fdd76a2367f
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═b91501a8-c3ab-47b5-95ea-618c8c02d446
@@ -1653,8 +1649,6 @@ version = "3.5.0+0"
 # ╠═8260df50-dece-4234-a7a9-32b762c07e79
 # ╠═5a4d959e-a92c-4cd4-854a-f8d8e2be1762
 # ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-# ╠═1e3409e2-5450-45d9-9ad0-cd2e7049666e
-# ╠═db5244f6-3aba-4ead-84c9-506f74f458a8
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
