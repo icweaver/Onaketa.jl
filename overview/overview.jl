@@ -11,29 +11,6 @@ begin
 	using PlutoUI
 	using MarkdownLiteral: @mdx
 	using AlgebraOfGraphics: opensans, firasans
-
-	set_aog_theme!()
-	update_theme!(
-		Theme(
-			# fontsize = 16,
-			Axis = (;
-				limits = (nothing, nothing, nothing, 22),
-				titlesize = 30,
-				titlealign = :left,
-				subtitlesize = 20,
-				subtitlecolor = :grey,
-				subtitlefont = firasans("Light"),
-			),
-			BarPlot = (;
-				bar_labels = :y,
-				label_size = 16,
-				label_offset = -18,
-				label_color = :lightgrey,
-				label_formatter = Int,
-				label_font = firasans("Light"),
-			),
-		)
-	)
 end
 
 # ╔═╡ 57d9df05-e2bd-4b8c-9ed4-06c09920165a
@@ -93,6 +70,9 @@ With these definitions made, we go on to visualize different aspects of the data
 	Do we want to include dropped student data in some way? For now, just omitting this by default.
 """
 
+# ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
+df = @rsubset df_raw !(:drop_status);
+
 # ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
 md"""
 ### Semester
@@ -126,25 +106,73 @@ md"""
 ## Notebook setup 🔧
 """
 
-# ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-df = @rsubset df_raw !(:drop_status);
+# ╔═╡ 95f393b9-ad23-4195-bd96-0c62b559c2a6
+md"""
+### Global settings
+"""
 
-# ╔═╡ dcedd578-486a-4fc4-a2d0-5524a8126393
-function barplot_groups(df_countmap; labels=[], title, subtitle, xticklabelrotation=0)
-	plt = data(df_countmap) * mapping(
-		:variable => sorter(labels) => "",
-		:nrow => "",
-	) * visual(BarPlot)
-	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
+# ╔═╡ f91d4ca2-afa1-4977-934b-04092ef119b1
+begin
+set_aog_theme!()
+update_theme!(
+	Theme(
+		# fontsize = 16,
+		Axis = (;
+			limits = (nothing, nothing, nothing, 22),
+			titlesize = 30,
+			titlealign = :left,
+			subtitlesize = 20,
+			subtitlecolor = :grey,
+			subtitlefont = firasans("Light"),
+		),
+		BarPlot = (;
+			bar_labels = :y,
+			label_size = 16,
+			label_offset = -18,
+			label_color = :lightgrey,
+			label_formatter = Int,
+			label_font = firasans("Light"),
+		),
+	)
+)
 end
 
-# ╔═╡ cbd3174d-a509-4a86-862a-7fdd76a2367f
-function barplot_groups(df_countmap, labels; title, subtitle, xticklabelrotation=0)
+# ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
+md"""
+### Convenience functions
+"""
+
+# ╔═╡ 9a642fe3-29a7-4ef0-8786-2830c615cd25
+function save_fig(fg, fname)
+	mkpath("./figures")
+	fpath = "./figures/$(fname).png"
+	@debug "Saving to $(fpath)"
+	save(fpath, fg, px_per_unit=3)
+end
+
+# ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+function _barplot_groups(df_countmap, x; title, subtitle, xticklabelrotation)
 	plt = data(df_countmap) * mapping(
-		:variable => renamer(labels) => "",
+		x,
 		:nrow => "",
 	) * visual(BarPlot)
-	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
+	fg = draw(plt; axis=(; title, subtitle, xticklabelrotation))
+	save_fig(fg, title)
+	fg|> as_svg
+end
+
+# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
+function barplot_groups(df_countmap; labels=[], title, subtitle, xticklabelrotation=0)
+	_barplot_groups(df_countmap, :variable => sorter(labels) => "";
+		title, subtitle, xticklabelrotation=0
+	)
+end
+
+# ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
+function barplot_groups(df_countmap, labels; title, subtitle, xticklabelrotation=0)
+	_barplot_groups(df_countmap, :variable => renamer(labels) => "";
+		title, subtitle, xticklabelrotation
+	)
 end
 
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
@@ -206,10 +234,15 @@ barplot_groups(group_counts(df, :us_census), [
 		"Native American" => "Native American",
 		"Not reported" => "Not reported",
 	],
-	title = "Race/ethnicity",
+	title = "Race and ethnicity",
 	subtitle = "Cumulative total by self-reported identity",
 	xticklabelrotation = π/8,
 )
+
+# ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
+md"""
+### Packages
+"""
 
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 TableOfContents()
@@ -242,7 +275,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "881fefcc4b7b56290cb8ba50193cc30e706cdaba"
+project_hash = "80f6c72487dfc7945ace264c53fe797d8f86e059"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1699,6 +1732,7 @@ version = "3.5.0+0"
 # ╟─a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
+# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
@@ -1708,11 +1742,16 @@ version = "3.5.0+0"
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
-# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
-# ╟─cbd3174d-a509-4a86-862a-7fdd76a2367f
+# ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
+# ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
+# ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
+# ╠═9a642fe3-29a7-4ef0-8786-2830c615cd25
+# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
-# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+# ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
+# ╟─68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
