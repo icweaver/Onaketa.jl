@@ -21,7 +21,13 @@ begin
 				subtitlesize = 20,
 				subtitlecolor = :grey,
 				subtitlefont = firasans("Light"),
-			)
+			),
+			BarPlot = (;
+				bar_labels = :y,
+				label_offset = -26,
+				label_color = :lightgrey,
+				label_formatter = Int,
+			),
 		)
 	)
 end
@@ -75,14 +81,15 @@ md"""
 ## Subject
 """
 
+# ╔═╡ ecd88f02-bb4f-47e2-8ab2-7d540713e72f
+df_subj = combine(groupby(df, :subject_cat), nrow)
+
 # ╔═╡ d9bb593c-9c4c-45fd-9f25-37d14cde2e55
 let
-	plt = data(df) * mapping(
+	plt = data(df_subj) * mapping(
 		:subject_cat => sorter(["basic math", "mid-level math", "advanced math", "science", "No data"]) => "",
-		;) * visual(Hist; width=0.5, bar_labels=:values)
-		# text = :value_str => verbatim,
-		# color = :variable => sort_order,
-	# ) * (visual(BarPlot) + visual(Makie.Text; align=(:center, :top), color=:white))
+		:nrow) *
+		visual(BarPlot)
 
 	draw(plt;
 		axis = (;
@@ -91,6 +98,11 @@ let
 	)
 	
 end |> as_svg
+
+# ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
+md"""
+## Grade
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -120,7 +132,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "c397e1a1c1e79e1f220af23eed01d5e5609d2f62"
+project_hash = "24960dc848f08f1328696a423bb7ee452e49e097"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1569,7 +1581,9 @@ version = "3.5.0+0"
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═8d602daf-01a9-466f-8d65-298353a1493c
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╠═d9bb593c-9c4c-45fd-9f25-37d14cde2e55
+# ╠═ecd88f02-bb4f-47e2-8ab2-7d540713e72f
+# ╟─d9bb593c-9c4c-45fd-9f25-37d14cde2e55
+# ╠═03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
