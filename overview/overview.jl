@@ -146,8 +146,8 @@ md"""
 function save_fig(fg, fname)
 	mkpath("./figures")
 	fpath = "./figures/$(fname).png"
-	@debug "Saving to $(fpath)"
 	save(fpath, fg, px_per_unit=3)
+	@debug "Saved to $(fpath)"
 end
 
 # ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
@@ -1745,10 +1745,10 @@ version = "3.5.0+0"
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
-# ╠═9a642fe3-29a7-4ef0-8786-2830c615cd25
+# ╟─9a642fe3-29a7-4ef0-8786-2830c615cd25
 # ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
 # ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
