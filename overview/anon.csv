@@ -1,0 +1,49 @@
+id,subject_cat,student_grade,student_race_ethnicity,Spring 2021,Fall 2021,Spring 2022,Fall 2022,Spring 2023,drop_status
+30,basic math,3,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+27,basic math,6,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+11,mid-level math,8,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+14,science,8,Black/African American/African,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE
+26,basic math,8,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+32,reading,8,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+37,mid-level math,8,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+24,basic math,8,Interracial ,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+17,mid-level math,9,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+20,reading,9,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+34,mid-level math,9,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+39,advanced math,9,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+22,science,9,Interracial ,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+28,mid-level math,9,Southeast Asian or Pacific Islander,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+45,mid-level math,9,White and Mexican ,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+9,mid-level math,10,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+10,science,10,Black/African American/African,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+16,mid-level math,10,Black/African American/African,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE
+25,science,10,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+33,mid-level math,10,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+35,mid-level math,10,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+36,mid-level math,10,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+46,mid-level math,10,Black/African American/African,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE
+48,science,10,Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+7,mid-level math,10,Native American,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE
+15,mid-level math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+18,mid-level math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+19,science,11,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+23,mid-level math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+29,mid-level math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+38,advanced math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+40,advanced math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+42,advanced math,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+43,science,11,Black/African American/African,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+31,mid-level math,12,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+41,mid-level math,12,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+12,advanced math,12,Native American,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
+13,advanced math,13,Afro-Indigenous,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+21,advanced math,13,Black/African American/African,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+6,science,13,Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
+8,advanced math,13,Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+44,mid-level math,13,Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+47,science,13,Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+2,mid-level math,8,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
+3,basic math,8,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE
+4,basic math,8,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
+5,No data,10,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
+1,mid-level math,11,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
