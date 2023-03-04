@@ -41,68 +41,65 @@ describe(df_raw, :nuniqueall, :nmissing, :eltype)
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_raw !(:drop_status)
 
-# ╔═╡ b91501a8-c3ab-47b5-95ea-618c8c02d446
-df_sem = @chain df begin
-	stack(r"Spring|Fall")
-	groupby(:variable)
-	combine(:value => count; renamecols=false)
-	@rtransform begin 
-		# :variable = fmt_sem(:variable)
-		:value_str = string(:value)
-	end
+# ╔═╡ dcedd578-486a-4fc4-a2d0-5524a8126393
+function barplot_groups(df_countmap; labels, title, subtitle)
+	plt = data(df_countmap) * mapping(
+		:variable => sorter(labels) => "",
+		:nrow => "",
+	) * visual(BarPlot)
+	draw(plt; axis=(; title, subtitle)) |> as_svg
 end
+
+# ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
+group_counts(df, cat) = combine(groupby(df, cat) => :variable, nrow)
 
 # ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
 md"""
 ## Semester
 """
 
-# ╔═╡ 8d602daf-01a9-466f-8d65-298353a1493c
-let
-	plt = data(df_sem) * mapping(
-		:variable => sorter(df_sem.variable) => "",
-		:value => "";
-		text = :value_str => verbatim,
-		# color = :variable => sort_order,
-	) * (visual(BarPlot; bar_labels=:y, label_offset=5))
-	
-	# + visual(Makie.Text; align=(:center, :top), color=:white))
+# ╔═╡ b91501a8-c3ab-47b5-95ea-618c8c02d446
+df_sem = @chain df begin
+	stack(r"Spring|Fall")
+	groupby(:variable)
+	combine(:value => count => :nrow)
+end
 
-	draw(plt;
-		axis = (;
-			title = "Students served",
-			subtitle = "Number of active students each semester"),
-	)
-	
-end |> as_svg
+# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
+barplot_groups(df_sem;
+	labels = ["Spring 2021", "Fall 2021", "Spring 2022", "Fall 2022", "Spring 2023"],
+	title = "Students served",
+	subtitle = "Number of active students each semester",
+)
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
 ## Subject
 """
 
-# ╔═╡ ecd88f02-bb4f-47e2-8ab2-7d540713e72f
-df_subj = combine(groupby(df, :subject_cat), nrow)
+# ╔═╡ 8b7b8b75-5389-4375-8d19-ee0eeb07c840
+df_subj = group_counts(df, :subject_cat)
 
-# ╔═╡ d9bb593c-9c4c-45fd-9f25-37d14cde2e55
-let
-	plt = data(df_subj) * mapping(
-		:subject_cat => sorter(["basic math", "mid-level math", "advanced math", "science", "No data"]) => "",
-		:nrow) *
-		visual(BarPlot)
+# ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
+barplot_groups(df_subj;
+	labels = ["basic math", "mid-level math", "advanced math", "science", "No data"],
+	title = "Course subject",
+	subtitle = "Cumulative total by category",
+)
 
-	draw(plt;
-		axis = (;
-			title = "Course subject",
-			subtitle = "Cumulative total by category"),
-	)
-	
-end |> as_svg
+# ╔═╡ 394d75da-906c-48b9-8943-f76eb237b726
+group_counts(df, :subject_cat)
+
+# ╔═╡ 2e2d7ddb-e0a4-4bb7-968a-cb4e8829dd4b
+group_counts(df, :subject_cat)
 
 # ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
 md"""
 ## Grade
 """
+
+# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1577,13 +1574,18 @@ version = "3.5.0+0"
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╠═b91501a8-c3ab-47b5-95ea-618c8c02d446
+# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
+# ╠═9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═8d602daf-01a9-466f-8d65-298353a1493c
+# ╠═b91501a8-c3ab-47b5-95ea-618c8c02d446
+# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╠═ecd88f02-bb4f-47e2-8ab2-7d540713e72f
-# ╟─d9bb593c-9c4c-45fd-9f25-37d14cde2e55
+# ╠═8b7b8b75-5389-4375-8d19-ee0eeb07c840
+# ╠═28a62b38-7b91-4dc7-8480-de491470128e
+# ╠═394d75da-906c-48b9-8943-f76eb237b726
+# ╠═2e2d7ddb-e0a4-4bb7-968a-cb4e8829dd4b
 # ╠═03e4f45e-a4d6-4606-8d10-7cbe10489a59
+# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
