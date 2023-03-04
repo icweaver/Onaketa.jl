@@ -1,4 +1,4 @@
-id,subject_cat,student_grade,student_race_ethnicity,us_census,Spring 2021,Fall 2021,Spring 2022,Fall 2022,Spring 2023,drop_status
+id,subject_cat,student_grade,student_race_ethnicity,us_census,active_spring_2021,active_fall_2021,active_spring_2022,active_fall_2022,active_spring_2023,drop_status
 13,advanced math,undergrad,Afro-Indigenous,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
 9,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
 10,science,10th,Black/African American/African,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE

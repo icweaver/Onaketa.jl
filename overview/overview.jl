@@ -39,16 +39,47 @@ end
 # ╔═╡ 57d9df05-e2bd-4b8c-9ed4-06c09920165a
 md"""
 # Onaketa students
+
+Below are some general insights into the anonymized data collected about our students.
+"""
+
+# ╔═╡ 4b64ccc5-b606-4ae2-9764-73529be867f6
+md"""
+## Raw data overview
+"""
+
+# ╔═╡ 5b59617c-c17c-41d3-94b4-2022ec56b00c
+md"""
+We read the data in from a simple csv file stored with this notebook.
 """
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 df_raw = CSV.read("anon.csv", DataFrame);
 
+# ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
+md"""
+Here are what the first few rows look like:
+"""
+
 # ╔═╡ ff20fcd3-0c30-46a7-a09e-586d05300d5c
 first(df_raw, 3)
 
+# ╔═╡ ba212dde-6e19-42bb-861e-0f077ffea347
+md"""
+We describe each column below:
+"""
+
 # ╔═╡ a86bc0dc-a61d-4f71-8547-9e9b732ef683
 describe(df_raw, :nuniqueall, :nmissing, :eltype)
+
+# ╔═╡ 3d551209-6a0c-4f35-885d-63a5a7c6a320
+md"""
+* `id`: Anonymized id for each student
+* `subject_cat`: Subject category
+* `student_grade`: Current grade student is in school
+* `student_race_ethnicity`: Self-reported race/ethnicity of student
+* `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
+"""
 
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_raw !(:drop_status);
@@ -88,14 +119,20 @@ md"""
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
 let
 	df_processed = @chain df begin
-		stack(r"Spring|Fall")
+		stack(r"active")
 		groupby(:variable)
 		combine(:value => count => :nrow)
 	end
-	labels = ["Spring 2021", "Fall 2021", "Spring 2022", "Fall 2022", "Spring 2023"]
 	
-	barplot_groups(df_processed;
-		labels,
+	labels = [
+		"active_spring_2021" => "Spring 2021",
+		"active_fall_2021" => "Fall 2021",
+		"active_spring_2022" => "Spring 2022",
+		"active_fall_2022" => "Fall 2022",
+		"active_spring_2023" => "Spring 2023",
+	]
+	
+	barplot_groups(df_processed, labels,
 		title = "Students served",
 		subtitle = "Number of active students each semester",
 	)
@@ -121,6 +158,7 @@ md"""
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
 let
 	df_processed = group_counts(df, :student_grade);
+	
 	labels = sort(df_processed.variable; lt=natural);
 	
 	barplot_groups(df_processed;
@@ -135,14 +173,8 @@ md"""
 ## Race/ethnicity
 """
 
-# ╔═╡ 8260df50-dece-4234-a7a9-32b762c07e79
- x = group_counts(df, :us_census)
-
-# ╔═╡ 5a4d959e-a92c-4cd4-854a-f8d8e2be1762
-x_order = sort(x.variable; lt=natural)
-
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-barplot_groups(x, [
+barplot_groups(group_counts(df, :us_census), [
 		"Black or African American" => "Black or\nAfrican American",
 		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
 		"Multiracial" => "Multiracial",
@@ -1638,9 +1670,14 @@ version = "3.5.0+0"
 
 # ╔═╡ Cell order:
 # ╟─57d9df05-e2bd-4b8c-9ed4-06c09920165a
+# ╟─4b64ccc5-b606-4ae2-9764-73529be867f6
+# ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
+# ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
+# ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
+# ╠═3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
 # ╟─cbd3174d-a509-4a86-862a-7fdd76a2367f
@@ -1652,9 +1689,7 @@ version = "3.5.0+0"
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╠═8260df50-dece-4234-a7a9-32b762c07e79
-# ╠═5a4d959e-a92c-4cd4-854a-f8d8e2be1762
-# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
