@@ -66,7 +66,7 @@ first(df_raw, 3)
 
 # ╔═╡ ba212dde-6e19-42bb-861e-0f077ffea347
 md"""
-where each row is for an individual student. We describe each column below:
+where each row is for an individual student. We describe each column shown below:
 """
 
 # ╔═╡ a86bc0dc-a61d-4f71-8547-9e9b732ef683
@@ -111,7 +111,7 @@ Total number of students supported in each academic subject. We categorize these
 md"""
 ### Grade
 
-Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 12th grade, with the largest representation being for students in 10th grade.
+Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 11th grade, with the largest representation being for students in 11th grade.
 """
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
@@ -1694,9 +1694,9 @@ version = "3.5.0+0"
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 # ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
-# ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
+# ╟─ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
-# ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
+# ╟─a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
