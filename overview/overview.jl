@@ -15,6 +15,7 @@ begin
 	set_aog_theme!()
 	update_theme!(
 		Theme(
+			# fontsize = 16,
 			Axis = (;
 				limits = (nothing, nothing, nothing, 22),
 				titlesize = 30,
@@ -22,17 +23,23 @@ begin
 				subtitlesize = 20,
 				subtitlecolor = :grey,
 				subtitlefont = firasans("Light"),
-				labelsize = 8,
 			),
 			BarPlot = (;
 				bar_labels = :y,
+				label_size = 16,
 				label_offset = -26,
 				label_color = :lightgrey,
 				label_formatter = Int,
+				label_font = firasans("Light"),
 			),
 		)
 	)
 end
+
+# ╔═╡ 57d9df05-e2bd-4b8c-9ed4-06c09920165a
+md"""
+# Onaketa students
+"""
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 df_raw = CSV.read("anon.csv", DataFrame);
@@ -78,19 +85,21 @@ md"""
 ## Semester
 """
 
-# ╔═╡ b91501a8-c3ab-47b5-95ea-618c8c02d446
-df_sem = @chain df begin
-	stack(r"Spring|Fall")
-	groupby(:variable)
-	combine(:value => count => :nrow)
-end
-
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-barplot_groups(df_sem;
-	labels = ["Spring 2021", "Fall 2021", "Spring 2022", "Fall 2022", "Spring 2023"],
-	title = "Students served",
-	subtitle = "Number of active students each semester",
-)
+let
+	df_processed = @chain df begin
+		stack(r"Spring|Fall")
+		groupby(:variable)
+		combine(:value => count => :nrow)
+	end
+	labels = ["Spring 2021", "Fall 2021", "Spring 2022", "Fall 2022", "Spring 2023"]
+	
+	barplot_groups(df_processed;
+		labels,
+		title = "Students served",
+		subtitle = "Number of active students each semester",
+	)
+end
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
@@ -109,18 +118,17 @@ md"""
 ## Grade
 """
 
-# ╔═╡ ea6ea4d0-8adb-457b-9f4f-8864ba131a9c
-df_grade = group_counts(df, :student_grade);
-
-# ╔═╡ 5a53ba13-33a7-4d61-9ab0-b7bf0fb310fd
-grade_order = sort(df_grade.variable; lt=natural);
-
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
-barplot_groups(df_grade;
-	labels = grade_order,
-	title = "Grade",
-	subtitle = "Cumulative total by grade level",
-)
+let
+	df_processed = group_counts(df, :student_grade);
+	labels = sort(df_processed.variable; lt=natural);
+	
+	barplot_groups(df_processed;
+		labels,
+		title = "Grade",
+		subtitle = "Cumulative total by grade level",
+	)
+end
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
@@ -1629,22 +1637,20 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─57d9df05-e2bd-4b8c-9ed4-06c09920165a
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╠═dcedd578-486a-4fc4-a2d0-5524a8126393
-# ╠═cbd3174d-a509-4a86-862a-7fdd76a2367f
+# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
+# ╟─cbd3174d-a509-4a86-862a-7fdd76a2367f
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═b91501a8-c3ab-47b5-95ea-618c8c02d446
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─28a62b38-7b91-4dc7-8480-de491470128e
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
-# ╠═ea6ea4d0-8adb-457b-9f4f-8864ba131a9c
-# ╠═5a53ba13-33a7-4d61-9ab0-b7bf0fb310fd
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╠═8260df50-dece-4234-a7a9-32b762c07e79
 # ╠═5a4d959e-a92c-4cd4-854a-f8d8e2be1762
