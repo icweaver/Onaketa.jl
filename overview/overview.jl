@@ -7,15 +7,16 @@ using InteractiveUtils
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using AlgebraOfGraphics, CairoMakie
-	using DataFramesMeta, CSV, Dates, PrettyTables
-	using MarkdownLiteral: @mdx
+	using DataFramesMeta, CSV, Dates, NaturalSort
 	using PlutoUI
+	using MarkdownLiteral: @mdx
 	using AlgebraOfGraphics: opensans, firasans
 
 	set_aog_theme!()
 	update_theme!(
 		Theme(
 			Axis = (;
+				limits = (nothing, nothing, nothing, 22),
 				titlesize = 30,
 				titlealign = :left,
 				subtitlesize = 20,
@@ -33,25 +34,34 @@ begin
 end
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df_raw = CSV.read("anon.csv", DataFrame)
+df_raw = CSV.read("anon.csv", DataFrame);
+
+# ╔═╡ ff20fcd3-0c30-46a7-a09e-586d05300d5c
+first(df_raw, 3)
 
 # ╔═╡ a86bc0dc-a61d-4f71-8547-9e9b732ef683
 describe(df_raw, :nuniqueall, :nmissing, :eltype)
 
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-df = @rsubset df_raw !(:drop_status)
+df = @rsubset df_raw !(:drop_status);
 
 # ╔═╡ dcedd578-486a-4fc4-a2d0-5524a8126393
-function barplot_groups(df_countmap; labels, title, subtitle)
+function barplot_groups(df_countmap; labels=[], title, subtitle, xticklabelrotation=0)
 	plt = data(df_countmap) * mapping(
 		:variable => sorter(labels) => "",
 		:nrow => "",
 	) * visual(BarPlot)
-	draw(plt; axis=(; title, subtitle)) |> as_svg
+	draw(plt; axis=(; title, subtitle, xticklabelrotation)) |> as_svg
 end
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
-group_counts(df, cat) = combine(groupby(df, cat) => :variable, nrow)
+function group_counts(df, cat)
+	@chain df begin
+		groupby(cat)
+		combine(nrow)
+		rename!(cat => :variable)
+	end
+end
 
 # ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
 md"""
@@ -77,29 +87,77 @@ md"""
 ## Subject
 """
 
-# ╔═╡ 8b7b8b75-5389-4375-8d19-ee0eeb07c840
-df_subj = group_counts(df, :subject_cat)
-
 # ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
-barplot_groups(df_subj;
+barplot_groups(group_counts(df, :subject_cat);
 	labels = ["basic math", "mid-level math", "advanced math", "science", "No data"],
 	title = "Course subject",
 	subtitle = "Cumulative total by category",
 )
-
-# ╔═╡ 394d75da-906c-48b9-8943-f76eb237b726
-group_counts(df, :subject_cat)
-
-# ╔═╡ 2e2d7ddb-e0a4-4bb7-968a-cb4e8829dd4b
-group_counts(df, :subject_cat)
 
 # ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
 md"""
 ## Grade
 """
 
-# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+# ╔═╡ ea6ea4d0-8adb-457b-9f4f-8864ba131a9c
+df_grade = group_counts(df, :student_grade);
 
+# ╔═╡ 5a53ba13-33a7-4d61-9ab0-b7bf0fb310fd
+grade_order = sort(df_grade.variable; lt=natural);
+
+# ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
+barplot_groups(df_grade;
+	labels = grade_order,
+	title = "Grade",
+	subtitle = "Cumulative total by grade level",
+)
+
+# ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
+md"""
+## Race/ethnicity
+"""
+
+# ╔═╡ 8260df50-dece-4234-a7a9-32b762c07e79
+ x = group_counts(df, :us_census)
+
+# ╔═╡ 5a4d959e-a92c-4cd4-854a-f8d8e2be1762
+x_order = sort(x.variable; lt=natural)
+
+# ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+barplot_groups(x;
+	labels = x_order,
+	title = "Race/ethnicity",
+	subtitle = "Cumulative total by self-reported identity",
+	xticklabelrotation = π/4,
+)
+
+# ╔═╡ 1e3409e2-5450-45d9-9ad0-cd2e7049666e
+let
+	plt = data(x) * mapping(
+		# :variable => renamer([
+		# 	"Black or African American" => "Black or\nAfrican American",
+		# 	"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
+		# 	"Multiracial" => "Multiracial",
+		# 	"Native American" => "Native American",
+		# 	"Not reported" => "Not reported",
+		# ]),
+		:variable => sorter(x_order),
+		:nrow
+	) * visual(BarPlot)
+
+	draw(plt)
+end
+
+# ╔═╡ db5244f6-3aba-4ead-84c9-506f74f458a8
+sorter(x_order)
+
+# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
+md"""
+## Notebook setup 🔧
+"""
+
+# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -110,8 +168,8 @@ CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 
 [compat]
 AlgebraOfGraphics = "~0.6.14"
@@ -119,8 +177,8 @@ CSV = "~0.10.9"
 CairoMakie = "~0.10.2"
 DataFramesMeta = "~0.13.0"
 MarkdownLiteral = "~0.1.1"
+NaturalSort = "~1.0.0"
 PlutoUI = "~0.7.50"
-PrettyTables = "~2.2.2"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -129,7 +187,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "24960dc848f08f1328696a423bb7ee452e49e097"
+project_hash = "881fefcc4b7b56290cb8ba50193cc30e706cdaba"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -933,6 +991,11 @@ git-tree-sha1 = "0877504529a3e5c3343c6f8b4c0381e57e4387e4"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "1.0.2"
 
+[[deps.NaturalSort]]
+git-tree-sha1 = "eda490d06b9f7c00752ee81cfa451efe55521e21"
+uuid = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
+version = "1.0.0"
+
 [[deps.Netpbm]]
 deps = ["FileIO", "ImageCore", "ImageMetadata"]
 git-tree-sha1 = "5ae7ca23e13855b3aba94550f26146c01d259267"
@@ -1042,9 +1105,9 @@ version = "1.50.9+0"
 
 [[deps.Parsers]]
 deps = ["Dates", "SnoopPrecompile"]
-git-tree-sha1 = "6f4fbcd1ad45905a5dee3f4256fabb49aa2110c6"
+git-tree-sha1 = "478ac6c952fddd4399e71d4779797c538d0ff2bf"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.5.7"
+version = "2.5.8"
 
 [[deps.Pixman_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1572,19 +1635,27 @@ version = "3.5.0+0"
 
 # ╔═╡ Cell order:
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
+# ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╠═a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─dcedd578-486a-4fc4-a2d0-5524a8126393
-# ╠═9ced090e-ebab-427c-b2f1-72a47d97fe81
+# ╠═dcedd578-486a-4fc4-a2d0-5524a8126393
+# ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═b91501a8-c3ab-47b5-95ea-618c8c02d446
-# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╠═8b7b8b75-5389-4375-8d19-ee0eeb07c840
-# ╠═28a62b38-7b91-4dc7-8480-de491470128e
-# ╠═394d75da-906c-48b9-8943-f76eb237b726
-# ╠═2e2d7ddb-e0a4-4bb7-968a-cb4e8829dd4b
-# ╠═03e4f45e-a4d6-4606-8d10-7cbe10489a59
+# ╟─28a62b38-7b91-4dc7-8480-de491470128e
+# ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
+# ╟─cc169622-035d-4d00-aff9-394ad531f597
+# ╠═ea6ea4d0-8adb-457b-9f4f-8864ba131a9c
+# ╠═5a53ba13-33a7-4d61-9ab0-b7bf0fb310fd
+# ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
+# ╠═8260df50-dece-4234-a7a9-32b762c07e79
+# ╠═5a4d959e-a92c-4cd4-854a-f8d8e2be1762
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═1e3409e2-5450-45d9-9ad0-cd2e7049666e
+# ╠═db5244f6-3aba-4ead-84c9-506f74f458a8
+# ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─00000000-0000-0000-0000-000000000001
