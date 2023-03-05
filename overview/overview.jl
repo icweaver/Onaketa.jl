@@ -128,7 +128,7 @@ update_theme!(
 		BarPlot = (;
 			bar_labels = :y,
 			label_size = 16,
-			label_offset = -18,
+			label_offset = -20,
 			label_color = :lightgrey,
 			label_formatter = Int,
 			label_font = firasans("Light"),

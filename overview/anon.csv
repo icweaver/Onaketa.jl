@@ -1,49 +1,51 @@
 id,subject_cat,student_grade,student_race_ethnicity,us_census,active_spring_2021,active_fall_2021,active_spring_2022,active_fall_2022,active_spring_2023,drop_status
-13,advanced math,undergrad,Afro-Indigenous,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
-9,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-10,science,10th,Black/African American/African,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
-16,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE
-25,science,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-33,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-35,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-36,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-46,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE
-15,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-18,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-19,science,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-23,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-29,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-38,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-40,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-42,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-43,science,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-31,mid-level math,12th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-41,mid-level math,12th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-30,basic math,3rd,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-27,basic math,6th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-11,mid-level math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-14,science,8th,Black/African American/African,Black or African American,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE
-26,basic math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-32,reading,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-37,mid-level math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-17,mid-level math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-20,reading,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-34,mid-level math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-39,advanced math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-21,advanced math,undergrad,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-24,basic math,8th,Interracial ,Multiracial,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-22,science,9th,Interracial ,Multiracial,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
-48,science,10th,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
-6,science,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
-8,advanced math,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
-44,mid-level math,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
-47,science,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
-7,mid-level math,10th,Native American,Native American,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE
-12,advanced math,12th,Native American,Native American,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
-5,No data,10th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
 1,mid-level math,11th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
 2,mid-level math,8th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
 3,basic math,8th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE
 4,basic math,8th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
-28,mid-level math,9th,Southeast Asian or Pacific Islander,Southeast Asian or Pacific Islander,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
-45,mid-level math,9th,White and Mexican ,Multiracial,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+5,No data,10th,Not reported,Not reported,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE
+6,science,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
+7,science,undergrad,Not reported,Not reported,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+8,mid-level math,10th,Native American,Native American,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE
+9,advanced math,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+10,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+11,science,10th,Black/African American/African,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+12,mid-level math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+13,advanced math,12th,Native American,Native American,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE
+14,advanced math,undergrad,Afro-Indigenous,Black or African American,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
+15,science,8th,Black/African American/African,Black or African American,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE
+16,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+17,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,TRUE,TRUE,TRUE,FALSE
+18,mid-level math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+19,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+20,science,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+21,reading,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+22,advanced math,undergrad,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+23,science,9th,Interracial ,Multiracial,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+24,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+25,basic math,8th,Interracial ,Multiracial,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+26,science,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+27,basic math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+28,science,undergrad,Not reported,Not reported,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE
+29,basic math,6th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+30,mid-level math,9th,Southeast Asian or Pacific Islander,Southeast Asian or Pacific Islander,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+31,mid-level math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+32,basic math,3rd,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+33,mid-level math,12th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+34,reading,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+35,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+36,mid-level math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+37,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+38,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+39,mid-level math,8th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+40,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+41,advanced math,9th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+42,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+43,mid-level math,12th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE
+44,advanced math,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+45,science,11th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE
+46,mid-level math,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+47,mid-level math,9th,White and Mexican ,Multiracial,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+48,mid-level math,10th,Black/African American/African,Black or African American,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE
+49,science,undergrad,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
+50,science,10th,Latinx/Latina/Latino (non-white Hispanic),Latinx/Latina/Latino (non-white Hispanic),FALSE,FALSE,FALSE,FALSE,TRUE,FALSE
