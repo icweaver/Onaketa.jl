@@ -7,7 +7,7 @@ using InteractiveUtils
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using AlgebraOfGraphics, CairoMakie
-	using DataFramesMeta, CSV, Dates, NaturalSort
+	using DataFramesMeta, CSV, Dates, NaturalSort, Statistics
 	using PlutoUI
 	using MarkdownLiteral: @mdx
 	using AlgebraOfGraphics: opensans, firasans
@@ -73,12 +73,13 @@ With these definitions made, we go on to visualize different aspects of the data
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_raw !(:drop_status);
 
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-### Semester
-
-Cumulative number of students served by our program each year. Given the explosive growth from 2021 - 2022, we expect to see at least 48 total students served by the end of this year.
-"""
+# ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
+function growth_rate(df)
+	# TODO: Generalize this
+	avg_before = mean(df[1:3, :nrow])
+	N_after = df[4, :nrow]
+	return 100.0 * (N_after - avg_before) / avg_before
+end
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
@@ -216,6 +217,13 @@ begin
 	fg_served |> as_svg
 end
 
+# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
+md"""
+### Semester
+
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program offers.
+"""
+
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
 	@chain df begin
@@ -318,6 +326,7 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 AlgebraOfGraphics = "~0.6.14"
@@ -335,7 +344,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "80f6c72487dfc7945ace264c53fe797d8f86e059"
+project_hash = "129141ec529bc92269e071421d518492daac086d"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1795,6 +1804,7 @@ version = "3.5.0+0"
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╟─957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─28a62b38-7b91-4dc7-8480-de491470128e
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
