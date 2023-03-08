@@ -221,7 +221,7 @@ end
 md"""
 ### Semester
 
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program offers.
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
 """
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
