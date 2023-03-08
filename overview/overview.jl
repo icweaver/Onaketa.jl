@@ -101,6 +101,13 @@ md"""
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
+# ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
+md"""
+## Summary
+
+We combine all of the figures above into a single graphic for quick comparison.
+"""
+
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
 ## Notebook setup 🔧
@@ -109,6 +116,8 @@ md"""
 # ╔═╡ 95f393b9-ad23-4195-bd96-0c62b559c2a6
 md"""
 ### Global settings
+
+This is where we set things like fontsize and title placement.
 """
 
 # ╔═╡ f91d4ca2-afa1-4977-934b-04092ef119b1
@@ -118,9 +127,9 @@ update_theme!(
 	Theme(
 		# fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, nothing, 22),
-			titlesize = 30,
-			titlealign = :left,
+			limits = (nothing, nothing, nothing, 23),
+			titlesize = 26,
+			titlegap = -60,
 			subtitlesize = 20,
 			subtitlecolor = :grey,
 			subtitlefont = firasans("Light"),
@@ -140,6 +149,8 @@ end
 # ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
 md"""
 ### Convenience functions
+
+Data processing and visualization tools down here.
 """
 
 # ╔═╡ 9a642fe3-29a7-4ef0-8786-2830c615cd25
@@ -151,39 +162,44 @@ function save_fig(fg, fname)
 end
 
 # ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
-function _barplot_groups(df_countmap, x; title, subtitle, xticklabelrotation)
+function _barplot_groups(df_countmap, x;
+	title, titlealign, subtitle, xticklabelrotation)
 	plt = data(df_countmap) * mapping(
 		x,
 		:nrow => "",
 	) * visual(BarPlot)
-	fg = draw(plt; axis=(; title, subtitle, xticklabelrotation))
-	save_fig(fg, title)
-	fg|> as_svg
+	axis = (; title, titlealign, subtitle, xticklabelrotation)
+	fg = draw(plt; axis)
+	save_fig(fg, strip(title))
+	fg |> as_svg
+	return fg, plt, axis
 end
 
 # ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
-function barplot_groups(df_countmap; labels=[], title, subtitle, xticklabelrotation=0)
+function barplot_groups(df_countmap;
+	labels=[], title, titlealign=:right, subtitle, xticklabelrotation=0)
 	_barplot_groups(df_countmap, :variable => sorter(labels) => "";
-		title, subtitle, xticklabelrotation=0
+		title, titlealign, subtitle, xticklabelrotation=0
 	)
 end
 
 # ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
-function barplot_groups(df_countmap, labels; title, subtitle, xticklabelrotation=0)
+function barplot_groups(df_countmap, labels;
+	title, titlealign=:right, subtitle, xticklabelrotation=0)
 	_barplot_groups(df_countmap, :variable => renamer(labels) => "";
-		title, subtitle, xticklabelrotation
+		title, titlealign, subtitle, xticklabelrotation
 	)
 end
 
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-let
-	df_processed = @chain df begin
+begin
+	df_served = @chain df begin
 		stack(r"active")
 		groupby(:variable)
 		combine(:value => count => :nrow)
 	end
 	
-	labels = [
+	labels_served = [
 		"active_spring_2021" => "Spring 2021",
 		"active_fall_2021" => "Fall 2021",
 		"active_spring_2022" => "Spring 2022",
@@ -191,10 +207,13 @@ let
 		"active_spring_2023" => "Spring 2023",
 	]
 	
-	barplot_groups(df_processed, labels,
-		title = "Students served",
-		subtitle = "Number of active students each semester",
+	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
+		title = " Students served",
+		titlealign = :left,
+		subtitle = " Number of active students each semester",
 	)
+
+	fg_served |> as_svg
 end
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
@@ -207,37 +226,78 @@ function group_counts(df, cat)
 end
 
 # ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
-barplot_groups(group_counts(df, :subject_cat);
-	labels = ["basic math", "mid-level math", "advanced math", "science", "No data"],
-	title = "Course subject",
-	subtitle = "Cumulative total by category",
-)
+begin
+	df_subject = group_counts(df, :subject_cat)
+	
+	labels_subject = [
+		"basic math", "mid-level math", "advanced math", "science", "No data"
+	]
+
+	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
+		labels = labels_subject,
+		title = "Course subject",
+		subtitle = "Cumulative total by category",
+	)
+
+	fg_subject |> as_svg
+end
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
-let
-	df_processed = group_counts(df, :student_grade);
+begin
+	df_grade = group_counts(df, :student_grade);
 	
-	labels = sort(df_processed.variable; lt=natural);
+	labels_grade = sort(df_grade.variable; lt=natural);
 	
-	barplot_groups(df_processed;
-		labels,
-		title = "Grade",
-		subtitle = "Cumulative total by grade level",
+	fg_grade, plt_grade, axis_grade = barplot_groups(df_grade;
+		labels = labels_grade,
+		title = " Grade",
+		titlealign = :left,
+		subtitle = " Cumulative total by grade level",
 	)
+
+	fg_grade |> as_svg
 end
 
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-barplot_groups(group_counts(df, :us_census), [
+begin
+	df_re = group_counts(df, :us_census)
+
+	labels_re = [
 		"Black or African American" => "Black or\nAfrican American",
 		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
 		"Multiracial" => "Multiracial",
 		"Native American" => "Native American",
 		"Not reported" => "Not reported",
-	],
-	title = "Race and ethnicity",
-	subtitle = "Cumulative total by self-reported identity",
-	xticklabelrotation = π/8,
-)
+	]
+
+	fg_re, plt_re, axis_re = barplot_groups(group_counts(df, :us_census), labels_re;
+		title = "Race and ethnicity",
+		subtitle = "Cumulative total by self-reported identity",
+		xticklabelrotation = π/8,
+	)
+
+	fg_re |> as_svg
+end
+
+# ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
+let
+	fig = Figure(resolution=(1400, 1200))
+	ax1 = Axis(fig[1, 1]); hidedecorations!(ax1)
+	ax2 = Axis(fig[1, 2]); hidedecorations!(ax2)
+	ax3 = Axis(fig[2, 1]); hidedecorations!(ax3)
+	ax4 = Axis(fig[2, 2]); hidedecorations!(ax4)
+
+	hideydecorations!.((ax2, ax4))
+	
+	draw!(fig[1, 1], plt_served; axis=axis_served)
+	draw!(fig[1, 2], plt_subject; axis=axis_subject)
+	draw!(fig[2, 1], plt_grade; axis=axis_grade)
+	draw!(fig[2, 2], plt_re; axis=axis_re)
+	
+	save_fig(fig, "Summary")
+	
+	fig
+end
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
@@ -1741,6 +1801,8 @@ version = "3.5.0+0"
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
+# ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
