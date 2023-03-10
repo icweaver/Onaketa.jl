@@ -11,6 +11,23 @@ begin
 	using Dates
 end
 
+# ╔═╡ 04c3a1fb-d67e-4f71-8e7c-c250b943f615
+md"""
+# Pheona
+"""
+
+# ╔═╡ 62b86439-97ef-4e53-8cfd-b6955fb2c0b9
+info_pheona = (
+	tutor_name = "Pheona Williams",
+	tutor_email = "pheonawillia@gmail.com",
+	tutor_position = "a 2021-2023 IBM PhD fellow and an applied physics PhD student at Harvard University, and graduate student researcher at the Massachusetts Institute of Technology",
+)
+
+# ╔═╡ 72730f35-8476-42ce-9403-e896f790cc19
+md"""
+## Zenze Taylor
+"""
+
 # ╔═╡ 3c1286e6-1add-4239-9954-8787a5e5cb9c
 md"""
 # Filipe
@@ -182,9 +199,19 @@ function intro(;
 	
 	$(tutor_first) will follow up with their meeting link and the tutor-student agreement. We ask that you read and sign the agreement before your first session.
 	
-	Please don't hesitate to reach out if you have questions!
+	Please don't hesitate to reach out if you have any questions!
 	"""
 end
+
+# ╔═╡ bdf41595-a99c-41d9-b374-0fae5630b79a
+intro(;
+	parent_names = "Cheo Tyehimba Taylor",
+	parent_emails = "cheot1@gmail.com",
+	student_name = "Zenzele Taylor",
+	subject = "Intermediate Algebra II / Geometry",
+	info_pheona...,
+	date_start = "**Thursday, March 9th at 07:00 pm PT**",
+)
 
 # ╔═╡ 8f5dc354-495c-4b5e-8797-f21848f6fc36
 intro(;
@@ -636,12 +663,16 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─04c3a1fb-d67e-4f71-8e7c-c250b943f615
+# ╟─62b86439-97ef-4e53-8cfd-b6955fb2c0b9
+# ╟─72730f35-8476-42ce-9403-e896f790cc19
+# ╟─bdf41595-a99c-41d9-b374-0fae5630b79a
 # ╟─3c1286e6-1add-4239-9954-8787a5e5cb9c
 # ╟─6dbd0282-4643-4f14-9e8e-cbd247feafc2
 # ╟─ab911de1-076b-4304-80dd-46e668e1e97c
-# ╠═8f5dc354-495c-4b5e-8797-f21848f6fc36
+# ╟─8f5dc354-495c-4b5e-8797-f21848f6fc36
 # ╟─fbc5458e-6100-43d5-a277-9f961ac44654
-# ╠═0d8ff4bc-a7fe-418a-b85a-66b145a88a60
+# ╟─0d8ff4bc-a7fe-418a-b85a-66b145a88a60
 # ╟─1d50acc7-6640-4c49-a92b-dcbaf8f35b4f
 # ╟─c2cdaabf-b033-4a26-89fa-e5918aa3a093
 # ╠═4ec529af-bb10-4031-abb4-ade9854794d1
