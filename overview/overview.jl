@@ -151,45 +151,32 @@ With these definitions made, we go on to visualize different aspects of the data
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_clean !(:drop_status);
 
-# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-# begin
-# 	df_served = @chain df begin
-# 		stack(r"active")
-# 		groupby(:variable)
-# 		combine(:value => count => :nrow)
-# 	end
-	
-# 	labels_served = [
-# 		"active_spring_2021" => "Spring 2021",
-# 		"active_fall_2021" => "Fall 2021",
-# 		"active_spring_2022" => "Spring 2022",
-# 		"active_fall_2022" => "Fall 2022",
-# 		"active_spring_2023" => "Spring 2023",
-# 	]
-	
-# 	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
-# 		title = " Students served",
-# 		titlealign = :left,
-# 		subtitle = " Number of active students each semester",
-# 	)
-
-# 	fg_served |> as_svg
-# end
-
-# ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
-function growth_rate(df)
-	# TODO: Generalize this
-	avg_before = mean(df[1:3, :nrow])
-	N_after = df[4, :nrow]
-	return 100.0 * (N_after - avg_before) / avg_before
-end
-
 # ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
 md"""
 ### Semester
 
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
-"""
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
+"""l
+
+# ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
+function active_terms_count(arr)
+	d = Dict{String, Int}()
+	
+	for terms in arr
+		for term ∈ split(terms, ',')
+			if haskey(d, term)
+				d[term] += 1
+			else
+				d[term] = 0
+			end
+		end
+	end
+
+	return d
+end
+
+# ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
+growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
@@ -324,6 +311,31 @@ function barplot_groups(df_countmap;
 	)
 end
 
+# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
+begin
+	d = active_terms_count(df.term_active)
+	df_served = stack(DataFrame(d), All(); value_name=:nrow)
+	
+	labels_served = [
+		"spring_2021" => "Spring 2021",
+		"fall_2021" => "Fall 2021",
+		"spring_2022" => "Spring 2022",
+		"fall_2022" => "Fall 2022",
+		"spring_2023" => "Spring 2023",
+	]
+	
+	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
+		title = " Students served",
+		titlealign = :left,
+		subtitle = " Number of active students each semester",
+	)
+
+	fg_served |> as_svg
+end
+
+# ╔═╡ 1070f4cd-3347-49a1-913d-39c9e6db7ff3
+df_served
+
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
 	@chain df begin
@@ -337,17 +349,17 @@ end
 begin
 	df_subject = group_counts(df_clean, :course_subject)
 	
-	labels_subject = [
-		"basic math", "mid-level math", "advanced math", "science", "other"
-	]
+	# labels_subject = [
+	# 	"basic math", "mid-level math", "advanced math", "science", "other"
+	# ]
 
-	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
-		labels = labels_subject,
-		title = "Course subject",
-		subtitle = "Cumulative total by category",
-	)
+	# fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
+	# 	labels = labels_subject,
+	# 	title = "Course subject",
+	# 	subtitle = "Cumulative total by category",
+	# )
 
-	fg_subject |> as_svg
+	# fg_subject |> as_svg
 end
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
@@ -1937,7 +1949,9 @@ version = "3.5.0+0"
 # ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═1070f4cd-3347-49a1-913d-39c9e6db7ff3
+# ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
 # ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
