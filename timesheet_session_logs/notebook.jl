@@ -5,13 +5,16 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 1488fab0-e7f9-11ed-17f1-efcdcceb06b8
-using Faker, DataFramesMeta
+using Faker, DataFramesMeta, Dates
 
 # ╔═╡ 32dedf7e-53ca-4c64-aef6-9d16e5a2a74c
-const N = 10
+const N = 1000
+
+# ╔═╡ 6d80f70e-f555-45b6-8298-ee7cd077462a
+reported_dates = [Date(2023, i, j) for i ∈ 1:4 for j ∈ rand(1:15, 4)]
 
 # ╔═╡ c1a48e2d-fb09-4d25-bd47-f05c220dfa39
-dt_reported() = Faker.date_time_this_year(; pattern="YYYY-mm-dd")
+dt_reported() = rand(reported_dates)
 
 # ╔═╡ 007d4f17-aa26-461f-b078-f0fff8b01047
 dur() = rand(0.25:0.25:3.0)
@@ -35,7 +38,7 @@ gen_f(f) = [f() for _ ∈ 1:N]
 tutor_names() = rand(["Ian Weaver", "Reza Barghi", "Haley Carrasco", "Greg Cunningham", "Filipe Cerqueira", "Gianni Sims", "Pheona Williams", "Adia Imara"])
 
 # ╔═╡ 74154e89-535d-4de2-aedb-9333e6364a6d
-DataFrame(
+df = DataFrame(
 	submission_id = gen_f(Faker.lexify),
 	respondent_id = gen_f(Faker.lexify),
 	submitted_date = gen_f(Faker.date_time_this_year),
@@ -47,12 +50,18 @@ DataFrame(
 	student = gen_f(students),
 	grade = gen_f(grade),
 	session_summary = gen_f(Faker.sentence),
-)
+	task = gen_f(Faker.sentence),
+	other_notes = session_summary = gen_f(Faker.sentence),
+);
+
+# ╔═╡ 3345beae-9c26-4b0d-a8e4-9f18da518ed2
+ sprint(show, "text/tab-separated-values", df) |> clipboard
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Faker = "0efc519c-db33-5916-ab87-703215c3906f"
 
 [compat]
@@ -66,7 +75,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "22b3a9f72459cefbbd519e864426ca43974e11d5"
+project_hash = "06231e56964df18a483e33624a6042790f5b9607"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -417,13 +426,15 @@ version = "17.4.0+0"
 # ╠═1488fab0-e7f9-11ed-17f1-efcdcceb06b8
 # ╠═32dedf7e-53ca-4c64-aef6-9d16e5a2a74c
 # ╠═74154e89-535d-4de2-aedb-9333e6364a6d
-# ╟─c1a48e2d-fb09-4d25-bd47-f05c220dfa39
+# ╠═3345beae-9c26-4b0d-a8e4-9f18da518ed2
+# ╠═6d80f70e-f555-45b6-8298-ee7cd077462a
+# ╠═c1a48e2d-fb09-4d25-bd47-f05c220dfa39
 # ╟─007d4f17-aa26-461f-b078-f0fff8b01047
 # ╟─f283d82b-d63e-4349-a696-9ff75c78b09d
 # ╟─ea0a6802-382a-4a39-9989-c8c140bdc364
 # ╟─7822eea6-2c9e-4f58-bee9-882c2bb1afad
 # ╟─85f9c912-11b3-451e-b9da-14899acde206
 # ╟─8e122b7c-5f39-45b5-98fd-b67546241c3b
-# ╠═ce993b08-4288-4a36-bda8-cfda0c43bb05
+# ╟─ce993b08-4288-4a36-bda8-cfda0c43bb05
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
