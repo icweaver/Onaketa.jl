@@ -76,9 +76,20 @@ function clean_grade(s)
 end
 
 # ╔═╡ c96d8756-01e5-4479-8ed6-e197425e5c3a
-function normalize_subject(s)
-	s = normalize_name(s)
-	if occursin("")
+function clean_subject(s)
+	s_clean = clean_name(s)
+	ismissing(s) && return s
+	if occursin("basic math", s_clean)
+		"Basic math (e.g., multiplication, fractions)"
+	elseif occursin("mid-level math", s_clean)
+		"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)"
+	elseif occursin("advanced math", s_clean)
+		"Advanced math (e.g., Precalculus, Calculus)"
+	elseif occursin("science", s_clean)
+		"Science (e.g., Biology, Chemistry, Physics)"
+	else
+		s
+	end
 end
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
@@ -88,7 +99,11 @@ df_clean = @transform df_raw begin
 	:guardian1_name = clean_name.(:guardian1_name)
 	:guardian2_name = clean_name.(:guardian2_name)
 	:student_grade = clean_grade.(:student_grade)
-end
+	:course_subject = clean_subject.(:course_subject)
+end;
+
+# ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
+CSV.write("data/data_cleaned.csv", df_clean)
 
 # ╔═╡ a86bc0dc-a61d-4f71-8547-9e9b732ef683
 describe(df_raw, :nuniqueall, :nmissing, :eltype)
@@ -1873,6 +1888,7 @@ version = "3.5.0+0"
 # ╠═52b9162e-7631-4a26-811a-cf2c72575f20
 # ╠═c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╠═a513c01e-355c-42fd-b016-30fab7880a9f
 # ╟─a86bc0dc-a61d-4f71-8547-9e9b732ef683
 # ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
