@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 1d152c82-d76e-490b-a836-416861075646
+using OrderedCollections
+
 # ╔═╡ 8d84d9da-f09a-4937-9c14-a90ff29afc29
 using StatsBase
 
@@ -151,24 +154,19 @@ With these definitions made, we go on to visualize different aspects of the data
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_clean !(:drop_status);
 
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-### Semester
-
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
-"""l
-
 # ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
 function active_terms_count(arr)
-	d = Dict{String, Int}()
+	d = OrderedDict(
+		"spring_2021" => 0,
+		"fall_2021" => 0,
+		"spring_2022" => 0,
+		"fall_2022" => 0,
+		"spring_2023" => 0,
+	)
 	
 	for terms in arr
 		for term ∈ split(terms, ',')
-			if haskey(d, term)
-				d[term] += 1
-			else
-				d[term] = 0
-			end
+			d[term] += 1
 		end
 	end
 
@@ -203,8 +201,11 @@ Self reported race/ethnicity for each student. Our largest demographics supporte
 """
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
-md"""
+@mdx """
 ## Summary
+
+Total number of applications received: $(nrow(df_clean))<br>
+Total numberof students supported: $(nrow(df))
 
 We combine all of the figures above into a single graphic for quick comparison.
 """
@@ -230,6 +231,7 @@ update_theme!(
 		Axis = (;
 			limits = (nothing, nothing, nothing, 30),
 			titlesize = 26,
+			titlecolor = "#ec008c",
 			titlegap = -60,
 			subtitlesize = 20,
 			subtitlecolor = :grey,
@@ -307,7 +309,7 @@ function barplot_groups(df_countmap;
 		title,
 		titlealign,
 		subtitle,
-		xticklabelrotation = 0,
+		xticklabelrotation,
 	)
 end
 
@@ -316,12 +318,16 @@ begin
 	d = active_terms_count(df.term_active)
 	df_served = stack(DataFrame(d), All(); value_name=:nrow)
 	
-	labels_served = [
-		"spring_2021" => "Spring 2021",
-		"fall_2021" => "Fall 2021",
-		"spring_2022" => "Spring 2022",
-		"fall_2022" => "Fall 2022",
-		"spring_2023" => "Spring 2023",
+	# labels_served = [
+	# 	"spring_2021" => "Spring 2021",
+	# 	"fall_2021" => "Fall 2021",
+	# 	"spring_2022" => "Spring 2022",
+	# 	"fall_2022" => "Fall 2022",
+	# 	"spring_2023" => "Spring 2023",
+	# ]
+
+	labels_served = [term => replace(titlecase(term), '_' => ' ')
+		for term in keys(d)
 	]
 	
 	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
@@ -333,8 +339,12 @@ begin
 	fg_served |> as_svg
 end
 
-# ╔═╡ 1070f4cd-3347-49a1-913d-39c9e6db7ff3
-df_served
+# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
+md"""
+### Semester
+
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
+"""
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
@@ -347,19 +357,19 @@ end
 
 # ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
 begin
-	df_subject = group_counts(df_clean, :course_subject)
+	df_subject = group_counts(df, :course_subject)
 	
-	# labels_subject = [
-	# 	"basic math", "mid-level math", "advanced math", "science", "other"
-	# ]
+	labels_subject = [
+		"basic math", "mid-level math", "advanced math", "science", "other"
+	]
 
-	# fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
-	# 	labels = labels_subject,
-	# 	title = "Course subject",
-	# 	subtitle = "Cumulative total by category",
-	# )
+	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
+		labels = labels_subject,
+		title = "Course subject",
+		subtitle = "Cumulative total by category",
+	)
 
-	# fg_subject |> as_svg
+	fg_subject |> as_svg
 end
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
@@ -373,6 +383,7 @@ begin
 		title = " Grade",
 		titlealign = :left,
 		subtitle = " Cumulative total by grade level",
+		xticklabelrotation = π/8,
 	)
 
 	fg_grade |> as_svg
@@ -437,6 +448,7 @@ DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
@@ -448,6 +460,7 @@ CairoMakie = "~0.10.2"
 DataFramesMeta = "~0.13.0"
 MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
+OrderedCollections = "~1.6.0"
 PlutoUI = "~0.7.50"
 StatsBase = "~0.33.21"
 """
@@ -458,7 +471,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.1"
 manifest_format = "2.0"
-project_hash = "168817564f0a857b946bd7043dae31bfffc93c15"
+project_hash = "afd12edb75124360867f31da6c5a9273420411e8"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1344,9 +1357,9 @@ uuid = "91d4177d-7536-5919-b921-800302f37372"
 version = "1.3.2+0"
 
 [[deps.OrderedCollections]]
-git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
+git-tree-sha1 = "d321bf2de576bf25ec4d3e4360faca399afca282"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.4.1"
+version = "1.6.0"
 
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1949,8 +1962,8 @@ version = "3.5.0+0"
 # ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═1070f4cd-3347-49a1-913d-39c9e6db7ff3
+# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═1d152c82-d76e-490b-a836-416861075646
 # ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
 # ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
@@ -1975,6 +1988,6 @@ version = "3.5.0+0"
 # ╠═9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
-# ╟─68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
