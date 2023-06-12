@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 8d84d9da-f09a-4937-9c14-a90ff29afc29
+using StatsBase
+
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using AlgebraOfGraphics, CairoMakie
@@ -80,13 +83,28 @@ function clean_subject(s)
 	s_clean = clean_name(s)
 	ismissing(s) && return s
 	if occursin("basic math", s_clean)
-		"Basic math (e.g., multiplication, fractions)"
+		"basic math"
 	elseif occursin("mid-level math", s_clean)
-		"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)"
+		"mid-level math"
 	elseif occursin("advanced math", s_clean)
-		"Advanced math (e.g., Precalculus, Calculus)"
+		"advanced math"
 	elseif occursin("science", s_clean)
-		"Science (e.g., Biology, Chemistry, Physics)"
+		"science"
+	else
+		"other"
+	end
+end
+
+# ╔═╡ b2f90e79-d9e1-49d3-8316-520a53851b8a
+function clean_re(s)
+	s_clean = clean_name(s)
+	ismissing(s) && return "Not reported"
+	if occursin("black", s_clean) || occursin("afr", s_clean)
+		"Black or African American"
+	elseif occursin("latin", s_clean)
+		"Latinx/Latina/Latino (non-white Hispanic)"
+	elseif occursin(" and ", s_clean) || occursin("mix", s_clean)
+		"Multiracial"
 	else
 		s
 	end
@@ -100,7 +118,8 @@ df_clean = @transform df_raw begin
 	:guardian2_name = clean_name.(:guardian2_name)
 	:student_grade = clean_grade.(:student_grade)
 	:course_subject = clean_subject.(:course_subject)
-end;
+	:student_race_ethnicity = clean_re.(:student_race_ethnicity)
+end
 
 # ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
 CSV.write("data/data_cleaned.csv", df_clean)
@@ -111,7 +130,7 @@ describe(df_raw, :nuniqueall, :nmissing, :eltype)
 # ╔═╡ 3d551209-6a0c-4f35-885d-63a5a7c6a320
 md"""
 * `id`: Anonymized id for each student
-* `subject_cat`: Subject category
+* `course_subject`: Subject category
 * `student_grade`: Current grade student is in school
 * `student_race_ethnicity`: Self-reported race/ethnicity of student
 * `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
@@ -130,7 +149,32 @@ With these definitions made, we go on to visualize different aspects of the data
 """
 
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-df = @rsubset df_raw !(:drop_status);
+df = @rsubset df_clean !(:drop_status);
+
+# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
+# begin
+# 	df_served = @chain df begin
+# 		stack(r"active")
+# 		groupby(:variable)
+# 		combine(:value => count => :nrow)
+# 	end
+	
+# 	labels_served = [
+# 		"active_spring_2021" => "Spring 2021",
+# 		"active_fall_2021" => "Fall 2021",
+# 		"active_spring_2022" => "Spring 2022",
+# 		"active_fall_2022" => "Fall 2022",
+# 		"active_spring_2023" => "Spring 2023",
+# 	]
+	
+# 	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
+# 		title = " Students served",
+# 		titlealign = :left,
+# 		subtitle = " Number of active students each semester",
+# 	)
+
+# 	fg_served |> as_svg
+# end
 
 # ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
 function growth_rate(df)
@@ -139,6 +183,13 @@ function growth_rate(df)
 	N_after = df[4, :nrow]
 	return 100.0 * (N_after - avg_before) / avg_before
 end
+
+# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
+md"""
+### Semester
+
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
+"""
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
@@ -153,6 +204,9 @@ md"""
 
 Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 11th grade, with the largest representation being for students in 11th grade.
 """
+
+# ╔═╡ 97ad34a1-eebd-45f3-b677-6794d3dcb492
+df_raw.student_grade |> countmap
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
@@ -187,7 +241,7 @@ update_theme!(
 	Theme(
 		# fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, nothing, 23),
+			limits = (nothing, nothing, nothing, 30),
 			titlesize = 26,
 			titlegap = -60,
 			subtitlesize = 20,
@@ -223,7 +277,11 @@ end
 
 # ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 function _barplot_groups(df_countmap, x;
-	title, titlealign, subtitle, xticklabelrotation)
+	title,
+	titlealign,
+	subtitle,
+	xticklabelrotation,
+)
 	plt = data(df_countmap) * mapping(
 		x,
 		:nrow => "",
@@ -235,53 +293,36 @@ function _barplot_groups(df_countmap, x;
 	return fg, plt, axis
 end
 
-# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
-function barplot_groups(df_countmap;
-	labels=[], title, titlealign=:right, subtitle, xticklabelrotation=0)
-	_barplot_groups(df_countmap, :variable => sorter(labels) => "";
-		title, titlealign, subtitle, xticklabelrotation=0
-	)
-end
-
 # ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
 function barplot_groups(df_countmap, labels;
-	title, titlealign=:right, subtitle, xticklabelrotation=0)
-	_barplot_groups(df_countmap, :variable => renamer(labels) => "";
-		title, titlealign, subtitle, xticklabelrotation
+	title,
+	titlealign = :right,
+	subtitle,
+	xticklabelrotation = 0,
+)
+	return _barplot_groups(df_countmap, :variable => renamer(labels) => "";
+		title,
+		titlealign,
+		subtitle,
+		xticklabelrotation,
 	)
 end
 
-# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-begin
-	df_served = @chain df begin
-		stack(r"active")
-		groupby(:variable)
-		combine(:value => count => :nrow)
-	end
-	
-	labels_served = [
-		"active_spring_2021" => "Spring 2021",
-		"active_fall_2021" => "Fall 2021",
-		"active_spring_2022" => "Spring 2022",
-		"active_fall_2022" => "Fall 2022",
-		"active_spring_2023" => "Spring 2023",
-	]
-	
-	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
-		title = " Students served",
-		titlealign = :left,
-		subtitle = " Number of active students each semester",
+# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
+function barplot_groups(df_countmap;
+	labels = [],
+	title,
+	titlealign = :right,
+	subtitle,
+	xticklabelrotation = 0,
+)
+	return _barplot_groups(df_countmap, :variable => sorter(labels) => "";
+		title,
+		titlealign,
+		subtitle,
+		xticklabelrotation = 0,
 	)
-
-	fg_served |> as_svg
 end
-
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-### Semester
-
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served)))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist, there is a clear need and demand for the services that our program provides.
-"""
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
@@ -294,10 +335,10 @@ end
 
 # ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
 begin
-	df_subject = group_counts(df, :subject_cat)
+	df_subject = group_counts(df_clean, :course_subject)
 	
 	labels_subject = [
-		"basic math", "mid-level math", "advanced math", "science", "No data"
+		"basic math", "mid-level math", "advanced math", "science", "other"
 	]
 
 	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
@@ -327,7 +368,7 @@ end
 
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 begin
-	df_re = group_counts(df, :us_census)
+	df_re = group_counts(df, :student_race_ethnicity)
 
 	labels_re = [
 		"Black or African American" => "Black or\nAfrican American",
@@ -337,7 +378,7 @@ begin
 		"Not reported" => "Not reported",
 	]
 
-	fg_re, plt_re, axis_re = barplot_groups(group_counts(df, :us_census), labels_re;
+	fg_re, plt_re, axis_re = barplot_groups(df_re, labels_re;
 		title = "Race and ethnicity",
 		subtitle = "Cumulative total by self-reported identity",
 		xticklabelrotation = π/8,
@@ -386,6 +427,7 @@ MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 AlgebraOfGraphics = "~0.6.14"
@@ -395,6 +437,7 @@ DataFramesMeta = "~0.13.0"
 MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
 PlutoUI = "~0.7.50"
+StatsBase = "~0.33.21"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -403,7 +446,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.1"
 manifest_format = "2.0"
-project_hash = "9525f86e93f8bfe1cbad0d1e7137c4b29ea3322a"
+project_hash = "168817564f0a857b946bd7043dae31bfffc93c15"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1887,6 +1930,7 @@ version = "3.5.0+0"
 # ╠═8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╠═52b9162e-7631-4a26-811a-cf2c72575f20
 # ╠═c96d8756-01e5-4479-8ed6-e197425e5c3a
+# ╠═b2f90e79-d9e1-49d3-8316-520a53851b8a
 # ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
 # ╟─a86bc0dc-a61d-4f71-8547-9e9b732ef683
@@ -1894,14 +1938,19 @@ version = "3.5.0+0"
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
-# ╟─957b85f4-95f7-4870-8c37-477e1454f243
+# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╟─28a62b38-7b91-4dc7-8480-de491470128e
+# ╠═28a62b38-7b91-4dc7-8480-de491470128e
+# ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
-# ╟─cc169622-035d-4d00-aff9-394ad531f597
+# ╠═cc169622-035d-4d00-aff9-394ad531f597
+# ╠═97ad34a1-eebd-45f3-b677-6794d3dcb492
+# ╠═8d84d9da-f09a-4937-9c14-a90ff29afc29
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
@@ -1909,10 +1958,7 @@ version = "3.5.0+0"
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
 # ╟─9a642fe3-29a7-4ef0-8786-2830c615cd25
-# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
-# ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
+# ╠═9ced090e-ebab-427c-b2f1-72a47d97fe81
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
