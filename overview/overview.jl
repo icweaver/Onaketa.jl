@@ -167,7 +167,7 @@ df = @rsubset df_clean !(:drop_status);
 student_addresses = filter(!ismissing, df.student_address)
 
 # ╔═╡ 81a1fe9a-c6ee-4a82-889d-7bb6f72646af
-student_address = student_addresses[14]
+student_address = student_addresses[1]
 
 # ╔═╡ 039f27f3-21e5-4e63-9336-427edcdb080f
 x = GeoJSON.read(read(download("https://nominatim.openstreetmap.org/search?q=$(escapeuri(student_address))&format=geojson"), String)) |> first
