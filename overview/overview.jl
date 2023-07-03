@@ -81,15 +81,15 @@ function clean_subject(s)
 	s_clean = clean_name(s)
 	ismissing(s) && return s
 	if occursin("basic math", s_clean)
-		"basic math"
+		"Basic math"
 	elseif occursin("mid-level math", s_clean)
-		"mid-level math"
+		"Mid-level math"
 	elseif occursin("advanced math", s_clean)
-		"advanced math"
+		"Advanced math"
 	elseif occursin("science", s_clean)
-		"science"
+		"Science"
 	else
-		"other"
+		"Other"
 	end
 end
 
@@ -343,7 +343,7 @@ begin
 	df_subject = group_counts(df, :course_subject)
 	
 	labels_subject = [
-		"basic math", "mid-level math", "advanced math", "science", "other"
+		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
 	]
 
 	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
