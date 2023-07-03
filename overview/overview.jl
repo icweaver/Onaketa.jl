@@ -188,9 +188,6 @@ md"""
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
-# ╔═╡ 3133d9de-03b5-4daf-918e-cb98975dd2de
-
-
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 @mdx """
 ## Summary
@@ -218,9 +215,9 @@ begin
 set_aog_theme!()
 update_theme!(
 	Theme(
-		# fontsize = 16,
+		fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, nothing, 30),
+			limits = (nothing, nothing, -0.5, 30),
 			titlesize = 26,
 			titlecolor = "#ec008c",
 			titlegap = -60,
@@ -1954,8 +1951,7 @@ version = "3.5.0+0"
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-# ╠═3133d9de-03b5-4daf-918e-cb98975dd2de
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
