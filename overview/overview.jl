@@ -188,12 +188,15 @@ md"""
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
+# ╔═╡ 3133d9de-03b5-4daf-918e-cb98975dd2de
+
+
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 @mdx """
 ## Summary
 
 Total number of applications received: $(nrow(df_clean))<br>
-Total numberof students supported: $(nrow(df))
+Total number of students supported: $(nrow(df))
 
 We combine all of the figures above into a single graphic for quick comparison.
 """
@@ -1952,6 +1955,7 @@ version = "3.5.0+0"
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═3133d9de-03b5-4daf-918e-cb98975dd2de
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
