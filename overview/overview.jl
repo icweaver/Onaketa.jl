@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -217,7 +217,7 @@ update_theme!(
 	Theme(
 		fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, -0.5, 30),
+			limits = (nothing, nothing, -0.5, 35),
 			titlesize = 26,
 			titlecolor = "#ec008c",
 			titlegap = -60,
@@ -447,7 +447,7 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.1"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "47548eaab0e1e2aa43a6560588f743fd5e1878d8"
 
@@ -624,7 +624,7 @@ version = "4.6.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.2+0"
+version = "1.0.5+0"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -1389,7 +1389,7 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.0"
+version = "1.9.2"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1951,7 +1951,7 @@ version = "3.5.0+0"
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35

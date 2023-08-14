@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -13,7 +13,7 @@ begin
 end
 
 # ╔═╡ bd54170f-9faf-4d1b-854a-9c78ffbe71c8
-df = CSV.read("data/responses_2023.csv", DataFrame)
+df = CSV.read("student_application_2023_08 - Sheet1.csv", DataFrame)
 
 # ╔═╡ bee2eb8a-ccbc-496d-b5c5-146e4c7178f3
 names(df)

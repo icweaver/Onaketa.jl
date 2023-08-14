@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -13,6 +13,9 @@ macro bind(def, element)
         el
     end
 end
+
+# ╔═╡ e67b5ad0-a2c8-44a1-9772-2d4a407e9577
+using TimeZones
 
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
@@ -42,19 +45,12 @@ The tutor and student availability is all shared in the same calendar, so we jus
 @bind reset_matrix Button("Reset")
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
-tutor_names = ["Pheona Williams", "Reza", "Haley Carrasco"]
-
-# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = ["Kayla Martinez", "Arianna Grillo", "Andrea Grillo", "Zenze Taylor"]
-
-# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
-begin
-	reset_matrix
-	@mdx """
-	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
-	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
-	"""
-end
+tutor_names = [
+	"Ian Weaver",
+	"Alice Tutor",
+	"Bob Tutor",
+	"Chloe Tutor",
+]
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
@@ -77,18 +73,19 @@ md"""
 """
 
 # ╔═╡ 6db3afa9-bafd-4cee-b2e5-853daa80eb08
-get_name(s) = split(s, "\"")[end-1]
+get_name(s) = split(s, "\"")[end-1] |> strip
 
 # ╔═╡ 682d139a-9a6e-4973-b55a-aeebe465ad1d
 get_time_codes(s) = split(s, "\"")[begin+1]
 
 # ╔═╡ c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
 function to_utc(s)
-	parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
+	t = parse.(Int, split(s, ",")) .÷ 1000 |> sort .|> unix2datetime
+	ZonedDateTime.(t, tz"UTC")
 end
 
 # ╔═╡ 99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-const DAY_TIME_FMT = dateformat"e II:MM p"
+const DAY_TIME_FMT = dateformat"e II:MM p Z"
 
 # ╔═╡ 6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 function extract_times(h)
@@ -111,7 +108,7 @@ function extract_times(h)
 		if occursin(".myCanDosAll", l)
 			t_unix = get_time_codes(l)
 			t = t_unix .|> to_utc
-			dt = Dates.format.(t, DAY_TIME_FMT)
+			dt = Dates.format.(astimezone.(t, localzone()), DAY_TIME_FMT)
 			user_info[pop!(name_buffer)] = dt
 		end
 	end
@@ -127,6 +124,18 @@ end
 
 # ╔═╡ 3cea2780-5362-4da5-9ac7-f9b01168bb31
 user_info = URL |> download_schedule |> extract_times
+
+# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
+student_names = filter(≠("Ian Weaver"), keys(user_info)) |> collect |> sort
+
+# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
+begin
+	reset_matrix
+	@mdx """
+	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
+	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
+	"""
+end
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -149,7 +158,7 @@ function group_by_day(dt)
 	else
 		gdf = @chain DataFrame([dt], [:daytime]) begin
 			# Pluto ExpressionExplorer workaround
-			select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period])
+			select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period, :tz])
 			# @rselect $[:day, :time, :period] = split(:daytime)
 			groupby(:day)
 		end
@@ -157,7 +166,7 @@ function group_by_day(dt)
 		return join(
 			[
 				join(
-					["$(r.day) $(r.time) $(r.period)" for r ∈ eachrow(df)], "<br>"
+					["$(r.day) $(r.time) $(r.period) $(r.tz)" for r ∈ eachrow(df)], "<br>"
 				)
 				for df ∈ gdf
 			], "<br>-----------<br>"
@@ -219,8 +228,8 @@ begin
 		# yaxis = attr(scaleanchor="x"), # Square cells
 		# plot_bgcolor = "rgba(0,0,0,0)",
 		title = "Tutor-student matching matrix", 
-		xaxis = attr(fixedrange=true),
-		yaxis = attr(fixedrange=true, autorange="reversed"),
+		xaxis = attr(fixedrange=true, title="Tutors"),
+		yaxis = attr(fixedrange=true, showticklabels=false, autorange="reversed", title="Students"),
 	))
 	
 	add_trace!(fig,
@@ -228,9 +237,12 @@ begin
 			z = N_selected,
 			x = tutor_names_selected,
 			y = student_names_selected,
+			# colorbar = {"title": "Your title"},
+			colorbar_title = "Matches",
 			customdata,
 			hovertemplate = """
 			<b>%{x} and %{y}: %{z} matches</b>
+			<br>Student timezone: <br>
 			<br>%{customdata}<extra></extra>
 			""",
 			zmin = minimum(N_all),
@@ -249,6 +261,9 @@ begin
 	}
 	")
 end
+
+# ╔═╡ e2cb043e-8f2b-4f3a-97b3-38486f893c3f
+customdata
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -272,6 +287,7 @@ NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [compat]
 CSV = "~0.10.9"
@@ -284,15 +300,16 @@ NamedArrays = "~0.9.6"
 OrderedCollections = "~1.4.1"
 PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
+TimeZones = "~1.11.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.5"
+julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "ff39dc19934cc5a3b30d2da3237d048082990c9a"
+project_hash = "2f443ec02bbdb6e45acd93d7599f017a27fdeab8"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -344,10 +361,14 @@ uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 version = "1.15.7"
 
 [[deps.ChangesOfVariables]]
-deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
+deps = ["LinearAlgebra", "Test"]
 git-tree-sha1 = "844b061c104c408b24537482469400af6075aae4"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
 version = "0.1.5"
+weakdeps = ["ChainRulesCore"]
+
+    [deps.ChangesOfVariables.extensions]
+    ChainRulesCoreExt = "ChainRulesCore"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -399,7 +420,7 @@ version = "4.5.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.1+0"
+version = "1.0.5+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -440,7 +461,9 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[deps.DelimitedFiles]]
 deps = ["Mmap"]
+git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+version = "1.9.1"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -452,6 +475,11 @@ version = "0.9.3"
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.ExprTools]]
+git-tree-sha1 = "27415f162e6028e81c72b82ef756bf321213b6ec"
+uuid = "e2ba6199-217a-4e67-a87a-7c52f15ade04"
+version = "0.1.10"
 
 [[deps.FilePathsBase]]
 deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
@@ -567,6 +595,10 @@ git-tree-sha1 = "f2355693d6778a178ade15952b7ac47a4ff97996"
 uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 version = "1.3.0"
 
+[[deps.LazyArtifacts]]
+deps = ["Artifacts", "Pkg"]
+uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
@@ -590,14 +622,20 @@ version = "1.10.2+0"
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
 [[deps.LinearAlgebra]]
-deps = ["Libdl", "libblastrampoline_jll"]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.LogExpFunctions]]
-deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
+deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "45b288af6956e67e621c5cbb2d75a261ab58300b"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
 version = "0.3.20"
+weakdeps = ["ChainRulesCore", "ChangesOfVariables", "InverseFunctions"]
+
+    [deps.LogExpFunctions.extensions]
+    ChainRulesCoreExt = "ChainRulesCore"
+    ChangesOfVariablesExt = "ChangesOfVariables"
+    InverseFunctionsExt = "InverseFunctions"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -638,7 +676,7 @@ version = "1.1.7"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
+version = "2.28.2+0"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
@@ -649,9 +687,15 @@ version = "1.1.0"
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
+[[deps.Mocking]]
+deps = ["Compat", "ExprTools"]
+git-tree-sha1 = "4cc0c5a83933648b615c36c2b956d94fda70641e"
+uuid = "78c3b35d-d492-501b-9361-3d52fe80e533"
+version = "0.7.7"
+
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.2.1"
+version = "2022.10.11"
 
 [[deps.NamedArrays]]
 deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
@@ -666,7 +710,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.20+0"
+version = "0.3.21+4"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -709,9 +753,9 @@ uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.5.3"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.8.0"
+version = "1.9.2"
 
 [[deps.PlotlyBase]]
 deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
@@ -737,6 +781,12 @@ git-tree-sha1 = "a6062fe4063cdafe78f4a0a81cfffb89721b30e7"
 uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
 version = "1.4.2"
 
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "9673d39decc5feece56ef3940e5dafba15ba0f81"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.1.2"
+
 [[deps.Preferences]]
 deps = ["TOML"]
 git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
@@ -761,6 +811,12 @@ uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 deps = ["SHA", "Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
+[[deps.RecipesBase]]
+deps = ["PrecompileTools"]
+git-tree-sha1 = "5c3d09cc4f31f5fc6af001c250bf1278733100ff"
+uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+version = "1.3.4"
+
 [[deps.Reexport]]
 git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
@@ -775,6 +831,12 @@ version = "1.3.0"
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
+
+[[deps.Scratch]]
+deps = ["Dates"]
+git-tree-sha1 = "30449ee12237627992a99d5e30ae63e4d78cd24a"
+uuid = "6c6a2e73-6563-6170-7368-637461726353"
+version = "1.2.0"
 
 [[deps.SentinelArrays]]
 deps = ["Dates", "Random"]
@@ -806,7 +868,7 @@ uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
 version = "1.1.0"
 
 [[deps.SparseArrays]]
-deps = ["LinearAlgebra", "Random"]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.SpecialFunctions]]
@@ -818,16 +880,22 @@ version = "2.1.7"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.9.0"
 
 [[deps.StringManipulation]]
 git-tree-sha1 = "46da2434b41f41ac3594ee9816ce5541c6096123"
 uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
 version = "0.3.0"
 
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "5.10.1+6"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.0"
+version = "1.0.3"
 
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
@@ -844,7 +912,7 @@ version = "1.10.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.1"
+version = "1.10.0"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -855,6 +923,12 @@ version = "0.1.1"
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[[deps.TimeZones]]
+deps = ["Dates", "Downloads", "InlineStrings", "LazyArtifacts", "Mocking", "Printf", "RecipesBase", "Scratch", "Unicode"]
+git-tree-sha1 = "5b347464bdac31eccfdbe1504d9484c31645cafc"
+uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+version = "1.11.0"
 
 [[deps.TranscodingStreams]]
 deps = ["Random", "Test"]
@@ -898,12 +972,12 @@ version = "1.6.1"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.12+3"
+version = "1.2.13+0"
 
 [[deps.libblastrampoline_jll]]
-deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
+deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.1.1+0"
+version = "5.8.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -919,26 +993,28 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─30c2e53f-984f-4902-9fb9-fea2f75e9ab3
-# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═e2cb043e-8f2b-4f3a-97b3-38486f893c3f
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
-# ╟─257cf5ff-7df6-4a23-9905-2fd6c8abe421
-# ╟─7c8f134a-a450-47ac-b923-f07e687f53ae
+# ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─aeadea54-6781-4784-861f-dcaeed550711
-# ╟─3cea2780-5362-4da5-9ac7-f9b01168bb31
+# ╠═3cea2780-5362-4da5-9ac7-f9b01168bb31
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
-# ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
-# ╟─c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
-# ╟─99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-# ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╠═682d139a-9a6e-4973-b55a-aeebe465ad1d
+# ╠═c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
+# ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
+# ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╠═e67b5ad0-a2c8-44a1-9772-2d4a407e9577
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
-# ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
-# ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
+# ╠═5ba6bed0-ae7a-48e2-a373-f4386332df71
+# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╟─168567e7-5c80-4ff3-b094-8e58f6b3ce58
