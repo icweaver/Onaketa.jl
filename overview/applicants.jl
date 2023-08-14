@@ -14,24 +14,15 @@ begin
 	using AlgebraOfGraphics: opensans, firasans
 end
 
-# ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
-function generate_report(num, row)
-	@mdx """<h2>$(num)) $(row.student_name)</h2>
+# ╔═╡ 956ed197-498b-44b8-921a-868504a71924
+md"""
+# Application responses ✏️
+"""
 
-	!!! note
-		**Grade:** $(row.student_grade)
-		
-		**Age:** $(row.student_age)
-
-		**Race/ethnicity:** $(row.student_race_ethnicity)
-
-		**State:** $(row.student_state)
-		
-		**Course subject:** $(row.course_subject)
-		
-		**Course name:** $(row.course_name)
-	"""
-end
+# ╔═╡ 2fbfc13b-6f4e-4741-a0de-e03701e00bf6
+md"""
+## Load data
+"""
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 df_raw = CSV.read("data/student_application_2023_08 - Sheet1.csv", DataFrame);
@@ -105,6 +96,30 @@ df = @transform df_raw begin
 	:student_race_ethnicity = clean_re.(:student_race_ethnicity)
 end;
 
+# ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
+md"""
+## View responses
+"""
+
+# ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
+function generate_report(num, row)
+	@mdx """<h2>$(num)) $(row.student_name)</h2>
+
+	!!! note
+		**Grade:** $(row.student_grade)
+		
+		**Age:** $(row.student_age)
+
+		**Race/ethnicity:** $(row.student_race_ethnicity)
+
+		**State:** $(row.student_state)
+		
+		**Course subject:** $(row.course_subject)
+		
+		**Course name:** $(row.course_name)
+	"""
+end
+
 # ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 @mdx """
 $([
@@ -113,12 +128,9 @@ $([
 ])
 """;
 
-# ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
-CSV.write("data/data_cleaned.csv", df)
-
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
-## Insights 🔎
+# Insights 🔎
 """
 
 # ╔═╡ e10530d2-7753-4c38-83b8-219a31f7f540
@@ -142,15 +154,15 @@ md"""
 """
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
-@mdx """
-## Summary
+md"""
+### Summary
 
-Total number of applications received: $(nrow(df))<br>
+Total number of applications received: $(nrow(df))
 """
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
-## Notebook setup 🔧
+# Notebook setup 🔧
 """
 
 # ╔═╡ 95f393b9-ad23-4195-bd96-0c62b559c2a6
@@ -1835,16 +1847,18 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-# ╠═720e6d9b-ce67-457c-9a79-b18754b56516
+# ╟─956ed197-498b-44b8-921a-868504a71924
+# ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
+# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
 # ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╠═a513c01e-355c-42fd-b016-30fab7880a9f
-# ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
+# ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
+# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# ╟─720e6d9b-ce67-457c-9a79-b18754b56516
+# ╠═bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═78d1d0c0-0ed2-44fc-b556-851abfe4c04a
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd

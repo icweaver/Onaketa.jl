@@ -14,6 +14,9 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ c1b0f03c-10a0-4da8-aa51-bfbb51934468
+using NaturalSort
+
 # ╔═╡ e67b5ad0-a2c8-44a1-9772-2d4a407e9577
 using TimeZones
 
@@ -27,7 +30,7 @@ end
 
 # ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
 md"""
-# Heatmap ✅ ❌
+# Heatmap 🔥
 
 Below is a top-level overview of all of the common times between tutors and students. 
 * Use the controls below to filter for different tutor-student pairs.
@@ -125,9 +128,6 @@ end
 # ╔═╡ 3cea2780-5362-4da5-9ac7-f9b01168bb31
 user_info = URL |> download_schedule |> extract_times
 
-# ╔═╡ b017a86e-1e76-42b2-96c2-2fbe1ebe264c
-user_info["Aaron Sandiford"]
-
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
 student_names = filter(≠("Ian Weaver"), keys(user_info)) |> collect |> sort
 
@@ -139,6 +139,18 @@ begin
 	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
 	"""
 end
+
+# ╔═╡ 57944788-2a17-4bf0-bd02-cbe8227a4280
+sort(filter(x -> occursin("Unknown", x), student_names); lt=natural)
+
+# ╔═╡ 14d2be49-4770-4fb2-af9c-33d7a4288981
+sort(filter(x -> occursin("NoApp", x), student_names); lt=natural)
+
+# ╔═╡ 5b0e8abf-090d-4328-a4eb-65eacbb6e51e
+length(student_names) - 11
+
+# ╔═╡ b017a86e-1e76-42b2-96c2-2fbe1ebe264c
+user_info["Aaron Sandiford"]
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -232,7 +244,13 @@ begin
 		# plot_bgcolor = "rgba(0,0,0,0)",
 		title = "Tutor-student matching matrix", 
 		xaxis = attr(fixedrange=true, title="Tutors"),
-		yaxis = attr(fixedrange=true, showticklabels=false, autorange="reversed", title="Students"),
+		yaxis = attr(
+			fixedrange = true,
+			showticklabels = false,
+			autorange = "reversed",
+			title = "Students",
+		),
+		height = 600,
 	))
 	
 	add_trace!(fig,
@@ -282,6 +300,7 @@ Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
+NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -295,6 +314,7 @@ Gumbo = "~0.8.2"
 HTTP = "~1.7.3"
 MarkdownLiteral = "~0.1.1"
 NamedArrays = "~0.9.6"
+NaturalSort = "~1.0.0"
 OrderedCollections = "~1.4.1"
 PlutoPlotly = "~0.3.6"
 PlutoUI = "~0.7.49"
@@ -307,7 +327,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "2f443ec02bbdb6e45acd93d7599f017a27fdeab8"
+project_hash = "5a22d5d071f25975f9601b2e2002e584d0947cfc"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -701,6 +721,11 @@ git-tree-sha1 = "2fd5787125d1a93fbe30961bd841707b8a80d75b"
 uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
 version = "0.9.6"
 
+[[deps.NaturalSort]]
+git-tree-sha1 = "eda490d06b9f7c00752ee81cfa451efe55521e21"
+uuid = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
+version = "1.0.0"
+
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
@@ -991,8 +1016,12 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─30c2e53f-984f-4902-9fb9-fea2f75e9ab3
-# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
+# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
+# ╠═57944788-2a17-4bf0-bd02-cbe8227a4280
+# ╠═14d2be49-4770-4fb2-af9c-33d7a4288981
+# ╠═5b0e8abf-090d-4328-a4eb-65eacbb6e51e
+# ╠═c1b0f03c-10a0-4da8-aa51-bfbb51934468
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
 # ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
