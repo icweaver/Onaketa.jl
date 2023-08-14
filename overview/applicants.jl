@@ -14,40 +14,27 @@ begin
 	using AlgebraOfGraphics: opensans, firasans
 end
 
-# ╔═╡ 57d9df05-e2bd-4b8c-9ed4-06c09920165a
-md"""
-# 🍎 Onaketa students
+# ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
+function generate_report(num, row)
+	@mdx """<h2>$(num)) $(row.student_name)</h2>
 
-Below are some general insights into the anonymized data collected about our students.
-"""
+	!!! note
+		**Grade:** $(row.student_grade)
+		
+		**Age:** $(row.student_age)
 
-# ╔═╡ 4b64ccc5-b606-4ae2-9764-73529be867f6
-md"""
-## Raw data overview 📖
-"""
+		**Race/ethnicity:** $(row.student_race_ethnicity)
 
-# ╔═╡ 5b59617c-c17c-41d3-94b4-2022ec56b00c
-md"""
-We read the data in from a simple csv file stored with this notebook.
-"""
+		**State:** $(row.student_state)
+		
+		**Course subject:** $(row.course_subject)
+		
+		**Course name:** $(row.course_name)
+	"""
+end
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df_raw = CSV.read("data/anon.csv", DataFrame);
-
-# ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
-md"""
-Here are what the first few rows look like:
-"""
-
-# ╔═╡ ff20fcd3-0c30-46a7-a09e-586d05300d5c
-first(df_raw, 3)
-
-# ╔═╡ ba212dde-6e19-42bb-861e-0f077ffea347
-md"""
-Each row is for an individual student in a given term. Each application question response is given its own column. We also include additional columns for information determined after the fact, like tutor assignment and drop status.
-
-Next, we normalize the data to have uniform formatting, categories, etc.
-"""
+df_raw = CSV.read("data/student_application_2023_08 - Sheet1.csv", DataFrame);
 
 # ╔═╡ 8404ca5a-b1ae-4d03-bf43-0033747437be
 clean_name(s) = ismissing(s) ? s : s |> strip |> lowercase
@@ -109,93 +96,56 @@ function clean_re(s)
 end
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df_clean = @transform df_raw begin
-	:tutor_name = clean_name.(:tutor_name)
+df = @transform df_raw begin
+	# :tutor_name = clean_name.(:tutor_name)
 	:guardian1_name = clean_name.(:guardian1_name)
 	:guardian2_name = clean_name.(:guardian2_name)
 	:student_grade = clean_grade.(:student_grade)
 	:course_subject = clean_subject.(:course_subject)
 	:student_race_ethnicity = clean_re.(:student_race_ethnicity)
-end
+end;
+
+# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+@mdx """
+$([
+	@mdx "$(generate_report(i, row))\n"
+	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
+])
+""";
 
 # ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
-CSV.write("data/data_cleaned.csv", df_clean)
-
-# ╔═╡ 3d551209-6a0c-4f35-885d-63a5a7c6a320
-md"""
-* `id`: Anonymized id for each student
-* `course_subject`: Subject category
-* `student_grade`: Current grade student is in school
-* `student_race_ethnicity`: Self-reported race/ethnicity of student
-* `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
-* `active_X`: A flag indicating whether the student was active in our program during semester X. We define fall to be the first semester of the year and spring to be the second.
-* `drop_status`: A flag indicating whether the student was unable to join or remain in our program
-"""
+CSV.write("data/data_cleaned.csv", df)
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
 ## Insights 🔎
-
-With these definitions made, we go on to visualize different aspects of the data.
-
-!!! todo
-	Do we want to include dropped student data in some way? For now, just omitting this by default.
 """
 
-# ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-df = @rsubset df_clean !(:drop_status);
-
-# ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
-function active_terms_count(arr)
-	d = OrderedDict(
-		"spring_2021" => 0,
-		"fall_2021" => 0,
-		"spring_2022" => 0,
-		"fall_2022" => 0,
-		"spring_2023" => 0,
-	)
-	
-	for terms in arr
-		for term ∈ split(terms, ',')
-			d[term] += 1
-		end
-	end
-
-	return d
-end
-
-# ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
-growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
+# ╔═╡ e10530d2-7753-4c38-83b8-219a31f7f540
+md"""
+### Discoverability
+"""
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
 ### Subject
-
-Total number of students supported in each academic subject. We categorize these by "basic math" (e.g., multiplication, fractions), "mid-level math" (e.g., Geometry, Algebra I/II, Trigonometry), "advanced math" (e.g., Precalculus, Calculus), and "science" (e.g., Biology, Chemistry, Physics). The subject that we have received the most requests for support in was for mid-level math, followed by an even split in science and advanced math.
 """
 
 # ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
 md"""
 ### Grade
-
-Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 11th grade, with the largest representation being for students in 11th grade.
 """
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
 ### Race/ethnicity
-
-Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 @mdx """
 ## Summary
 
-Total number of applications received: $(nrow(df_clean))<br>
-Total number of students supported: $(nrow(df))
-
-We combine all of the figures above into a single graphic for quick comparison.
+Total number of applications received: $(nrow(df))<br>
 """
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
@@ -255,17 +205,16 @@ function save_fig(fg, fname)
 	@debug "Saved to $(fpath)"
 end
 
-# ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
-function _barplot_groups(df_countmap, x;
-	title,
-	titlealign,
-	subtitle,
-	xticklabelrotation,
+# ╔═╡ 78d1d0c0-0ed2-44fc-b556-851abfe4c04a
+function bargroups(df, x;
+	title = "Title",
+	titlealign = :left,
+	subtitle = "Subtitle",
+	xticklabelrotation = 0.0,
+	f = (x -> x)
 )
-	plt = data(df_countmap) * mapping(
-		x,
-		:nrow => "",
-	) * visual(BarPlot)
+	plt = data(df) * frequency() * mapping(x => f => "")
+	
 	axis = (; title, titlealign, subtitle, xticklabelrotation)
 	fg = draw(plt; axis)
 	save_fig(fg, strip(title))
@@ -273,110 +222,62 @@ function _barplot_groups(df_countmap, x;
 	return fg, plt, axis
 end
 
-# ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
-function barplot_groups(df_countmap, labels;
-	title,
-	titlealign = :right,
-	subtitle,
-	xticklabelrotation = 0,
-)
-	return _barplot_groups(df_countmap, :variable => renamer(labels) => "";
-		title,
-		titlealign,
-		subtitle,
-		xticklabelrotation,
-	)
-end
-
-# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
-function barplot_groups(df_countmap;
-	labels = [],
-	title,
-	titlealign = :right,
-	subtitle,
-	xticklabelrotation = 0,
-)
-	return _barplot_groups(df_countmap, :variable => sorter(labels) => "";
-		title,
-		titlealign,
-		subtitle,
-		xticklabelrotation,
-	)
-end
-
-# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-begin
-	d = active_terms_count(df.term_active)
-	df_served = stack(DataFrame(d), All(); value_name=:nrow)
-
-	labels_served = [term => replace(titlecase(term), '_' => ' ')
-		for term in keys(d)
+# ╔═╡ bcbe2191-4dec-4bbd-b327-18367f7914dd
+fg_hear, plt_hear, axis_hear = let
+	labels = [
+		"Recommended by friend or colleague" => "Recommended by\nfriend or colleague",
+		"Search engine (Google, Yahoo, etc.)" => "Search engine\n(Google, Yahoo, etc.)",
+		"Social media" => "Social media",
 	]
 	
-	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
-		title = " Students served",
+	bargroups(df, :question_hear_about;
+		title = " Discoverability",
 		titlealign = :left,
-		subtitle = " Number of active students each semester",
+		subtitle = " How applicants heard about the program",
+		f = renamer(labels)
+		# xticklabelrotation = π/8,
 	)
+end;
 
-	fg_served |> as_svg
-end
+# ╔═╡ 59985e47-6c4f-48cd-90ec-2f7ac73371c3
+fg_hear |> as_svg
 
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-### Semester
-
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
-"""
-
-# ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
-function group_counts(df, cat)
-	@chain df begin
-		groupby(cat)
-		combine(nrow)
-		rename!(cat => :variable)
-	end
-end
-
-# ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
-begin
-	df_subject = group_counts(df, :course_subject)
-	
-	labels_subject = [
+# ╔═╡ 50560612-b24b-4369-ae25-a9e045858198
+fg_subject, plt_subject, axis_subject = let	
+	labels = [
 		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
 	]
 
-	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
-		labels = labels_subject,
+	bargroups(df, :course_subject;
 		title = "Course subject",
-		subtitle = "Cumulative total by category",
+		titlealign = :right,
+		subtitle = "General category requested",
+		f = sorter(labels)
 	)
+end;
 
-	fg_subject |> as_svg
-end
+# ╔═╡ 53c6ffe6-c2d0-4e30-ba37-e27c03cf8c00
+fg_subject |> as_svg
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
-begin
-	df_grade = group_counts(df, :student_grade);
+fg_grade, plt_grade, axis_grade = let
+	df_grade = combine(groupby(df, :student_grade), nrow)
+	labels = sort(df_grade.student_grade; lt=natural);
 	
-	labels_grade = sort(df_grade.variable; lt=natural);
-	
-	fg_grade, plt_grade, axis_grade = barplot_groups(df_grade;
-		labels = labels_grade,
+	bargroups(df, :student_grade;
 		title = " Grade",
 		titlealign = :left,
-		subtitle = " Cumulative total by grade level",
-		xticklabelrotation = π/8,
+		subtitle = " Student grade level in school",
+		f = sorter(labels),
 	)
+end;
 
-	fg_grade |> as_svg
-end
+# ╔═╡ 1223d4a5-bfb5-4fbd-80b6-699c61a771fb
+fg_grade |> as_svg
 
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-begin
-	df_re = group_counts(df, :student_race_ethnicity)
-
-	labels_re = [
+fg_re, plt_re, axis_re = let
+	labels = [
 		"Black or African American" => "Black or\nAfrican American",
 		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
 		"Multiracial" => "Multiracial",
@@ -384,14 +285,16 @@ begin
 		"Not reported" => "Not reported",
 	]
 
-	fg_re, plt_re, axis_re = barplot_groups(df_re, labels_re;
+	fg_re, plt_re, axis_re = bargroups(df, :student_race_ethnicity;
 		title = "Race and ethnicity",
-		subtitle = "Cumulative total by self-reported identity",
-		xticklabelrotation = π/8,
+		titlealign = :right,
+		subtitle = "Self-reported identity",
+		f = renamer(labels),
 	)
+end;
 
-	fg_re |> as_svg
-end
+# ╔═╡ 422034d9-c7cf-48ea-9e6e-25a0987a02d7
+fg_re |> as_svg
 
 # ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 let
@@ -403,7 +306,7 @@ let
 
 	hideydecorations!.((ax2, ax4))
 	
-	draw!(fig[1, 1], plt_served; axis=axis_served)
+	draw!(fig[1, 1], plt_hear; axis=axis_hear)
 	draw!(fig[1, 2], plt_subject; axis=axis_subject)
 	draw!(fig[2, 1], plt_grade; axis=axis_grade)
 	draw!(fig[2, 2], plt_re; axis=axis_re)
@@ -411,6 +314,15 @@ let
 	save_fig(fig, "Summary")
 	
 	fig
+end
+
+# ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
+function group_counts(df, cat)
+	@chain df begin
+		groupby(cat)
+		combine(nrow)
+		rename!(cat => :variable)
+	end
 end
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
@@ -1923,35 +1835,29 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─57d9df05-e2bd-4b8c-9ed4-06c09920165a
-# ╟─4b64ccc5-b606-4ae2-9764-73529be867f6
-# ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
+# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# ╠═720e6d9b-ce67-457c-9a79-b18754b56516
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-# ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
-# ╟─ff20fcd3-0c30-46a7-a09e-586d05300d5c
-# ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
 # ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
-# ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
-# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
-# ╠═957b85f4-95f7-4870-8c37-477e1454f243
+# ╠═78d1d0c0-0ed2-44fc-b556-851abfe4c04a
+# ╟─e10530d2-7753-4c38-83b8-219a31f7f540
+# ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd
+# ╟─59985e47-6c4f-48cd-90ec-2f7ac73371c3
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╟─28a62b38-7b91-4dc7-8480-de491470128e
-# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╠═50560612-b24b-4369-ae25-a9e045858198
+# ╟─53c6ffe6-c2d0-4e30-ba37-e27c03cf8c00
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╠═cc169622-035d-4d00-aff9-394ad531f597
+# ╟─1223d4a5-bfb5-4fbd-80b6-699c61a771fb
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─422034d9-c7cf-48ea-9e6e-25a0987a02d7
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35

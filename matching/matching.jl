@@ -125,6 +125,9 @@ end
 # ╔═╡ 3cea2780-5362-4da5-9ac7-f9b01168bb31
 user_info = URL |> download_schedule |> extract_times
 
+# ╔═╡ b017a86e-1e76-42b2-96c2-2fbe1ebe264c
+user_info["Aaron Sandiford"]
+
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
 student_names = filter(≠("Ian Weaver"), keys(user_info)) |> collect |> sort
 
@@ -146,7 +149,7 @@ md"""
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
 	dt_common = dt_tutor ∩ dt_student
 	N = length(dt_common)
-	iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
+	# iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
 	return dt_common, N
 end
 
@@ -192,10 +195,10 @@ function store_matches(user_info, tutors, students)
 			dt_common_matrix[i, j] = group_by_day(dt_common)
 			
 			# Show link to schedule
-			@debug Markdown.parse("""
-			**Found $(N_common) matches** \\
-			$(tutor_name) and $(student_name)
-			""")
+			# @debug Markdown.parse("""
+			# **Found $(N_common) matches** \\
+			# $(tutor_name) and $(student_name)
+			# """)
 
 			# Save to file for debugging
 			# save_df(df_common, tutor_name, student_name)
@@ -234,16 +237,14 @@ begin
 	
 	add_trace!(fig,
 		heatmap(;
-			z = N_selected,
 			x = tutor_names_selected,
 			y = student_names_selected,
-			# colorbar = {"title": "Your title"},
+			z = N_selected,
 			colorbar_title = "Matches",
 			customdata,
 			hovertemplate = """
 			<b>%{x} and %{y}: %{z} matches</b>
-			<br>Student timezone: <br>
-			<br>%{customdata}<extra></extra>
+			<br><br>%{customdata}<extra></extra>
 			""",
 			zmin = minimum(N_all),
 			zmax = maximum(N_all),
@@ -261,9 +262,6 @@ begin
 	}
 	")
 end
-
-# ╔═╡ e2cb043e-8f2b-4f3a-97b3-38486f893c3f
-customdata
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -994,7 +992,6 @@ version = "17.4.0+0"
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─30c2e53f-984f-4902-9fb9-fea2f75e9ab3
 # ╠═e077cacc-e638-49bc-9e50-62a43a7af574
-# ╠═e2cb043e-8f2b-4f3a-97b3-38486f893c3f
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
@@ -1002,6 +999,7 @@ version = "17.4.0+0"
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─aeadea54-6781-4784-861f-dcaeed550711
+# ╠═b017a86e-1e76-42b2-96c2-2fbe1ebe264c
 # ╠═3cea2780-5362-4da5-9ac7-f9b01168bb31
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╠═682d139a-9a6e-4973-b55a-aeebe465ad1d
