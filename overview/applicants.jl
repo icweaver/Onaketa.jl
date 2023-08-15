@@ -117,6 +117,16 @@ function generate_report(num, row)
 		**Course subject:** $(row.course_subject)
 		
 		**Course name:** $(row.course_name)
+
+		**Performance:** $(row.question_performance)
+
+		**Strengths:** $(row.question_strengths)
+
+		**Struggles:** $(row.question_struggles)
+
+		**Goals:** $(row.question_goals)
+
+		**Other questions:** $(row.question_other)
 	"""
 end
 
@@ -126,7 +136,7 @@ $([
 	@mdx "$(generate_report(i, row))\n"
 	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
 ])
-""";
+"""
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -1858,7 +1868,7 @@ version = "3.5.0+0"
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
 # ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
-# ╠═bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
+# ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═78d1d0c0-0ed2-44fc-b556-851abfe4c04a
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd
