@@ -14,18 +14,12 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ c1b0f03c-10a0-4da8-aa51-bfbb51934468
-using NaturalSort
-
-# ╔═╡ e67b5ad0-a2c8-44a1-9772-2d4a407e9577
-using TimeZones
-
 # ╔═╡ b653343f-97ad-4367-b604-c734c957a2a7
 begin
-	using HTTP, Gumbo, Cascadia, Dates
+	using HTTP, Gumbo, Cascadia, Dates, TimeZones
 	using DataFramesMeta, CSV, OrderedCollections, NamedArrays
 	using MarkdownLiteral: @mdx
-	using PlutoPlotly, PlutoUI
+	using PlutoPlotly, PlutoUI, NaturalSort
 end
 
 # ╔═╡ 5992a43e-3a89-4300-94d7-13f47dd06261
@@ -53,6 +47,7 @@ tutor_names = [
 	"Alice Tutor",
 	"Bob Tutor",
 	"Chloe Tutor",
+	"Chima McGruder",
 ]
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
@@ -126,10 +121,19 @@ function download_schedule(url)
 end
 
 # ╔═╡ 3cea2780-5362-4da5-9ac7-f9b01168bb31
-user_info = URL |> download_schedule |> extract_times
+user_info = URL |> download_schedule |> extract_times;
+
+# ╔═╡ 57944788-2a17-4bf0-bd02-cbe8227a4280
+names_unknown = sort(filter(x -> occursin("Unknown", x), collect(keys(user_info))); lt=natural)
+
+# ╔═╡ 14d2be49-4770-4fb2-af9c-33d7a4288981
+names_noapp = sort(filter(x -> occursin("NoApp", x), collect(keys(user_info))); lt=natural)
+
+# ╔═╡ b8cfab6d-1f31-4766-b373-8393ee6aee21
+student_blacklist = names_unknown ∪ names_noapp ∪ tutor_names 
 
 # ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = filter(≠("Ian Weaver"), keys(user_info)) |> collect |> sort
+student_names = filter(∉(student_blacklist), keys(user_info)) |> collect |> sort
 
 # ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
 begin
@@ -139,18 +143,6 @@ begin
 	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
 	"""
 end
-
-# ╔═╡ 57944788-2a17-4bf0-bd02-cbe8227a4280
-sort(filter(x -> occursin("Unknown", x), student_names); lt=natural)
-
-# ╔═╡ 14d2be49-4770-4fb2-af9c-33d7a4288981
-sort(filter(x -> occursin("NoApp", x), student_names); lt=natural)
-
-# ╔═╡ 5b0e8abf-090d-4328-a4eb-65eacbb6e51e
-length(student_names) - 11
-
-# ╔═╡ b017a86e-1e76-42b2-96c2-2fbe1ebe264c
-user_info["Aaron Sandiford"]
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -378,16 +370,6 @@ git-tree-sha1 = "c6d890a52d2c4d55d326439580c3b8d0875a77d9"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 version = "1.15.7"
 
-[[deps.ChangesOfVariables]]
-deps = ["LinearAlgebra", "Test"]
-git-tree-sha1 = "844b061c104c408b24537482469400af6075aae4"
-uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
-version = "0.1.5"
-weakdeps = ["ChainRulesCore"]
-
-    [deps.ChangesOfVariables.extensions]
-    ChainRulesCoreExt = "ChainRulesCore"
-
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "9c209fb7536406834aa938fb149964b985de6c83"
@@ -575,12 +557,6 @@ version = "1.3.2"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
-[[deps.InverseFunctions]]
-deps = ["Test"]
-git-tree-sha1 = "49510dfcb407e572524ba94aeae2fced1f3feb0f"
-uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
-version = "0.1.8"
-
 [[deps.InvertedIndices]]
 git-tree-sha1 = "82aec7a3dd64f4d9584659dc0b62ef7db2ef3e19"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
@@ -648,12 +624,16 @@ deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "45b288af6956e67e621c5cbb2d75a261ab58300b"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
 version = "0.3.20"
-weakdeps = ["ChainRulesCore", "ChangesOfVariables", "InverseFunctions"]
 
     [deps.LogExpFunctions.extensions]
     ChainRulesCoreExt = "ChainRulesCore"
     ChangesOfVariablesExt = "ChangesOfVariables"
     InverseFunctionsExt = "InverseFunctions"
+
+    [deps.LogExpFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ChangesOfVariables = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -1020,22 +1000,19 @@ version = "17.4.0+0"
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╠═57944788-2a17-4bf0-bd02-cbe8227a4280
 # ╠═14d2be49-4770-4fb2-af9c-33d7a4288981
-# ╠═5b0e8abf-090d-4328-a4eb-65eacbb6e51e
-# ╠═c1b0f03c-10a0-4da8-aa51-bfbb51934468
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═b8cfab6d-1f31-4766-b373-8393ee6aee21
 # ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─aeadea54-6781-4784-861f-dcaeed550711
-# ╠═b017a86e-1e76-42b2-96c2-2fbe1ebe264c
 # ╠═3cea2780-5362-4da5-9ac7-f9b01168bb31
 # ╟─6db3afa9-bafd-4cee-b2e5-853daa80eb08
 # ╠═682d139a-9a6e-4973-b55a-aeebe465ad1d
 # ╠═c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
 # ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
 # ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
-# ╠═e67b5ad0-a2c8-44a1-9772-2d4a407e9577
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
