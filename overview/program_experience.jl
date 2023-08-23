@@ -14,82 +14,123 @@ end
 
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
 md"""
-# Application responses - Fall 2023 🚀
+# Tutor reviews
 """
 
-# ╔═╡ 2fbfc13b-6f4e-4741-a0de-e03701e00bf6
+# ╔═╡ e87deb2d-02e5-4ed1-b551-f06cd8786a47
 md"""
-## Load data
+## Filipe Cerqueira
 """
 
-# ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df = CSV.read("data/program_experience_survey_2023 - Sheet1.csv", DataFrame;
-	normalizenames = true,
-)
-
-# ╔═╡ 5edccc41-4838-4b3e-8a53-bebe78b22a48
-gdf = groupby(df, :Tutor_s_name)
-
-# ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
+# ╔═╡ 62e4bbaa-c3c0-45ff-aff3-729087718c6e
 md"""
-## Responses (sorted by tutor)
+## Gianni Sims
+"""
+
+# ╔═╡ 00f8f9a5-825b-4fd5-8f40-44a712e926a4
+md"""
+## Gregory Cunningham
+"""
+
+# ╔═╡ f3197d1b-1132-4472-b663-b9de3da39658
+md"""
+## Haley Carrasco
+"""
+
+# ╔═╡ 809d9af8-a165-4006-8095-2400bfd478a5
+md"""
+## Ian Weaver
 """
 
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
-function generate_report(row)
-	@mdx """<h3>$(row.Student_s_name)</h3>
-
+function generate_report(i, row)
+	@mdx """<h4>$(i)) $(row.Student_s_name)</h4>
+	
 	!!! note
-		**Subject:** $(row.Subject_tutored)
+		**Submission date:**\n
+		$(row.Submitted_at)
+		
+		**Subject:**\n
+		$(row.Subject_tutored)
+		
+		**The student's confidence in their classwork has improved:**\n
+		$(row.The_student_s_confidence_in_their_classwork_has_improved_)
+		
+		**The student was comfortable with the tutor:**\n
+		$(row.The_student_was_comfortable_with_the_tutor_)
+		
+		**The student can ask for help when they don't understand subject matter:**\n
+		$(row.The_student_can_ask_for_help_when_they_don_t_understand_subject_matter_)
+		
+		**The student's study skills have improved:**\n
+		$(row.The_student_s_study_skills_have_improved_)
+		
+		**The student's grade in the class improved:**\n
+		$(row.The_student_s_grade_in_the_class_improved_)
+		
+		**The student is better prepared to learn in school as a result of the Onaketa tutoring program:**\n
+		
+		$(row.The_student_is_better_prepared_to_learn_in_school_as_a_result_of_the_Onaketa_tutoring_program_)
+		
+		**The student has developed a more positive attitude towards math and or science:**\n
+		
+		$(row.The_student_has_developed_a_more_positive_attitude_towards_math_and_or_science_)
+		
+		**The tutor was friendly and eager to help:**\n
+		$(row.The_tutor_was_friendly_and_eager_to_help_)
+		
+		**The tutor was on time for sessions:**\n
+		$(row.The_tutor_was_on_time_for_sessions_)
+		
+		**The tutor had excellent communication skills:**\n
+		$(row.The_tutor_had_excellent_communication_skills_)
+		
+		**The tutor established a positive relationship with the student:**\n
+		$(row.The_tutor_established_a_positive_relationship_with_the_student_)
+		
+		**The tutor knows and understands the subject matter of this course:**\n
+		$(row.The_tutor_knows_and_understands_the_subject_matter_of_this_course_)
+		
+		**The tutor explained ideas and concepts clearly:**\n
+		$(row.The_tutor_explained_ideas_and_concepts_clearly_)
+		
+		**The tutor was encouraging:**\n
+		$(row.The_tutor_was_encouraging_)
+		
+		**The tutor taught using examples:**\n
+		$(row.The_tutor_taught_using_examples_)
+		
+		**The tutor was patient:**\n
+		$(row.The_tutor_was_patient_)
+		
+		**The tutor was a good mentor to the student:**\n
+		$(row.The_tutor_was_a_good_mentor_to_the_student_)
+		
+		**Overall sessions with this tutor were helpful and improved the student's knowledge of the subject:**\n
+		
+		$(row.Overall_sessions_with_this_tutor_were_helpful_and_improved_the_student_s_knowledge_of_the_subject_)
+		
+		**Please describe the student's academic progress. Specifically comment on how they improved their grades, e.g., they went from a C to an A their test grades improved:**\n
+		
+		$(row.Please_describe_the_student_s_academic_progress_Specifically_comment_on_how_they_improved_their_grades_E_g_they_went_from_a_C_to_an_A_their_test_grades_improved_)
+		
+		**I would use Onaketa tutoring services again:**\n
+		$(row.I_would_use_Onaketa_tutoring_services_again_)
+		
+		**I would recommend Onaketa to other families:**\n
+		$(row.I_would_recommend_Onaketa_to_other_families_)
+		
+		**Please comment on the student's growth while participating in the Onaketa tutoring program:**\n
+		
+		$(row.Please_comment_on_the_student_s_growth_while_participating_in_the_Onaketa_tutoring_program_)
+		
+		**Do you have any specific suggestions for improvement in the future:**\n
+		$(row.Do_you_have_any_specific_suggestions_for_improvement_in_the_future_)
+		
+		**Share any other feedback comments you have here:**\n
+		$(row.Share_any_other_feedback_comments_you_have_here_)
 	"""
 end
-
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-@mdx """
-$([
-	@mdx "$(generate_report(row))\n"
-	for (nt, g) in pairs(gdf) for row ∈ eachrow(g)
-])
-"""
-
-# ╔═╡ b2154379-27d5-4404-9b3a-5307726e1249
-# "Submission_ID"
-# 		"Respondent_ID"
-# 		"Submitted_at"
-# 		"Guardian_name"
-# 		"Email_address"
-# 		"Confirm_email_address"
-# 		"Student_s_name"
-# 		"Student_s_school_name"
-# 		"Student_s_grade_level"
-# 		"Tutor_s_name"
-# 		"Subject_tutored"
-# 		"other_subject"
-# 		"The_student_s_confidence_in_their_classwork_has_improved_"
-# 		"The_student_was_comfortable_with_the_tutor_"
-# 		"The_student_can_ask_for_help_when_they_don_t_understand_subject_matter_"
-# 		"The_student_s_study_skills_have_improved_"
-# 		"The_student_s_grade_in_the_class_improved_"
-# 		"The_student_is_better_prepared_to_learn_in_school_as_a_result_of_the_Onaketa_tutoring_program_"
-# 		"The_student_has_developed_a_more_positive_attitude_towards_math_and_or_science_"
-# 		"The_tutor_was_friendly_and_eager_to_help_"
-# 		"The_tutor_was_on_time_for_sessions_"
-# 		"The_tutor_had_excellent_communication_skills_"
-# 		"The_tutor_established_a_positive_relationship_with_the_student_"
-# 		"The_tutor_knows_and_understands_the_subject_matter_of_this_course_"
-# 		"The_tutor_explained_ideas_and_concepts_clearly_"
-# 		"The_tutor_was_encouraging_"
-# 		"The_tutor_taught_using_examples_"
-# 		"The_tutor_was_patient_"
-# 		"The_tutor_was_a_good_mentor_to_the_student_"
-# 		"Overall_sessions_with_this_tutor_were_helpful_and_improved_the_student_s_knowledge_of_the_subject_"
-# 		"Please_describe_the_student_s_academic_progress_Specifically_comment_on_how_they_improved_their_grades_E_g_they_went_from_a_C_to_an_A_their_test_grades_improved_"
-# 		"I_would_use_Onaketa_tutoring_services_again_"
-# 		"I_would_recommend_Onaketa_to_other_families_"
-# 		"You_would_help_us_grow_our_program_by_sharing_your_testimonial!_Please_click_yes_if_you_give_Onaketa_permission_to_use_your_comments_below_on_our_website_We_will_make_all_comments_shared_with_us_anonymous_"
-# 		"Please_comment_on_the_student_s_growth_while_participating_in_the_Onaketa_tutoring_program_"
-# 		"Do_you_have_any_specific_suggestions_for_improvement_in_the_future_"
-# 		"Share_any_other_feedback_comments_you_have_here_"
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
@@ -97,11 +138,72 @@ md"""
 """
 
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-TableOfContents()
+TableOfContents(; depth=4)
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
 ### Packages
+"""
+
+# ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
+df = CSV.read("data/program_experience_survey_2023 - Sheet1.csv", DataFrame;
+	normalizenames = true,
+);
+
+# ╔═╡ 5edccc41-4838-4b3e-8a53-bebe78b22a48
+gdf = groupby(df, :Tutor_s_name);
+
+# ╔═╡ 2e35a173-8564-45cc-b7ad-fed693a5ff96
+sub_df(tutor_name) = enumerate(eachrow(sort(gdf[(tutor_name,)], :Student_s_name)))
+
+# ╔═╡ ea5bb849-98ba-42fd-ab59-50ebb3b695bf
+@mdx """
+$(
+	[
+		@mdx "$(generate_report(i, row))\n"
+		for (i, row) ∈ sub_df("Filipe Cerqueira")
+	]
+)
+"""
+
+# ╔═╡ d692eb1d-712e-4dbd-8ded-ddd4c7b0d961
+@mdx """
+$(
+	[
+		@mdx "$(generate_report(i, row))\n"
+		for (i, row) ∈ sub_df("Gianni Sims")
+	]
+)
+"""
+
+# ╔═╡ 4f3fbc1c-0891-4ca2-864c-06ed1951875a
+@mdx """
+$(
+	[
+		@mdx "$(generate_report(i, row))\n"
+		for (i, row) ∈ sub_df("Gregory Cunningham")
+	]
+)
+"""
+
+# ╔═╡ a2685d51-945d-4afd-8462-86b3aec9693e
+@mdx """
+$(
+	[
+		@mdx "$(generate_report(i, row))\n"
+		for (i, row) ∈ sub_df("Haley Carrasco")
+	]
+)
+"""
+
+# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+@mdx """
+$(
+	[
+		@mdx "$(generate_report(i, row))\n"
+		for (i, row) ∈ sub_df("Ian Weaver")
+	]
+)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -574,16 +676,23 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
-# ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
-# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╠═5edccc41-4838-4b3e-8a53-bebe78b22a48
-# ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
-# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-# ╠═720e6d9b-ce67-457c-9a79-b18754b56516
-# ╠═b2154379-27d5-4404-9b3a-5307726e1249
+# ╟─e87deb2d-02e5-4ed1-b551-f06cd8786a47
+# ╟─ea5bb849-98ba-42fd-ab59-50ebb3b695bf
+# ╟─62e4bbaa-c3c0-45ff-aff3-729087718c6e
+# ╟─d692eb1d-712e-4dbd-8ded-ddd4c7b0d961
+# ╟─00f8f9a5-825b-4fd5-8f40-44a712e926a4
+# ╟─4f3fbc1c-0891-4ca2-864c-06ed1951875a
+# ╟─f3197d1b-1132-4472-b663-b9de3da39658
+# ╟─a2685d51-945d-4afd-8462-86b3aec9693e
+# ╟─809d9af8-a165-4006-8095-2400bfd478a5
+# ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# ╟─2e35a173-8564-45cc-b7ad-fed693a5ff96
+# ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
+# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╟─5edccc41-4838-4b3e-8a53-bebe78b22a48
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
