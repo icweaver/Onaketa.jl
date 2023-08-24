@@ -8,7 +8,7 @@ using InteractiveUtils
 begin
 	using AlgebraOfGraphics, CairoMakie
 	using DataFramesMeta, CSV, Dates, NaturalSort, Statistics
-	using OrderedCollections
+	using OrderedCollections, CategoricalArrays
 	using PlutoUI
 	using MarkdownLiteral: @mdx
 	using AlgebraOfGraphics: opensans, firasans
@@ -23,6 +23,13 @@ md"""
 md"""
 ## Load data
 """
+
+# ╔═╡ 0265500d-d6f0-4cdb-af4f-257bee7a917f
+to_cat(field, levels) = categorical(field;
+	levels,
+	ordered = true,
+	compress = true,
+)
 
 # ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
 md"""
@@ -63,6 +70,22 @@ function generate_report(num, row)
 		**Other questions:** $(row.question_other)
 	"""
 end
+
+# ╔═╡ ab379bec-ed51-4ffe-9603-18f766334cd0
+md"""
+# Sorting =\
+
+Sorted by the specified `features` in the data below
+"""
+
+# ╔═╡ 794418de-4912-435c-8386-3e67d724b62f
+features = [
+	:student_age,
+	:question_performance,
+	:house_size,
+	:house_income,
+	:Submitted_at,
+]
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -207,6 +230,22 @@ df = let
 		:student_grade = clean_grade.(:student_grade)
 		:course_subject = clean_subject.(:course_subject)
 		:student_race_ethnicity = clean_re.(:student_race_ethnicity)
+		:question_performance = to_cat(:question_performance,
+			["Poor", "Fair", "Good", "Excellent (e.g., mostly As and Bs)"],
+		)
+		:house_income = to_cat(:house_income,
+			[
+				"Below \$10,000",
+				"Between \$10,000 - \$25,000",
+				"Between \$25,000 - \$50,000",
+				"Between \$50,000 - \$100,000",
+				"Between \$100,000 - \$150,000",
+				"Above \$150,000",
+			],
+		)
+		:house_size = to_cat(:house_size,
+			reverse(["1", "2", "3", "4", "5", "6+"])
+		)
 	end
 end
 
@@ -217,6 +256,12 @@ $([
 	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
 ])
 """
+
+# ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
+@chain df begin
+	sort(features)
+	select(:student_name, features)
+end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -361,6 +406,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
@@ -373,6 +419,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 AlgebraOfGraphics = "~0.6.14"
 CSV = "~0.10.9"
 CairoMakie = "~0.10.2"
+CategoricalArrays = "~0.10.8"
 DataFramesMeta = "~0.13.0"
 MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
@@ -386,7 +433,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "47548eaab0e1e2aa43a6560588f743fd5e1878d8"
+project_hash = "32f9dd3f44577aa2ab9b60b8a9e9d6fd6d8fd293"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -498,6 +545,24 @@ deps = ["LinearAlgebra"]
 git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
 uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
 version = "0.5.1"
+
+[[deps.CategoricalArrays]]
+deps = ["DataAPI", "Future", "Missings", "Printf", "Requires", "Statistics", "Unicode"]
+git-tree-sha1 = "1568b28f91293458345dabba6a5ea3f183250a61"
+uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
+version = "0.10.8"
+
+    [deps.CategoricalArrays.extensions]
+    CategoricalArraysJSONExt = "JSON"
+    CategoricalArraysRecipesBaseExt = "RecipesBase"
+    CategoricalArraysSentinelArraysExt = "SentinelArrays"
+    CategoricalArraysStructTypesExt = "StructTypes"
+
+    [deps.CategoricalArrays.weakdeps]
+    JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+    SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+    StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 
 [[deps.Chain]]
 git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
@@ -1863,9 +1928,13 @@ version = "3.5.0+0"
 # ╟─956ed197-498b-44b8-921a-868504a71924
 # ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
 # ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
 # ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
+# ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
+# ╟─794418de-4912-435c-8386-3e67d724b62f
+# ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╟─bcbe2191-4dec-4bbd-b327-18367f7914dd
