@@ -79,12 +79,25 @@ Sorted by the specified `features` in the data below
 """
 
 # ╔═╡ 794418de-4912-435c-8386-3e67d724b62f
+# This order determines what is sorted first
 features = [
 	:student_age,
 	:question_performance,
 	:house_size,
 	:house_income,
 ]
+
+# ╔═╡ 5e2823df-75b6-42c1-816c-df081bc0df66
+md"""
+No immediate red flags stood out to me in the free response sections of the application responses. Instead, I just ranked responses in descending order of priority along the following axes above:
+
+1. `student_age`: Age of the student. Younger students prioritzed.
+2. `question_performance`: Self reported performance in class. Weaker students prioritized.
+3. `house_size`: Number of members in student's household. Larger households prioritized.
+4. `house_income`: Annual household income. Lower income households prioritized.
+
+While the ranking within each feature is fairly objective, the feature priority order certainly is not. For example, switching the order of whether sorting by household size or household income first significantly changes which students land in the top 18, and I have no objective measure for which one should be a higher priority. I hate this part of the job.
+"""
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -434,7 +447,7 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.3"
 manifest_format = "2.0"
 project_hash = "32f9dd3f44577aa2ab9b60b8a9e9d6fd6d8fd293"
 
@@ -1937,6 +1950,7 @@ version = "3.5.0+0"
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
 # ╟─794418de-4912-435c-8386-3e67d724b62f
+# ╟─5e2823df-75b6-42c1-816c-df081bc0df66
 # ╟─0b62a929-5f18-4b67-9c9b-85d86a749a6c
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
