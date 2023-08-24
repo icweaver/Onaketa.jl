@@ -27,87 +27,132 @@ function generate_report(i, row)
 	@mdx """<h4>$(i)) $(row.Student_s_name)</h4>
 	
 	!!! note
-		**Submission date:**\n
+		**Submission date**\n
 		$(row.Submitted_at)
 		
-		**Subject:**\n
+		---
+		
+		**Subject**\n
 		$(row.Subject_tutored)
 		
-		**The student's confidence in their classwork has improved:**\n
+		---
+		
+		**The student's confidence in their classwork has improved**\n
 		$(row.The_student_s_confidence_in_their_classwork_has_improved_)
 		
-		**The student was comfortable with the tutor:**\n
+		---
+		
+		**The student was comfortable with the tutor**\n
 		$(row.The_student_was_comfortable_with_the_tutor_)
 		
-		**The student can ask for help when they don't understand subject matter:**\n
+		---
+		
+		**The student can ask for help when they don't understand subject matter**\n
 		$(row.The_student_can_ask_for_help_when_they_don_t_understand_subject_matter_)
 		
-		**The student's study skills have improved:**\n
+		---
+		
+		**The student's study skills have improved**\n
 		$(row.The_student_s_study_skills_have_improved_)
 		
-		**The student's grade in the class improved:**\n
+		---
+		
+		**The student's grade in the class improved**\n
 		$(row.The_student_s_grade_in_the_class_improved_)
 		
-		**The student is better prepared to learn in school as a result of the Onaketa tutoring program:**\n
+		---
 		
+		**The student is better prepared to learn in school as a result of the Onaketa tutoring program**\n
 		$(row.The_student_is_better_prepared_to_learn_in_school_as_a_result_of_the_Onaketa_tutoring_program_)
 		
-		**The student has developed a more positive attitude towards math and or science:**\n
+		---
 		
+		**The student has developed a more positive attitude towards math and or science**\n
 		$(row.The_student_has_developed_a_more_positive_attitude_towards_math_and_or_science_)
 		
-		**The tutor was friendly and eager to help:**\n
+		---
+		
+		**The tutor was friendly and eager to help**\n
 		$(row.The_tutor_was_friendly_and_eager_to_help_)
 		
-		**The tutor was on time for sessions:**\n
+		---
+		
+		**The tutor was on time for sessions**\n
 		$(row.The_tutor_was_on_time_for_sessions_)
 		
-		**The tutor had excellent communication skills:**\n
+		---
+		
+		**The tutor had excellent communication skills**\n
 		$(row.The_tutor_had_excellent_communication_skills_)
 		
-		**The tutor established a positive relationship with the student:**\n
+		---
+		
+		**The tutor established a positive relationship with the student**\n
 		$(row.The_tutor_established_a_positive_relationship_with_the_student_)
 		
-		**The tutor knows and understands the subject matter of this course:**\n
+		---
+		
+		**The tutor knows and understands the subject matter of this course**\n
 		$(row.The_tutor_knows_and_understands_the_subject_matter_of_this_course_)
 		
-		**The tutor explained ideas and concepts clearly:**\n
+		---
+		
+		**The tutor explained ideas and concepts clearly**\n
 		$(row.The_tutor_explained_ideas_and_concepts_clearly_)
 		
-		**The tutor was encouraging:**\n
+		---
+		
+		**The tutor was encouraging**\n
 		$(row.The_tutor_was_encouraging_)
 		
-		**The tutor taught using examples:**\n
+		---
+		
+		**The tutor taught using examples**\n
 		$(row.The_tutor_taught_using_examples_)
 		
-		**The tutor was patient:**\n
+		---
+		
+		**The tutor was patient**\n
 		$(row.The_tutor_was_patient_)
 		
-		**The tutor was a good mentor to the student:**\n
+		---
+		
+		**The tutor was a good mentor to the student**\n
 		$(row.The_tutor_was_a_good_mentor_to_the_student_)
 		
-		**Overall sessions with this tutor were helpful and improved the student's knowledge of the subject:**\n
+		---
 		
+		**Overall sessions with this tutor were helpful and improved the student's knowledge of the subject**\n
 		$(row.Overall_sessions_with_this_tutor_were_helpful_and_improved_the_student_s_knowledge_of_the_subject_)
 		
-		**Please describe the student's academic progress. Specifically comment on how they improved their grades, e.g., they went from a C to an A their test grades improved:**\n
+		---
 		
+		**Please describe the student's academic progress. Specifically comment on how they improved their grades, e.g., they went from a C to an A their test grades improved**\n
 		$(row.Please_describe_the_student_s_academic_progress_Specifically_comment_on_how_they_improved_their_grades_E_g_they_went_from_a_C_to_an_A_their_test_grades_improved_)
 		
-		**I would use Onaketa tutoring services again:**\n
+		---
+		
+		**I would use Onaketa tutoring services again**\n
 		$(row.I_would_use_Onaketa_tutoring_services_again_)
 		
-		**I would recommend Onaketa to other families:**\n
+		---
+		
+		**I would recommend Onaketa to other families**\n
 		$(row.I_would_recommend_Onaketa_to_other_families_)
 		
-		**Please comment on the student's growth while participating in the Onaketa tutoring program:**\n
+		---
 		
+		**Please comment on the student's growth while participating in the Onaketa tutoring program**\n
 		$(row.Please_comment_on_the_student_s_growth_while_participating_in_the_Onaketa_tutoring_program_)
 		
-		**Do you have any specific suggestions for improvement in the future:**\n
+		---
+		
+		**Do you have any specific suggestions for improvement in the future**\n
 		$(row.Do_you_have_any_specific_suggestions_for_improvement_in_the_future_)
 		
-		**Share any other feedback comments you have here:**\n
+		---
+		
+		**Share any other feedback comments you have here**\n
 		$(row.Share_any_other_feedback_comments_you_have_here_)
 	"""
 end
