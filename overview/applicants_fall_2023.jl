@@ -84,7 +84,6 @@ features = [
 	:question_performance,
 	:house_size,
 	:house_income,
-	:Submitted_at,
 ]
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
@@ -259,8 +258,12 @@ $([
 
 # ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
 @chain df begin
-	sort(features)
+	@rsubset begin
+		:Submitted_at < DateTime(2023, 08, 13)
+	end
 	select(:student_name, features)
+	sort(features)
+	first(18)
 end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
@@ -1429,10 +1432,10 @@ uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.3.0"
 
 [[deps.PrettyTables]]
-deps = ["Crayons", "Formatting", "LaTeXStrings", "Markdown", "Reexport", "StringManipulation", "Tables"]
-git-tree-sha1 = "96f6db03ab535bdb901300f88335257b0018689d"
+deps = ["Crayons", "LaTeXStrings", "Markdown", "Printf", "Reexport", "StringManipulation", "Tables"]
+git-tree-sha1 = "ee094908d720185ddbdc58dbe0c1cbe35453ec7a"
 uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "2.2.2"
+version = "2.2.7"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -1934,7 +1937,7 @@ version = "3.5.0+0"
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
 # ╟─794418de-4912-435c-8386-3e67d724b62f
-# ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
+# ╟─0b62a929-5f18-4b67-9c9b-85d86a749a6c
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╟─bcbe2191-4dec-4bbd-b327-18367f7914dd
