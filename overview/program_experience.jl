@@ -17,31 +17,6 @@ md"""
 # Tutor reviews
 """
 
-# ╔═╡ e87deb2d-02e5-4ed1-b551-f06cd8786a47
-md"""
-## Filipe Cerqueira
-"""
-
-# ╔═╡ 62e4bbaa-c3c0-45ff-aff3-729087718c6e
-md"""
-## Gianni Sims
-"""
-
-# ╔═╡ 00f8f9a5-825b-4fd5-8f40-44a712e926a4
-md"""
-## Gregory Cunningham
-"""
-
-# ╔═╡ f3197d1b-1132-4472-b663-b9de3da39658
-md"""
-## Haley Carrasco
-"""
-
-# ╔═╡ 809d9af8-a165-4006-8095-2400bfd478a5
-md"""
-## Ian Weaver
-"""
-
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(i, row)
 	@mdx """<h4>$(i)) $(row.Student_s_name)</h4>
@@ -151,60 +126,25 @@ df = CSV.read("data/program_experience_survey_2023 - Sheet1.csv", DataFrame;
 );
 
 # ╔═╡ 5edccc41-4838-4b3e-8a53-bebe78b22a48
-gdf = groupby(df, :Tutor_s_name);
+gdf = groupby(df, :Tutor_s_name; sort=true);
 
-# ╔═╡ 2e35a173-8564-45cc-b7ad-fed693a5ff96
-sub_df(tutor_name) = enumerate(eachrow(sort(gdf[(tutor_name,)], :Student_s_name)))
+# ╔═╡ 3e9c3547-3238-4b21-ba63-f2738941e5a4
+let
+	report = []
 
-# ╔═╡ ea5bb849-98ba-42fd-ab59-50ebb3b695bf
-@mdx """
-$(
-	[
-		@mdx "$(generate_report(i, row))\n"
-		for (i, row) ∈ sub_df("Filipe Cerqueira")
-	]
-)
-"""
+	for (nt, sdf) ∈ pairs(gdf)
+		tutor_block = []
+		push!(tutor_block, @mdx "<h2>$(nt.Tutor_s_name)</h2>")
+		for (i, row) ∈ enumerate(eachrow(sdf))
+			push!(tutor_block, @mdx "$(generate_report(i, row))")
+		end
+		push!(report, tutor_block)
+	end
 
-# ╔═╡ d692eb1d-712e-4dbd-8ded-ddd4c7b0d961
-@mdx """
-$(
-	[
-		@mdx "$(generate_report(i, row))\n"
-		for (i, row) ∈ sub_df("Gianni Sims")
-	]
-)
-"""
-
-# ╔═╡ 4f3fbc1c-0891-4ca2-864c-06ed1951875a
-@mdx """
-$(
-	[
-		@mdx "$(generate_report(i, row))\n"
-		for (i, row) ∈ sub_df("Gregory Cunningham")
-	]
-)
-"""
-
-# ╔═╡ a2685d51-945d-4afd-8462-86b3aec9693e
-@mdx """
-$(
-	[
-		@mdx "$(generate_report(i, row))\n"
-		for (i, row) ∈ sub_df("Haley Carrasco")
-	]
-)
-"""
-
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-@mdx """
-$(
-	[
-		@mdx "$(generate_report(i, row))\n"
-		for (i, row) ∈ sub_df("Ian Weaver")
-	]
-)
-"""
+	@mdx """
+	$(report)
+	"""
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -676,17 +616,7 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
-# ╟─e87deb2d-02e5-4ed1-b551-f06cd8786a47
-# ╟─ea5bb849-98ba-42fd-ab59-50ebb3b695bf
-# ╟─62e4bbaa-c3c0-45ff-aff3-729087718c6e
-# ╟─d692eb1d-712e-4dbd-8ded-ddd4c7b0d961
-# ╟─00f8f9a5-825b-4fd5-8f40-44a712e926a4
-# ╟─4f3fbc1c-0891-4ca2-864c-06ed1951875a
-# ╟─f3197d1b-1132-4472-b663-b9de3da39658
-# ╟─a2685d51-945d-4afd-8462-86b3aec9693e
-# ╟─809d9af8-a165-4006-8095-2400bfd478a5
-# ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-# ╟─2e35a173-8564-45cc-b7ad-fed693a5ff96
+# ╟─3e9c3547-3238-4b21-ba63-f2738941e5a4
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
