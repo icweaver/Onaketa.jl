@@ -17,6 +17,11 @@ md"""
 # Tutor reviews
 """
 
+# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
+md"""
+# Notebook setup 🔧
+"""
+
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(i, row)
 	@mdx """<h4>$(i)) $(row.Student_s_name)</h4>
@@ -107,11 +112,6 @@ function generate_report(i, row)
 	"""
 end
 
-# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
-md"""
-# Notebook setup 🔧
-"""
-
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 TableOfContents(; depth=4)
 
@@ -135,7 +135,7 @@ let
 	for (nt, sdf) ∈ pairs(gdf)
 		tutor_block = []
 		push!(tutor_block, @mdx "<h2>$(nt.Tutor_s_name)</h2>")
-		for (i, row) ∈ enumerate(eachrow(sdf))
+		for (i, row) ∈ enumerate(eachrow(sort(sdf, :Student_s_name)))
 			push!(tutor_block, @mdx "$(generate_report(i, row))")
 		end
 		push!(report, tutor_block)
@@ -617,8 +617,8 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
 # ╟─3e9c3547-3238-4b21-ba63-f2738941e5a4
-# ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
+# ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
