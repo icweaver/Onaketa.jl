@@ -75,7 +75,7 @@ end
 md"""
 # Sorting =\
 
-Sorted by the specified `features` in the data below
+Sorted by the specified `features` in the data below for students that submitted their application before the priority deadline
 """
 
 # ╔═╡ 794418de-4912-435c-8386-3e67d724b62f
@@ -276,7 +276,7 @@ $([
 	end
 	select(:student_name, features)
 	sort(features)
-	first(18)
+	# first(18)
 end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
