@@ -99,6 +99,28 @@ No immediate red flags stood out to me in the free response sections of the appl
 While the ranking within each feature is fairly objective, the feature priority order certainly is not. For example, switching the order of whether sorting by household size or household income first significantly changes which students land in the top 18, and I have no objective measure for which one should be a higher priority. I hate this part of the job.
 """
 
+# ╔═╡ 6618ab98-78de-432b-bb34-d94b2feb9fbe
+selected_students = [
+	"Aaron Sandiford",
+	"Aleeya Ortega",
+	"Alyssa Ortega",
+	"Brycen Eason",
+	"Channing Brisbane",
+	"David Oche",
+	"David Singleton",
+	"Ethan Barlay",
+	"Kaliyah Benton",
+	"Keilana Alfaro",
+	"Léonie Mendy",
+	"Markayla Lejoi Denson",
+	"Miles Banks",
+	"Nahla Kaplan Rasheed",
+	"Nova Abdulla",
+	"Omega Harris",
+	"Saphere",
+	"Simone Hopson",
+]
+
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
 # Insights 🔎
@@ -270,7 +292,7 @@ $([
 """
 
 # ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
-@chain df begin
+df_sorted = @chain df begin
 	@rsubset begin
 		:Submitted_at < DateTime(2023, 08, 13)
 	end
@@ -278,6 +300,16 @@ $([
 	sort(features)
 	# first(18)
 end
+
+# ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
+@chain df begin
+	@rsubset :student_name ∈ selected_students
+	@select :student_name :course_subject
+	sort(:student_name)
+end
+
+# ╔═╡ 16a1e2b1-228a-41cd-8c54-dfb3baf1bf2d
+names(df)
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -1952,6 +1984,9 @@ version = "3.5.0+0"
 # ╟─794418de-4912-435c-8386-3e67d724b62f
 # ╟─5e2823df-75b6-42c1-816c-df081bc0df66
 # ╟─0b62a929-5f18-4b67-9c9b-85d86a749a6c
+# ╠═0f98b77a-7370-40c1-bab0-369afa95310e
+# ╠═16a1e2b1-228a-41cd-8c54-dfb3baf1bf2d
+# ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╟─bcbe2191-4dec-4bbd-b327-18367f7914dd

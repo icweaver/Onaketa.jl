@@ -43,12 +43,49 @@ The tutor and student availability is all shared in the same calendar, so we jus
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
 tutor_names = [
-	"Ian Weaver",
+	# "Ian Weaver",
 	"Alice Tutor",
 	"Bob Tutor",
 	"Chloe Tutor",
 	"Chima McGruder",
 ]
+
+# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
+# student_names = filter(∉(student_blacklist), keys(user_info)) |> collect |> sort
+
+# ╔═╡ bb51c56d-2c6d-4e37-b670-303f0564457d
+student_names = [
+	"Aaron Sandiford",
+	"Aleeya Ortega",
+	"Alyssa Ortega",
+	"Brycen Eason",
+	"Channing Brisbane",
+	"David Oche",
+	"David Singleton",
+	"Ethan Barlay",
+	"Kaliyah Benton",
+	"Keilana Alfaro",
+	"Léonie Mendy",
+	"Markayla Lejoi Denson",
+	"Miles Banks",
+	"Nahla Kaplan Rasheed",
+	"Nova Abdulla",
+	"Omega Harris",
+	"Saphere",
+	"Simone Hopson",
+]
+
+# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
+begin
+	reset_matrix
+	@mdx """
+	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
+	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
+	"""
+end
+
+# ╔═╡ 09c86cf1-cb82-4285-9f8f-aa9b477cac76
+
 
 # ╔═╡ d4cdbad9-c798-4753-b122-b13dfcff58ed
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
@@ -131,18 +168,6 @@ names_noapp = sort(filter(x -> occursin("NoApp", x), collect(keys(user_info))); 
 
 # ╔═╡ b8cfab6d-1f31-4766-b373-8393ee6aee21
 student_blacklist = names_unknown ∪ names_noapp ∪ tutor_names 
-
-# ╔═╡ 7c8f134a-a450-47ac-b923-f07e687f53ae
-student_names = filter(∉(student_blacklist), keys(user_info)) |> collect |> sort
-
-# ╔═╡ 13788e0e-10b8-44d1-8db3-625dd6e47240
-begin
-	reset_matrix
-	@mdx """
-	$(@bind tutor_names_selected MultiSelect(tutor_names; default=tutor_names))
-	$(@bind student_names_selected MultiSelect(student_names; default=student_names))
-	"""
-end
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -238,7 +263,7 @@ begin
 		xaxis = attr(fixedrange=true, title="Tutors"),
 		yaxis = attr(
 			fixedrange = true,
-			showticklabels = false,
+			# showticklabels = false,
 			autorange = "reversed",
 			title = "Students",
 		),
@@ -317,7 +342,7 @@ TimeZones = "~1.11.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.3"
 manifest_format = "2.0"
 project_hash = "5a22d5d071f25975f9601b2e2002e584d0947cfc"
 
@@ -996,7 +1021,7 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─30c2e53f-984f-4902-9fb9-fea2f75e9ab3
-# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╟─13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╠═57944788-2a17-4bf0-bd02-cbe8227a4280
 # ╠═14d2be49-4770-4fb2-af9c-33d7a4288981
@@ -1004,6 +1029,8 @@ version = "17.4.0+0"
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
 # ╠═b8cfab6d-1f31-4766-b373-8393ee6aee21
 # ╠═7c8f134a-a450-47ac-b923-f07e687f53ae
+# ╠═bb51c56d-2c6d-4e37-b670-303f0564457d
+# ╠═09c86cf1-cb82-4285-9f8f-aa9b477cac76
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
 # ╟─6166ca3f-13da-48ba-8944-7d9b70bf1adf
 # ╟─aeadea54-6781-4784-861f-dcaeed550711
