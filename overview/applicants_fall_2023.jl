@@ -36,6 +36,14 @@ md"""
 ## Responses (sorted by name)
 """
 
+# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# @mdx """
+# $([
+# 	@mdx "$(generate_report(i, row))"
+# 	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
+# ])
+# """
+
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(num, row)
 	@mdx """<h3>$(num)) $(row.student_name)</h3>
@@ -102,24 +110,42 @@ While the ranking within each feature is fairly objective, the feature priority 
 # ╔═╡ 6618ab98-78de-432b-bb34-d94b2feb9fbe
 selected_students = [
 	"Aaron Sandiford",
+	"Abigail Wilson",
 	"Aleeya Ortega",
 	"Alyssa Ortega",
+	"Brooklyn Thomas",
 	"Brycen Eason",
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
 	"Ethan Barlay",
+	"Gabriel Hassan",
+	"Jordyn Loud",
+	"Judah Worthy",
 	"Kaliyah Benton",
 	"Keilana Alfaro",
-	"Léonie Mendy",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
 	"Nahla Kaplan Rasheed",
+	"Nailah Gabrielle Cannon",
+	# "Narhaniiel Eshete", # No scheduling link, inbox full
 	"Nova Abdulla",
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
 ]
+
+# ╔═╡ 95cd60d4-7e19-468e-9b34-0d4e5012b655
+md"""
+From Filipe waitlist (high to low priority)
+
+```
+Gabriel Hassan
+Abigail Wilson
+Narhaniiel Eshete
+Brooklyn Thomas
+```
+"""
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -283,33 +309,35 @@ df = let
 	end
 end
 
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-@mdx """
-$([
-	@mdx "$(generate_report(i, row))"
-	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
-])
-"""
-
 # ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
 df_sorted = @chain df begin
 	@rsubset begin
 		:Submitted_at < DateTime(2023, 08, 13)
 	end
-	select(:student_name, features)
+	# select(:student_name, features)
 	sort(features)
 	# first(18)
 end
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
-@chain df begin
+df_selected = @chain df begin
 	@rsubset :student_name ∈ selected_students
-	@select :student_name :course_subject
+	# @select :student_name :course_subject
 	sort(:student_name)
 end
 
-# ╔═╡ 16a1e2b1-228a-41cd-8c54-dfb3baf1bf2d
-names(df)
+# ╔═╡ c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
+foreach(println, antijoin(df_sorted, df_selected; on=:student_name).student_name)
+
+# ╔═╡ e6b17509-f625-474f-83c9-ffeb8d9e1eb8
+for row ∈ eachrow(df_selected)
+	println(row.student_name)
+	println(row.student_age)
+	println(row.student_race_ethnicity)
+	println(row.course_name)
+	println(row.student_state)
+	println()
+end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -1978,15 +2006,17 @@ version = "3.5.0+0"
 # ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
-# ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
 # ╟─794418de-4912-435c-8386-3e67d724b62f
 # ╟─5e2823df-75b6-42c1-816c-df081bc0df66
-# ╟─0b62a929-5f18-4b67-9c9b-85d86a749a6c
+# ╠═c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
+# ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
 # ╠═0f98b77a-7370-40c1-bab0-369afa95310e
-# ╠═16a1e2b1-228a-41cd-8c54-dfb3baf1bf2d
+# ╠═e6b17509-f625-474f-83c9-ffeb8d9e1eb8
 # ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
+# ╟─95cd60d4-7e19-468e-9b34-0d4e5012b655
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╟─bcbe2191-4dec-4bbd-b327-18367f7914dd
