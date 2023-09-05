@@ -107,6 +107,9 @@ No immediate red flags stood out to me in the free response sections of the appl
 While the ranking within each feature is fairly objective, the feature priority order certainly is not. For example, switching the order of whether sorting by household size or household income first significantly changes which students land in the top 18, and I have no objective measure for which one should be a higher priority. I hate this part of the job.
 """
 
+# ╔═╡ 19abaf74-c42a-4ba7-94f8-6132c9f4e10c
+
+
 # ╔═╡ 6618ab98-78de-432b-bb34-d94b2feb9fbe
 selected_students = [
 	"Aaron Sandiford",
@@ -118,18 +121,20 @@ selected_students = [
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
+	"Dorien Omar Hughes",
 	"Ethan Barlay",
-	"Gabriel Hassan",
+	# "Gabriel Hassan",
 	"Jordyn Loud",
 	"Judah Worthy",
 	"Kaliyah Benton",
 	"Keilana Alfaro",
+	"Kennedy Burks",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
 	"Nahla Kaplan Rasheed",
 	"Nailah Gabrielle Cannon",
 	# "Narhaniiel Eshete", # No scheduling link, inbox full
-	"Nova Abdulla",
+	# "Nova Abdulla",
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
@@ -322,12 +327,14 @@ end
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 df_selected = @chain df begin
 	@rsubset :student_name ∈ selected_students
-	# @select :student_name :course_subject
 	sort(:student_name)
 end
 
 # ╔═╡ c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
 foreach(println, antijoin(df_sorted, df_selected; on=:student_name).student_name)
+
+# ╔═╡ d5a1de0d-415f-4710-a770-9411df75c523
+clipboard(sprint(show, "text/csv", select(df_selected, :student_email, :guardian1_email, :student_name)))
 
 # ╔═╡ e6b17509-f625-474f-83c9-ffeb8d9e1eb8
 for row ∈ eachrow(df_selected)
@@ -2014,6 +2021,8 @@ version = "3.5.0+0"
 # ╠═c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
 # ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
 # ╠═0f98b77a-7370-40c1-bab0-369afa95310e
+# ╠═19abaf74-c42a-4ba7-94f8-6132c9f4e10c
+# ╠═d5a1de0d-415f-4710-a770-9411df75c523
 # ╠═e6b17509-f625-474f-83c9-ffeb8d9e1eb8
 # ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
 # ╟─95cd60d4-7e19-468e-9b34-0d4e5012b655

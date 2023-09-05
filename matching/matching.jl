@@ -43,8 +43,8 @@ The tutor and student availability is all shared in the same calendar, so we jus
 
 # ╔═╡ 257cf5ff-7df6-4a23-9905-2fd6c8abe421
 tutor_names = [
-	"Filipe Cerqueira",
 	"Chima McGruder",
+	"Filipe Cerqueira",
 	"Gianni Sims",
 	"Gregory Cunningham",
 	"Haley Carrasco",
@@ -63,18 +63,20 @@ student_names = [
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
+	"Dorien Omar Hughes",
 	"Ethan Barlay",
-	"Gabriel Hassan",
+	# "Gabriel Hassan",
 	"Jordyn Loud",
 	"Judah Worthy",
 	"Kaliyah Benton",
 	"Keilana Alfaro",
+	"Kennedy Burks",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
 	"Nahla Kaplan Rasheed",
 	"Nailah Gabrielle Cannon",
 	# "Narhaniiel Eshete", # No scheduling link, inbox full
-	"Nova Abdulla",
+	# "Nova Abdulla",
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
@@ -167,6 +169,9 @@ names_unknown = sort(filter(x -> occursin("Unknown", x), collect(keys(user_info)
 
 # ╔═╡ 14d2be49-4770-4fb2-af9c-33d7a4288981
 names_noapp = sort(filter(x -> occursin("NoApp", x), collect(keys(user_info))); lt=natural)
+
+# ╔═╡ a4af126c-3a9d-487d-b442-c4098fc948e2
+user_info[tutor_names[1]]
 
 # ╔═╡ b8cfab6d-1f31-4766-b373-8393ee6aee21
 let
@@ -1032,6 +1037,7 @@ version = "17.4.0+0"
 # ╠═57944788-2a17-4bf0-bd02-cbe8227a4280
 # ╠═14d2be49-4770-4fb2-af9c-33d7a4288981
 # ╠═257cf5ff-7df6-4a23-9905-2fd6c8abe421
+# ╠═a4af126c-3a9d-487d-b442-c4098fc948e2
 # ╠═b8cfab6d-1f31-4766-b373-8393ee6aee21
 # ╠═bb51c56d-2c6d-4e37-b670-303f0564457d
 # ╟─d4cdbad9-c798-4753-b122-b13dfcff58ed
