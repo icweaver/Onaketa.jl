@@ -15,35 +15,32 @@ end
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
 md"""
 # Onaketa students - Fall 2023 🚀
+
+Sorted alphabetically by tutor first name, then student first name.
 """
 
-# ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
+# ╔═╡ 64204f64-73d6-453f-9054-aafaee658af8
 md"""
-# Notebook setup 🔧
+# Matching matrix
+
+Common times between tutors and students. May be useful for finding substitute tutors as well.
 """
 
-# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-TableOfContents()
+# ╔═╡ 7bbcdea1-0ab1-4aa1-8577-809050320391
 
-# ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
-md"""
-### Convenience functions
-"""
 
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(num, row)
 	@mdx """<h3>$(num)) $(row.student_name)</h3>
 
-	!!! note
-		**Submission date:** $(row.Submitted_at)
-	
+	!!! note " "
+		[**Schedule**]($(row.schedule))
+		
 		**Grade:** $(row.student_grade)
 		
 		**Age:** $(row.student_age)
 
 		**Race/ethnicity:** $(row.student_race_ethnicity)
-
-		**Household income:** $(row.house_income)
 	
 		**Household size:** $(row.house_size)
 
@@ -63,17 +60,17 @@ function generate_report(num, row)
 
 		**Other questions:** $(row.question_other)
 	"""
-end
+end;
 
 # ╔═╡ 0265500d-d6f0-4cdb-af4f-257bee7a917f
 to_cat(field, levels) = categorical(field;
 	levels,
 	ordered = true,
 	compress = true,
-)
+);
 
 # ╔═╡ 8404ca5a-b1ae-4d03-bf43-0033747437be
-clean_name(s) = ismissing(s) ? s : s |> strip |> lowercase
+clean_name(s) = ismissing(s) ? s : s |> strip |> lowercase;
 
 # ╔═╡ 52b9162e-7631-4a26-811a-cf2c72575f20
 function clean_grade(s)
@@ -97,7 +94,22 @@ function clean_grade(s)
 	else
 		s
 	end
-end
+end;
+
+# ╔═╡ b2f90e79-d9e1-49d3-8316-520a53851b8a
+function clean_re(s)
+	s_clean = clean_name(s)
+	ismissing(s) && return "Not reported"
+	if occursin("black", s_clean) || occursin("afr", s_clean)
+		"Black or African American"
+	elseif occursin("latin", s_clean)
+		"Latinx/Latina/Latino (non-white Hispanic)"
+	elseif occursin(" and ", s_clean) || occursin("mix", s_clean)
+		"Multiracial"
+	else
+		s
+	end
+end;
 
 # ╔═╡ c96d8756-01e5-4479-8ed6-e197425e5c3a
 function clean_subject(s)
@@ -114,22 +126,10 @@ function clean_subject(s)
 	else
 		"Other"
 	end
-end
+end;
 
-# ╔═╡ b2f90e79-d9e1-49d3-8316-520a53851b8a
-function clean_re(s)
-	s_clean = clean_name(s)
-	ismissing(s) && return "Not reported"
-	if occursin("black", s_clean) || occursin("afr", s_clean)
-		"Black or African American"
-	elseif occursin("latin", s_clean)
-		"Latinx/Latina/Latino (non-white Hispanic)"
-	elseif occursin(" and ", s_clean) || occursin("mix", s_clean)
-		"Multiracial"
-	else
-		s
-	end
-end
+# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+TableOfContents()
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
 df = let
@@ -201,22 +201,56 @@ tutor_students = Dict(
 		"Jordyn Loud",
 		"Keilana Alfaro",
 	],
-)
+);
+
+# ╔═╡ 41ee8585-0a26-45cb-add9-97db1e490d25
+students_tutor = let
+	d = Dict{String, String}()
+	
+	for (tutor, students) ∈ tutor_students
+		for student ∈ students
+			d[student] = tutor
+		end
+	end
+
+	d
+end;
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 df_selected = @chain df begin
-	@aside student_names = values(tutor_students)
-	@rsubset :student_name ∈ reduce(vcat, student_names)
-	sort(:student_name)
+	@rsubset :student_name ∈ keys(students_tutor)
+	@rtransform :tutor = students_tutor[:student_name]
 end;
 
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-@mdx """
-$([
-	@mdx "$(generate_report(i, row))"
-	for (i, row) in enumerate(eachrow(sort(df_selected, :student_name)))
-])
-"""
+# ╔═╡ fef8258b-811e-43fc-ac56-d2abe3296a23
+gdf = groupby(df_selected, :tutor; sort=true);
+
+# ╔═╡ 219b18a1-0f2b-4b0f-8ec8-746dff5ed485
+let
+	report = []
+
+	for (nt, sdf) ∈ pairs(gdf)
+		tutor_block = []
+		push!(tutor_block, @mdx "<h1>$(nt.tutor)</h2>")
+		for (i, row) ∈ enumerate(eachrow(sort(sdf, :student_name)))
+			push!(tutor_block, @mdx "$(generate_report(i, row))")
+		end
+		push!(report, tutor_block)
+	end
+
+	@mdx """
+	$(report)
+	"""
+end
+
+# ╔═╡ 7043b074-174e-4e7e-ad2e-3c95c8177d23
+@mdx """<i style="color: #ec008c">Good luck all!</i>"""
+
+# ╔═╡ 4fe6863c-5db6-447b-979b-3f478de3954d
+let
+	x = sort(df_selected, :student_name)[:, [:student_name, :course_name]]
+	clipboard(sprint(show, "text/csv", x))
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -708,19 +742,23 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
-# ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-# ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
-# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-# ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
+# ╟─64204f64-73d6-453f-9054-aafaee658af8
+# ╠═7bbcdea1-0ab1-4aa1-8577-809050320391
+# ╟─219b18a1-0f2b-4b0f-8ec8-746dff5ed485
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
-# ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╠═0f98b77a-7370-40c1-bab0-369afa95310e
-# ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
+# ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
+# ╟─68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╟─0f98b77a-7370-40c1-bab0-369afa95310e
+# ╟─fef8258b-811e-43fc-ac56-d2abe3296a23
+# ╟─6618ab98-78de-432b-bb34-d94b2feb9fbe
+# ╟─41ee8585-0a26-45cb-add9-97db1e490d25
 # ╟─fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
+# ╟─7043b074-174e-4e7e-ad2e-3c95c8177d23
+# ╠═4fe6863c-5db6-447b-979b-3f478de3954d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

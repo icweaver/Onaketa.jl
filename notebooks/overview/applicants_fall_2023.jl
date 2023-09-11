@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 15ba6dc9-2eaf-41c6-b4b4-0dc67b190822
+using PrettyTables
+
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using AlgebraOfGraphics, CairoMakie
@@ -107,9 +110,6 @@ No immediate red flags stood out to me in the free response sections of the appl
 While the ranking within each feature is fairly objective, the feature priority order certainly is not. For example, switching the order of whether sorting by household size or household income first significantly changes which students land in the top 18, and I have no objective measure for which one should be a higher priority. I hate this part of the job.
 """
 
-# ╔═╡ 19abaf74-c42a-4ba7-94f8-6132c9f4e10c
-
-
 # ╔═╡ 6618ab98-78de-432b-bb34-d94b2feb9fbe
 selected_students = [
 	"Aaron Sandiford",
@@ -138,6 +138,28 @@ selected_students = [
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
+]
+
+# ╔═╡ ed474fa7-250a-419b-b9ca-c6f8bbec14bd
+waitlist_students = [
+	"Davion C Brown",
+	"Nadia Juma",
+	"Léonie Mendy",
+	"Joëlle Mendy",
+	"Narhaniiel Eshete",
+	"Zenze Taylor",
+	"Gabriel Hassan",
+	"Nova Abdulla",
+	"Meshack Juma",
+]
+
+# ╔═╡ bd429138-aca3-4b53-90d7-16f41b17c572
+reject_students = [
+	"Cristian E Santos",
+	"Jasmine Bellinger",
+	"Gavin Mosi Morrison",
+	"Lee'Asha Imary Pough Alequin",
+	"Zaniya Bryant",
 ]
 
 # ╔═╡ 95cd60d4-7e19-468e-9b34-0d4e5012b655
@@ -316,13 +338,22 @@ end
 
 # ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
 df_sorted = @chain df begin
-	@rsubset begin
-		:Submitted_at < DateTime(2023, 08, 13)
-	end
+	# @rsubset begin
+	# 	:Submitted_at < DateTime(2023, 08, 13)
+	# end
 	# select(:student_name, features)
 	sort(features)
 	# first(18)
 end
+
+# ╔═╡ 97ab6cd7-b8e1-4419-af92-497dc0c4dce9
+df_extra = @chain df_sorted begin
+	@rsubset :student_name ∉ selected_students
+	select(:student_name, features, :Submitted_at)
+end
+
+# ╔═╡ 86b5ef05-112b-4f2f-853c-3bf574de2cf0
+clipboard(sprint(show, "text/csv", df_extra))
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 df_selected = @chain df begin
@@ -345,6 +376,25 @@ for row ∈ eachrow(df_selected)
 	println(row.student_state)
 	println()
 end
+
+# ╔═╡ 6b04c951-4e16-4dbd-a151-ace92a0f197e
+df_waitlist = @chain df begin
+	@rsubset :student_name ∈ waitlist_students
+	@select :student_email :guardian1_email :student_name
+end
+
+# ╔═╡ a0a4c75f-ee74-4104-971f-c777ce01d617
+clipboard(sprint(show, "text/csv", df_waitlist))
+
+# ╔═╡ bd213ad4-d18e-486b-bb16-26b70300fbe2
+df_reject = @chain df begin
+	@rsubset :student_name ∈ reject_students
+	@select :student_email :guardian1_email :student_name
+	@transform :guardian1_email = "ian@oanketa.org"
+end
+
+# ╔═╡ 5ff2e3db-e302-44c6-aca3-05428a8ad820
+clipboard(sprint(show, "text/csv", df_reject))
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -496,6 +546,7 @@ MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
@@ -508,6 +559,7 @@ MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.0"
 PlutoUI = "~0.7.50"
+PrettyTables = "~2.2.7"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -516,7 +568,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "32f9dd3f44577aa2ab9b60b8a9e9d6fd6d8fd293"
+project_hash = "689abb5bff713447dd54ba4258f13a1d02879ef6"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -2016,15 +2068,23 @@ version = "3.5.0+0"
 # ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
-# ╟─794418de-4912-435c-8386-3e67d724b62f
+# ╠═794418de-4912-435c-8386-3e67d724b62f
 # ╟─5e2823df-75b6-42c1-816c-df081bc0df66
 # ╠═c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
 # ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
+# ╠═15ba6dc9-2eaf-41c6-b4b4-0dc67b190822
+# ╠═97ab6cd7-b8e1-4419-af92-497dc0c4dce9
+# ╠═86b5ef05-112b-4f2f-853c-3bf574de2cf0
 # ╠═0f98b77a-7370-40c1-bab0-369afa95310e
-# ╠═19abaf74-c42a-4ba7-94f8-6132c9f4e10c
 # ╠═d5a1de0d-415f-4710-a770-9411df75c523
 # ╠═e6b17509-f625-474f-83c9-ffeb8d9e1eb8
 # ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
+# ╠═ed474fa7-250a-419b-b9ca-c6f8bbec14bd
+# ╠═6b04c951-4e16-4dbd-a151-ace92a0f197e
+# ╠═a0a4c75f-ee74-4104-971f-c777ce01d617
+# ╠═bd429138-aca3-4b53-90d7-16f41b17c572
+# ╠═bd213ad4-d18e-486b-bb16-26b70300fbe2
+# ╠═5ff2e3db-e302-44c6-aca3-05428a8ad820
 # ╟─95cd60d4-7e19-468e-9b34-0d4e5012b655
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
