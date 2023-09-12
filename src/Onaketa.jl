@@ -1,6 +1,8 @@
 module Onaketa
 
-export download_schedule, extract_times
+using MarkdownLiteral: @mdx
+
+export download_schedules, extract_times, get_matches, plot_matches, @mdx
 
 include("matching.jl")
 

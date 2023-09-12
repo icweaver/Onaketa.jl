@@ -5,9 +5,14 @@ version = "1.0.0-DEV"
 
 [deps]
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
+NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [compat]
