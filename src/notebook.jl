@@ -28,10 +28,16 @@ using Onaketa, PlutoUI
 md"""
 # Student Tutor Matching 📆
 
-A top-level overview of all of the common times between tutors and students based on their live [whenisgood](https://whenisgood.net/) schedules. To run this notebook locally, first download the external [`Onaketa.jl`](https://github.com/icweaver/Onaketa.jl) package.
+A top-level overview of all of the common times between tutors and students based on their live [whenisgood](https://whenisgood.net/) schedules. Most things will run directly on this site, but to have full access to the interactive controls, it's recommened to run this notebook on your local computer. To do this, first download the external [`Onaketa.jl`](https://github.com/icweaver/Onaketa.jl) package.
 
 !!! tip
-	See [here](https://pkgdocs.julialang.org/v1/managing-packages/#Adding-unregistered-packages) for downloading unregistered Julia packages.
+	To download the [unregistered Julia package](https://pkgdocs.julialang.org/v1/managing-packages/#Adding-unregistered-packages), `Onaketa.jl`, first [install Julia](https://julialang.org/downloads/) and then paste this into the [package REPL](https://docs.julialang.org/en/v1/stdlib/Pkg/):
+
+	```julia
+		pkg> add https://github.com/icweaver/Onaketa.jl
+	```
+
+	This assumes that you have [`Pluto.jl`](https://plutojl.org/) (Julia's take on Jupyter notebooks) installed into your global environment.
 """
 
 # ╔═╡ 222dd02f-8b56-413a-b32f-372013a41c38

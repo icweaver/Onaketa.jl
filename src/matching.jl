@@ -1,7 +1,7 @@
 using HTTP, Gumbo, Cascadia
 using Dates, TimeZones
 using OrderedCollections, DataFramesMeta, NamedArrays
-using MarkdownLiteral, PlutoPlotly
+using PlutoPlotly
 
 const DAY_TIME_FMT = dateformat"e II:MM p Z"
 
