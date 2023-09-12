@@ -25,8 +25,10 @@ end
 using Onaketa, PlutoUI
 
 # ╔═╡ e9e1d92d-9a84-4240-ab1a-137869132e59
+begin
+section1_title = "Student Tutor Matching 📆"
 md"""
-## Student Tutor Matching 📆
+## 1) $(section1_title)
 
 A top-level overview of all of the common times between tutors and selected students based on their live [whenisgood](https://whenisgood.net/) schedules. Most things will run directly on this site. To have full access to the interactive controls, it's recommened to run this notebook on your local computer. To do this, first download the external [`Onaketa.jl`](https://github.com/icweaver/Onaketa.jl) package.
 
@@ -39,17 +41,7 @@ A top-level overview of all of the common times between tutors and selected stud
 
 	This assumes that you have [`Pluto.jl`](https://plutojl.org/) (Julia's take on Jupyter notebooks) installed into your global environment.
 """
-
-# ╔═╡ ba563197-2c9d-481e-ad46-7934e12afb47
-md"""
-### Download schedules
-"""
-
-# ╔═╡ 7486fc9a-4bf8-4094-8ab1-65bd3d566238
-@bind URL confirm(TextField(50;default="https://whenisgood.net/2xfibm8/onaketa2023/results/qjn7dng"))
-
-# ╔═╡ be646c2d-febe-448f-84cf-ee88072d33d0
-user_info = URL |> download_schedules |> extract_times;
+end
 
 # ╔═╡ 222dd02f-8b56-413a-b32f-372013a41c38
 md"""
@@ -68,6 +60,17 @@ Additionally, if running locally:
 
 # ╔═╡ 9dc32763-615b-4388-a32e-88f471b64a74
 @bind reset_matrix Button("Reset")
+
+# ╔═╡ ba563197-2c9d-481e-ad46-7934e12afb47
+md"""
+### Download schedules
+"""
+
+# ╔═╡ 7486fc9a-4bf8-4094-8ab1-65bd3d566238
+@bind URL confirm(TextField(50;default="https://whenisgood.net/2xfibm8/onaketa2023/results/qjn7dng"))
+
+# ╔═╡ be646c2d-febe-448f-84cf-ee88072d33d0
+user_info = URL |> download_schedules |> extract_times;
 
 # ╔═╡ 67ffd46f-707a-4875-a9e3-9e98fb0eb002
 md"""
@@ -133,6 +136,27 @@ plot_matches(N_common_matrix, dt_common_matrix;
 	student_names_selected,
 )
 
+# ╔═╡ 4adfa761-2cb8-4db7-96a5-5380db39ebcb
+begin
+title_section2 = "2) Student roster"
+@mdx """
+## $(title_section2)
+
+Current tutor-student assignments.
+"""
+end
+
+# ╔═╡ b515a252-a4fa-4e35-b2e7-688682b7ac56
+@mdx """
+# Student overview
+
+Below are two main sections
+
+1. `$(title_section1)`: Visualizes the overlap in schedules for all tutors and selected students for the program.
+
+2. `$(title_section2)`: Tutor student assignments along with student summaries.
+"""
+
 # ╔═╡ 22a2fd6a-8ca1-4f32-88e1-1620c667ddb7
 md"""
 ---
@@ -147,18 +171,20 @@ md"""
 TableOfContents()
 
 # ╔═╡ Cell order:
+# ╠═b515a252-a4fa-4e35-b2e7-688682b7ac56
 # ╟─e9e1d92d-9a84-4240-ab1a-137869132e59
-# ╟─ba563197-2c9d-481e-ad46-7934e12afb47
-# ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
-# ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─222dd02f-8b56-413a-b32f-372013a41c38
 # ╟─4fe092a2-023d-4147-9123-94dda83bc001
 # ╟─9dc32763-615b-4388-a32e-88f471b64a74
 # ╟─70d09e5c-70b8-4792-8f1a-74a2220733f0
+# ╟─ba563197-2c9d-481e-ad46-7934e12afb47
+# ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
+# ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
 # ╟─67e4e384-8902-436a-bb8d-83d02a88e3d4
 # ╟─4af03cb3-da47-4fac-b781-ab8c0014ecb9
 # ╠═21de3fc2-1bb1-4bee-a0a6-56a1bbf117d2
+# ╟─4adfa761-2cb8-4db7-96a5-5380db39ebcb
 # ╟─22a2fd6a-8ca1-4f32-88e1-1620c667ddb7
 # ╟─a0c531a5-ff2a-4939-a6a5-8ad31e7aae44
 # ╠═b2cee969-3010-45ce-b4ff-4e637477ed4e
