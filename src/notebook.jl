@@ -26,9 +26,9 @@ using Onaketa, PlutoUI
 
 # ╔═╡ e9e1d92d-9a84-4240-ab1a-137869132e59
 begin
-section1_title = "Student Tutor Matching 📆"
+title_section1 = "Student Tutor Matching 📆"
 md"""
-## 1) $(section1_title)
+## 1) $(title_section1)
 
 A top-level overview of all of the common times between tutors and selected students based on their live [whenisgood](https://whenisgood.net/) schedules. Most things will run directly on this site. To have full access to the interactive controls, it's recommened to run this notebook on your local computer. To do this, first download the external [`Onaketa.jl`](https://github.com/icweaver/Onaketa.jl) package.
 
@@ -77,18 +77,7 @@ md"""
 ### Find matches
 """
 
-# ╔═╡ 67e4e384-8902-436a-bb8d-83d02a88e3d4
-tutor_names = [
-	"Chima McGruder",
-	"Filipe Cerqueira",
-	"Gianni Sims",
-	"Gregory Cunningham",
-	"Haley Carrasco",
-	"Ian Weaver",
-	"Pheona Williams",
-]
-
-# ╔═╡ 4af03cb3-da47-4fac-b781-ab8c0014ecb9
+# ╔═╡ 9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
 student_names = [
 	"Aaron Sandiford",
 	"Abigail Wilson",
@@ -113,6 +102,17 @@ student_names = [
 	"Simone Hopson",
 ]
 
+# ╔═╡ 3edda429-067e-4c80-b5f8-33d9bd4c4b86
+tutor_names = [
+	"Chima McGruder",
+	"Filipe Cerqueira",
+	"Gianni Sims",
+	"Gregory Cunningham",
+	"Haley Carrasco",
+	"Ian Weaver",
+	"Pheona Williams",
+]
+
 # ╔═╡ 70d09e5c-70b8-4792-8f1a-74a2220733f0
 begin
 	reset_matrix
@@ -122,11 +122,11 @@ begin
 	"""
 end
 
-# ╔═╡ 21de3fc2-1bb1-4bee-a0a6-56a1bbf117d2
-# Number of matches, corresponding tooltip data
+# ╔═╡ cd1ae99b-bacf-43ea-b5cb-40a78d177025
+# Number of matches and corresponding tooltip data
 N_common_matrix, dt_common_matrix = get_matches(user_info;
 	tutor_names, student_names,
-)
+);
 
 # ╔═╡ 4fe092a2-023d-4147-9123-94dda83bc001
 plot_matches(N_common_matrix, dt_common_matrix;
@@ -138,9 +138,9 @@ plot_matches(N_common_matrix, dt_common_matrix;
 
 # ╔═╡ 4adfa761-2cb8-4db7-96a5-5380db39ebcb
 begin
-title_section2 = "2) Student roster"
-@mdx """
-## $(title_section2)
+title_section2 = "Student roster"
+md"""
+## 2) $(title_section2)
 
 Current tutor-student assignments.
 """
@@ -148,14 +148,17 @@ end
 
 # ╔═╡ b515a252-a4fa-4e35-b2e7-688682b7ac56
 @mdx """
-# Student overview
+# **Student overview - Fall 2023 🚀**
 
-Below are two main sections
+Below are two main sections,
 
-1. `$(title_section1)`: Visualizes the overlap in schedules for all tutors and selected students for the program.
+1. $(title_section1): Visualizes the overlap in schedules for all tutors and selected students for the program.
 
-2. `$(title_section2)`: Tutor student assignments along with student summaries.
+2. $(title_section2): Tutor student assignments along with student summaries.
 """
+
+# ╔═╡ a4d3a78f-0c0e-4d9e-96d6-36a96fa277b3
+
 
 # ╔═╡ 22a2fd6a-8ca1-4f32-88e1-1620c667ddb7
 md"""
@@ -171,7 +174,7 @@ md"""
 TableOfContents()
 
 # ╔═╡ Cell order:
-# ╠═b515a252-a4fa-4e35-b2e7-688682b7ac56
+# ╟─b515a252-a4fa-4e35-b2e7-688682b7ac56
 # ╟─e9e1d92d-9a84-4240-ab1a-137869132e59
 # ╟─222dd02f-8b56-413a-b32f-372013a41c38
 # ╟─4fe092a2-023d-4147-9123-94dda83bc001
@@ -181,10 +184,11 @@ TableOfContents()
 # ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
 # ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
-# ╟─67e4e384-8902-436a-bb8d-83d02a88e3d4
-# ╟─4af03cb3-da47-4fac-b781-ab8c0014ecb9
-# ╠═21de3fc2-1bb1-4bee-a0a6-56a1bbf117d2
+# ╟─9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
+# ╟─3edda429-067e-4c80-b5f8-33d9bd4c4b86
+# ╠═cd1ae99b-bacf-43ea-b5cb-40a78d177025
 # ╟─4adfa761-2cb8-4db7-96a5-5380db39ebcb
+# ╠═a4d3a78f-0c0e-4d9e-96d6-36a96fa277b3
 # ╟─22a2fd6a-8ca1-4f32-88e1-1620c667ddb7
 # ╟─a0c531a5-ff2a-4939-a6a5-8ad31e7aae44
 # ╠═b2cee969-3010-45ce-b4ff-4e637477ed4e
