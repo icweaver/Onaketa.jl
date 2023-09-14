@@ -173,13 +173,11 @@ tutor_students = Dict(
 	],
 	"Gregory Cunningham" => [
 		"David Singleton",
-		"Dorien Omar Hughes",
 		"Nailah Gabrielle Cannon",
 	],
 	"Haley Carrasco" => [
 		"Aleeya Ortega",
 		"Alyssa Ortega",
-		"Brooklyn Thomas",
 		"Omega Harris",
 	],
 	"Ian Weaver" => [
@@ -727,19 +725,19 @@ version = "17.4.0+0"
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
 # ╟─219b18a1-0f2b-4b0f-8ec8-746dff5ed485
-# ╠═720e6d9b-ce67-457c-9a79-b18754b56516
-# ╠═0265500d-d6f0-4cdb-af4f-257bee7a917f
-# ╠═8404ca5a-b1ae-4d03-bf43-0033747437be
-# ╠═52b9162e-7631-4a26-811a-cf2c72575f20
-# ╠═b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╠═c96d8756-01e5-4479-8ed6-e197425e5c3a
-# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╠═0f98b77a-7370-40c1-bab0-369afa95310e
-# ╠═fef8258b-811e-43fc-ac56-d2abe3296a23
-# ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
-# ╠═41ee8585-0a26-45cb-add9-97db1e490d25
-# ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
+# ╟─720e6d9b-ce67-457c-9a79-b18754b56516
+# ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
+# ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
+# ╟─52b9162e-7631-4a26-811a-cf2c72575f20
+# ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
+# ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
+# ╟─68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
+# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╟─0f98b77a-7370-40c1-bab0-369afa95310e
+# ╟─fef8258b-811e-43fc-ac56-d2abe3296a23
+# ╟─6618ab98-78de-432b-bb34-d94b2feb9fbe
+# ╟─41ee8585-0a26-45cb-add9-97db1e490d25
+# ╟─fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 # ╟─7043b074-174e-4e7e-ad2e-3c95c8177d23
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
