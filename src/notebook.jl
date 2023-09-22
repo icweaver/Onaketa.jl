@@ -93,6 +93,7 @@ student_names = [
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
+	"Davion C Brown",
 	"Ethan Barlay",
 	"Jordyn Loud",
 	"Judah Worthy",
@@ -101,12 +102,16 @@ student_names = [
 	"Kennedy Burks",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
+	"Nadia Juma",
 	"Nahla Kaplan Rasheed",
 	"Nailah Gabrielle Cannon",
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
 ]
+
+# ╔═╡ 170b9ad9-458f-48bf-abe3-f8fae598269f
+length(student_names)
 
 # ╔═╡ 3edda429-067e-4c80-b5f8-33d9bd4c4b86
 tutor_names = [
@@ -196,7 +201,8 @@ TableOfContents()
 # ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
 # ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
-# ╟─9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
+# ╠═9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
+# ╠═170b9ad9-458f-48bf-abe3-f8fae598269f
 # ╟─3edda429-067e-4c80-b5f8-33d9bd4c4b86
 # ╠═cd1ae99b-bacf-43ea-b5cb-40a78d177025
 # ╟─4adfa761-2cb8-4db7-96a5-5380db39ebcb

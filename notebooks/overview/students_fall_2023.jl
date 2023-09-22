@@ -173,11 +173,13 @@ tutor_students = Dict(
 	],
 	"Gregory Cunningham" => [
 		"David Singleton",
+		"Davion C Brown",
 		"Nailah Gabrielle Cannon",
 	],
 	"Haley Carrasco" => [
 		"Aleeya Ortega",
 		"Alyssa Ortega",
+		"Nadia Juma",
 		"Omega Harris",
 	],
 	"Ian Weaver" => [
