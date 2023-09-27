@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.29
 
 using Markdown
 using InteractiveUtils
@@ -93,13 +93,13 @@ student_names = [
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
-	"Davion C Brown",
 	"Ethan Barlay",
 	"Jordyn Loud",
 	"Judah Worthy",
 	"Kaliyah Benton",
 	"Keilana Alfaro",
 	"Kennedy Burks",
+	"Léonie Mendy",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
 	"Nadia Juma",
@@ -109,9 +109,6 @@ student_names = [
 	"Saphere",
 	"Simone Hopson",
 ]
-
-# ╔═╡ 170b9ad9-458f-48bf-abe3-f8fae598269f
-length(student_names)
 
 # ╔═╡ 3edda429-067e-4c80-b5f8-33d9bd4c4b86
 tutor_names = [
@@ -202,7 +199,6 @@ TableOfContents()
 # ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
 # ╠═9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
-# ╠═170b9ad9-458f-48bf-abe3-f8fae598269f
 # ╟─3edda429-067e-4c80-b5f8-33d9bd4c4b86
 # ╠═cd1ae99b-bacf-43ea-b5cb-40a78d177025
 # ╟─4adfa761-2cb8-4db7-96a5-5380db39ebcb

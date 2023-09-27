@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.29
 
 using Markdown
 using InteractiveUtils
@@ -173,7 +173,7 @@ tutor_students = Dict(
 	],
 	"Gregory Cunningham" => [
 		"David Singleton",
-		"Davion C Brown",
+		"Léonie Mendy",
 		"Nailah Gabrielle Cannon",
 	],
 	"Haley Carrasco" => [
