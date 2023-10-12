@@ -161,18 +161,17 @@ tutor_students = Dict(
 		"Saphere",
 	],
 	"Filipe Cerqueira" => [
-		"Brycen Eason",
 		"Channing Brisbane",
+		"Joëlle Mendy",
 		"Markayla Lejoi Denson",
 	],
 	"Gianni Sims" => [
 		"Simone Hopson",
 		"Ethan Barlay",
-		"Kaliyah Benton",
 		"Kennedy Burks",
 	],
 	"Gregory Cunningham" => [
-		"David Singleton",
+		"Gabriel Hassan",
 		"Léonie Mendy",
 		"Nailah Gabrielle Cannon",
 	],
@@ -183,13 +182,16 @@ tutor_students = Dict(
 		"Omega Harris",
 	],
 	"Ian Weaver" => [
-		"Nahla Kaplan Rasheed",
 		"David Oche",
 		"Judah Worthy",
+		"Kimathi Bradford-Cuff",
+		"Nahla Kaplan Rasheed",
+
 	],
 	"Pheona Williams" => [
 		"Jordyn Loud",
 		"Keilana Alfaro",
+		"Zenze Taylor",
 	],
 );
 

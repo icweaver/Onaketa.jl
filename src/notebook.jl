@@ -94,9 +94,9 @@ student_names = [
 	"David Oche",
 	"David Singleton",
 	"Ethan Barlay",
+	"Joëlle Mendy",
 	"Jordyn Loud",
 	"Judah Worthy",
-	"Kaliyah Benton",
 	"Keilana Alfaro",
 	"Kennedy Burks",
 	"Léonie Mendy",
@@ -108,6 +108,7 @@ student_names = [
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
+	"Zenze Taylor",
 ]
 
 # ╔═╡ 3edda429-067e-4c80-b5f8-33d9bd4c4b86
@@ -118,7 +119,7 @@ tutor_names = [
 	"Gregory Cunningham",
 	"Haley Carrasco",
 	"Ian Weaver",
-	"Pheona Williams",
+	"LaNell Williams",
 ]
 
 # ╔═╡ 70d09e5c-70b8-4792-8f1a-74a2220733f0
@@ -193,13 +194,13 @@ TableOfContents()
 # ╟─50f2fd10-9ec4-4ecf-a694-7dc56695d3a1
 # ╟─4fe092a2-023d-4147-9123-94dda83bc001
 # ╟─9dc32763-615b-4388-a32e-88f471b64a74
-# ╟─70d09e5c-70b8-4792-8f1a-74a2220733f0
+# ╠═70d09e5c-70b8-4792-8f1a-74a2220733f0
 # ╟─ba563197-2c9d-481e-ad46-7934e12afb47
 # ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
 # ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
 # ╠═9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
-# ╟─3edda429-067e-4c80-b5f8-33d9bd4c4b86
+# ╠═3edda429-067e-4c80-b5f8-33d9bd4c4b86
 # ╠═cd1ae99b-bacf-43ea-b5cb-40a78d177025
 # ╟─4adfa761-2cb8-4db7-96a5-5380db39ebcb
 # ╠═a4d3a78f-0c0e-4d9e-96d6-36a96fa277b3

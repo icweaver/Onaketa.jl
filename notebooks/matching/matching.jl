@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.29
 
 using Markdown
 using InteractiveUtils
@@ -49,7 +49,7 @@ tutor_names = [
 	"Gregory Cunningham",
 	"Haley Carrasco",
 	"Ian Weaver",
-	"Pheona Williams",
+	"LaNell Williams",
 ]
 
 # ╔═╡ bb51c56d-2c6d-4e37-b670-303f0564457d
@@ -59,24 +59,20 @@ student_names = [
 	"Aleeya Ortega",
 	"Alyssa Ortega",
 	"Brooklyn Thomas",
-	"Brycen Eason",
 	"Channing Brisbane",
 	"David Oche",
 	"David Singleton",
 	"Dorien Omar Hughes",
 	"Ethan Barlay",
-	# "Gabriel Hassan",
 	"Jordyn Loud",
 	"Judah Worthy",
-	"Kaliyah Benton",
 	"Keilana Alfaro",
 	"Kennedy Burks",
 	"Markayla Lejoi Denson",
 	"Miles Banks",
 	"Nahla Kaplan Rasheed",
 	"Nailah Gabrielle Cannon",
-	# "Narhaniiel Eshete", # No scheduling link, inbox full
-	# "Nova Abdulla",
+	# "Narhaniiel Eshete",
 	"Omega Harris",
 	"Saphere",
 	"Simone Hopson",
