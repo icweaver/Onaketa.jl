@@ -169,6 +169,7 @@ tutor_students = Dict(
 		"Simone Hopson",
 		"Ethan Barlay",
 		"Kennedy Burks",
+		"Nova Abdulla",
 	],
 	"Gregory Cunningham" => [
 		"Gabriel Hassan",
