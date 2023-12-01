@@ -12,12 +12,33 @@ df = CSV.read("data/timesheet_log.csv", DataFrame)
 
 # ╔═╡ 398a2202-f6ff-4ae1-a01f-2150966e7524
 gdf = @chain df begin
+	sort([:category, :student_name])
 	@rtransform $[:y, :m, :d] = yearmonthday(:reported_date)
-	groupby([:team_member, :y, :m])
-end
+	groupby([:team_member, :y, :m]; sort=true)
+end;
 
 # ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
-gdf[("Gianni Sims", 2023, 11)]
+df_team_member = gdf[("Gianni Sims", 2023, 11)]
+
+# ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
+@select df_team_member begin
+	:reported_date
+	:category
+	:duration_hrs
+	:rate
+	:student_name
+	:student_name_other
+	:notes
+end
+
+# ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
+@chain df_team_member begin
+	groupby(:category)
+	@combine begin
+		:total_hrs = sum(:duration_hrs)
+		# :pay = 35 * :total_hrs
+	end
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -470,5 +491,7 @@ version = "17.4.0+0"
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
+# ╠═4df7bcbb-3412-4be6-a086-5353d46b5765
+# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
