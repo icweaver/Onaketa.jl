@@ -21,7 +21,7 @@ gdf = @chain df begin
 end;
 
 # ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
-team_member_name = "Gianni Sims"
+team_member_name = "Filipe Cerqueira"
 
 # ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
 df_team_member = gdf[(team_member_name, 2023, 11)];
@@ -53,13 +53,13 @@ team_member_total_pay = sum(team_member_pay_summary.pay)
 
 # ╔═╡ aa30b0b2-481a-4e12-8923-8f64d42aa21e
 md"""
-$(team_member_name)
+**Team member:** $(team_member_name)
 
-$(team_member_total_pay)
+**Total pay:** $(team_member_total_pay)
 
-$(team_member_pay_summary)
+**Pay summary:** $(team_member_pay_summary)
 
-$(team_member_log)
+**Timesheet entries:** $(team_member_log)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -515,7 +515,7 @@ version = "17.4.0+0"
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
-# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
+# ╟─9e8a9329-a85d-407d-8289-c79477bf2162
 # ╠═ab491bd9-50a0-45a4-9104-7935afecb5e9
 # ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╠═aa30b0b2-481a-4e12-8923-8f64d42aa21e
