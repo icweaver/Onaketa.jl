@@ -20,11 +20,14 @@ gdf = @chain df begin
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
+# ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
+team_member_name = "Gianni Sims"
+
 # ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
-df_team_member = gdf[("Ian Weaver", 2023, 11)];
+df_team_member = gdf[(team_member_name, 2023, 11)];
 
 # ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
-@select df_team_member begin
+team_member_log = @select df_team_member begin
 	:reported_date
 	:category
 	:duration_hrs
@@ -35,7 +38,7 @@ df_team_member = gdf[("Ian Weaver", 2023, 11)];
 end
 
 # ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
-df_summary = @chain df_team_member begin
+team_member_pay_summary = @chain df_team_member begin
 	groupby(:category)
 	@combine begin
 		:total_hrs = sum(:duration_hrs)
@@ -46,7 +49,18 @@ df_summary = @chain df_team_member begin
 end
 
 # ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
-sum(df_summary.pay)
+team_member_total_pay = sum(team_member_pay_summary.pay)
+
+# ╔═╡ aa30b0b2-481a-4e12-8923-8f64d42aa21e
+md"""
+$(team_member_name)
+
+$(team_member_total_pay)
+
+$(team_member_pay_summary)
+
+$(team_member_log)
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -502,6 +516,8 @@ version = "17.4.0+0"
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
 # ╠═9e8a9329-a85d-407d-8289-c79477bf2162
+# ╠═ab491bd9-50a0-45a4-9104-7935afecb5e9
 # ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+# ╠═aa30b0b2-481a-4e12-8923-8f64d42aa21e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
