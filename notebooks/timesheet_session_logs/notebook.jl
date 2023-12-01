@@ -7,6 +7,9 @@ using InteractiveUtils
 # ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
 using CSV, DataFramesMeta, PlutoUI, Dates
 
+# ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
+const RATE = 35.00
+
 # ╔═╡ 266ee10b-299e-42f0-b9b1-c4dd9e10a545
 df = CSV.read("data/timesheet_log.csv", DataFrame);
 
@@ -32,13 +35,18 @@ df_team_member = gdf[("Ian Weaver", 2023, 11)];
 end
 
 # ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
-@chain df_team_member begin
+df_summary = @chain df_team_member begin
 	groupby(:category)
 	@combine begin
 		:total_hrs = sum(:duration_hrs)
-		# :pay = 35 * :total_hrs
+	end
+	@transform begin
+		:pay = RATE * :total_hrs
 	end
 end
+
+# ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+sum(df_summary.pay)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -487,11 +495,13 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╠═3afefd61-24af-4547-b969-2c98729e916b
 # ╠═b458a412-8fdf-11ee-21fc-39ca9d7aec91
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
 # ╠═9e8a9329-a85d-407d-8289-c79477bf2162
+# ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
