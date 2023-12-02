@@ -39,6 +39,13 @@ gdf = @chain df begin
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
+# ╔═╡ 0b5d7cb1-d326-41e1-82a3-6e837e46758d
+md"""
+|           |               |
+|-----------|---------------|
+| Something | This is a very long line that breaks into two. This is a very long line that breaks into two.This is a very long line that breaks into two.This is a very long line that breaks into two.|
+"""
+
 # ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
 @bind team_member_name Select([
 	"Adia Imara",
@@ -58,7 +65,10 @@ df_team_member = gdf[(team_member_name, 2023, 11)];
 team_member_pay_summary = @chain df_team_member begin
 	groupby(:category)
 	@combine :total_hrs = sum(:hours)
-	@transform :pay = RATE * :total_hrs
+	@transform begin
+		:rate = 35.00
+		:pay = RATE * :total_hrs
+	end
 end
 
 # ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
@@ -86,7 +96,7 @@ function format_table(df)
 		"\\begin{table}" => "\\begin{table}[htb]",
 		"tabular" => "tabularx",
 		"{l" => "{\\linewidth}{l",
-		"l}" => "X}",
+		"l}" => ">{\\raggedright\\arraybackslash}X}",
 	)
 end
 
@@ -97,6 +107,7 @@ report = """
 \\usepackage[utf8]{inputenc}
 \\usepackage{tabularx}
 \\usepackage[table]{xcolor}
+\\usepackage{array}
 
 \\begin{document}
 \\rowcolors{1}{white}{gray!25}
@@ -104,8 +115,9 @@ report = """
 Name: $(team_member_name)
 
 Summary:
-
 $(format_table(team_member_pay_summary))
+
+Total: $(team_member_total_pay)
 
 Log:
 $(format_table(team_member_log))
@@ -583,7 +595,8 @@ version = "17.4.0+0"
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
-# ╟─9e8a9329-a85d-407d-8289-c79477bf2162
+# ╠═0b5d7cb1-d326-41e1-82a3-6e837e46758d
+# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
 # ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
 # ╟─8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╠═4df7bcbb-3412-4be6-a086-5353d46b5765
