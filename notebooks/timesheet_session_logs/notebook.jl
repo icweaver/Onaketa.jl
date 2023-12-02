@@ -14,13 +14,10 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 46d69c6c-76b7-40f1-94d7-49ed6eaa6b36
-using Printf
-
 # ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
 begin
 	using CSV, DataFramesMeta, PlutoUI, Dates
-	using Tectonic, PrettyTables
+	using Tectonic, PrettyTables, Printf
 end
 
 # ╔═╡ 1f8ba080-95d6-4e60-871e-1929aaf59ddf
@@ -611,7 +608,6 @@ version = "17.4.0+0"
 # ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
 # ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
 # ╟─9d19194a-5bb6-4857-88ef-ddd638ed4e6a
-# ╠═46d69c6c-76b7-40f1-94d7-49ed6eaa6b36
 # ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
