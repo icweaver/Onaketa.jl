@@ -14,6 +14,9 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ 46d69c6c-76b7-40f1-94d7-49ed6eaa6b36
+using Printf
+
 # ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
 begin
 	using CSV, DataFramesMeta, PlutoUI, Dates
@@ -57,7 +60,7 @@ function format_table(df; linewidth=false)
 		# wrap_table = true,
 		wrap_table = true,
 		# wrap_table_environment = "table",
-		formatters = ft_printf("%5.2f")
+		formatters = ft_printf("%.2f")
 	)
 	replace(s,
 		"\\begin{table}" => "\\begin{table}[h!]",
@@ -108,6 +111,7 @@ end
 # ╔═╡ 815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 report = """
 \\documentclass{article}
+
 \\usepackage[margin=0.5in]{geometry}
 \\usepackage[utf8]{inputenc}
 \\usepackage[T1]{fontenc}
@@ -116,15 +120,15 @@ report = """
 \\usepackage[table]{xcolor}
 \\usepackage{array}
 
-\\begin{document}
 \\rowcolors{1}{white}{gray!25}
 \\def\\arraystretch{1.5}%
 
+\\begin{document}
 \\textbf{Pay period:} $(pay_year) $(monthname(pay_month))
 
 \\textbf{Name:} $(team_member_name)
 
-\\textbf{Total (USD):} $(team_member_total_pay)
+\\textbf{Total (USD):} $(@sprintf("%.2f", team_member_total_pay))
 
 $(format_table(team_member_pay_summary))
 $(format_table(team_member_log; linewidth=true))
@@ -148,6 +152,7 @@ DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Tectonic = "9ac5f52a-99c6-489f-af81-462ef484790f"
 
 [compat]
@@ -164,7 +169,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.4"
 manifest_format = "2.0"
-project_hash = "867046793e36b5964d6b6382a1c3ef7728b948e6"
+project_hash = "af91023f1d5dfaccb9e8a5877ad209bf2e32c593"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -606,6 +611,7 @@ version = "17.4.0+0"
 # ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
 # ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
 # ╟─9d19194a-5bb6-4857-88ef-ddd638ed4e6a
+# ╠═46d69c6c-76b7-40f1-94d7-49ed6eaa6b36
 # ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
