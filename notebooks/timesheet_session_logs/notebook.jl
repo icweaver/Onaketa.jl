@@ -39,20 +39,20 @@ pay_year, pay_month = (2023, 11);
 const RATE = 35.00;
 
 # ╔═╡ d141b6c5-11fc-4984-b1cf-5801426fc255
-function to_latex(df)
+function to_latex(df; wrap_table=false)
 	pretty_table(String, df;
 		backend = Val(:latex),
 		tf = tf_latex_double,
 		show_subheader = false,
 		alignment = :l,
-		wrap_table = true,
+		wrap_table = wrap_table,
 		formatters = ft_printf("%.2f"),
 	)
 end
 
 # ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
 function format_summary(df)
-	s = replace(to_latex(df),
+	s = replace(to_latex(df; wrap_table=true),
 		"\\begin{table}" => "\\begin{table}[h!]",
 		"lll}" => "rrr}",
 	)
@@ -63,7 +63,7 @@ end
 function format_log(df)
 	s = replace(to_latex(df),
 		"\\begin{table}" => "\\begin{table}[h!]",
-		"tabular" => "tabularx",
+		"tabular" => "xltabular",
 		"{l" => "{\\linewidth}{l",
 		"l}" => ">{\\raggedright\\arraybackslash}X}",
 	)
@@ -120,7 +120,8 @@ report = """
 \\usepackage[utf8]{inputenc}
 \\usepackage[T1]{fontenc}
 \\usepackage{charter}
-\\usepackage{tabularx}
+\\usepackage{xltabular}
+\\usepackage{booktabs}
 \\usepackage[table]{xcolor}
 \\usepackage{array}
 \\usepackage{tikz}
