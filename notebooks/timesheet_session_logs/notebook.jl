@@ -20,9 +20,6 @@ begin
 	using Tectonic, PrettyTables, Printf
 end
 
-# ╔═╡ 1f8ba080-95d6-4e60-871e-1929aaf59ddf
-pay_year, pay_month = (2023, 11);
-
 # ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
 @bind team_member_name Select([
 	"Adia Imara",
@@ -35,43 +32,44 @@ pay_year, pay_month = (2023, 11);
 	"LaNell Williams",
 ]; default="Ian Weaver")
 
+# ╔═╡ 1f8ba080-95d6-4e60-871e-1929aaf59ddf
+pay_year, pay_month = (2023, 11);
+
 # ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
 const RATE = 35.00;
 
-# ╔═╡ 9d19194a-5bb6-4857-88ef-ddd638ed4e6a
-function table_width(linewidth)
-	if linewidth
-		"{\\linewidth}{l"
-	else
-		"{0.5\\linewidth}{l"
-	end
-end
-
-# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
-function format_table(df; linewidth=false)
-	s = pretty_table(String, df;
+# ╔═╡ d141b6c5-11fc-4984-b1cf-5801426fc255
+function to_latex(df)
+	pretty_table(String, df;
 		backend = Val(:latex),
 		tf = tf_latex_double,
 		show_subheader = false,
 		alignment = :l,
-		# wrap_table = true,
 		wrap_table = true,
-		# wrap_table_environment = "table",
 		formatters = ft_printf("%.2f"),
 	)
-	s = replace(s,
+end
+
+# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
+function format_summary(df)
+	s = replace(to_latex(df),
+		"\\begin{table}" => "\\begin{table}[h!]",
+		"lll}" => "rrr}",
+	)
+	return s
+end
+
+# ╔═╡ 68df12c9-0dfc-426a-80dd-e4bf55d1d181
+function format_log(df)
+	s = replace(to_latex(df),
 		"\\begin{table}" => "\\begin{table}[h!]",
 		"tabular" => "tabularx",
-		"{l" => table_width(linewidth),
+		"{l" => "{\\linewidth}{l",
 		"l}" => ">{\\raggedright\\arraybackslash}X}",
 	)
 
-	# Hacky workaround to align around decimal points in each table
-	s = if linewidth
-		replace(s, "{lll"=>"{llr")
-	else
-		replace(s, "{lll"=>"{lrr", "raggedright" => "raggedleft")
-	end
+	# Hacky workaround to align around decimal points
+	s = replace(s, "{lll"=>"{llr")
 
 	return s
 end
@@ -145,21 +143,21 @@ report = """
 
 {\\color{onaketa-pink}\\textbf{Total (USD): $(@sprintf("%.2f", team_member_total_pay))}}
 
-$(format_table(team_member_pay_summary))
-$(format_table(team_member_log; linewidth=true))
+$(format_summary(team_member_pay_summary))
+$(format_log(team_member_log))
 \\end{document}
 """
 
 # ╔═╡ ed0218a6-0ae3-483f-bd35-450a3a3e747b
 let
 	name = replace(team_member_name, " "=>"_")
-	fname = "pay_summary_$(pay_year)_$(pay_month)_$(name).tex"
-	fpath = "reports"
-	mkpath("reports")
+	fname = "pay_summary_$(pay_year)_$(monthname(pay_month))_$(name).tex"
+	fpath = "src"
 	write("$(fpath)/$(fname)", report)
 	
+	mkpath("pdfs")
 	tectonic() do bin
-		run(`$(bin) $(fpath)/$(fname)`)
+		run(`$(bin) -o pdfs $(fpath)/$(fname)`)
 	end
 end
 
@@ -622,15 +620,16 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
-# ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╠═ed0218a6-0ae3-483f-bd35-450a3a3e747b
 # ╠═1f8ba080-95d6-4e60-871e-1929aaf59ddf
 # ╠═3afefd61-24af-4547-b969-2c98729e916b
 # ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╟─9e8a9329-a85d-407d-8289-c79477bf2162
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
-# ╟─815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
-# ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
-# ╠═9d19194a-5bb6-4857-88ef-ddd638ed4e6a
+# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+# ╠═d141b6c5-11fc-4984-b1cf-5801426fc255
+# ╠═8d607e10-d489-4bf3-8cff-898aa32cf36a
+# ╠═68df12c9-0dfc-426a-80dd-e4bf55d1d181
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
