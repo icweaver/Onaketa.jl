@@ -4,63 +4,122 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
 using CSV, DataFramesMeta, PlutoUI, Dates
+
+# ╔═╡ 1c038be2-e06e-4d17-b880-b705ae469d1a
+using Tectonic
+
+# ╔═╡ 73273c8e-2147-4612-9819-45f573c11c00
+using PrettyTables
 
 # ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
 const RATE = 35.00
 
 # ╔═╡ 266ee10b-299e-42f0-b9b1-c4dd9e10a545
-df = CSV.read("data/timesheet_log.csv", DataFrame);
+df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
 
 # ╔═╡ 398a2202-f6ff-4ae1-a01f-2150966e7524
 gdf = @chain df begin
-	sort([:category, :student_name])
-	@rtransform $[:y, :m, :d] = yearmonthday(:reported_date)
+	@rtransform begin
+		$[:y, :m, :d] = yearmonthday(:date)
+		:student_name = coalesce(:student_name, :student_name_other)
+	end
+	# sort([:category, :student_name])
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
 # ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
-team_member_name = "Filipe Cerqueira"
+@bind team_member_name Select([
+	"Adia Imara",
+	"Chima McGruder",
+	"Filipe Cerqueira",
+	"Gianni Sims",
+	"Greg Cunningham",
+	"Haley Carrasco",
+	"Ian Weaver",
+	"LaNell Williams",
+]; default="Ian Weaver")
 
 # ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
 df_team_member = gdf[(team_member_name, 2023, 11)];
 
-# ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
-team_member_log = @select df_team_member begin
-	:reported_date
-	:category
-	:duration_hrs
-	:rate
-	:student_name
-	:student_name_other
-	:notes
-end
-
 # ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
 team_member_pay_summary = @chain df_team_member begin
 	groupby(:category)
-	@combine begin
-		:total_hrs = sum(:duration_hrs)
-	end
-	@transform begin
-		:pay = RATE * :total_hrs
-	end
+	@combine :total_hrs = sum(:hours)
+	@transform :pay = RATE * :total_hrs
 end
 
 # ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 team_member_total_pay = sum(team_member_pay_summary.pay)
 
-# ╔═╡ aa30b0b2-481a-4e12-8923-8f64d42aa21e
-md"""
-**Team member:** $(team_member_name)
+# ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
+team_member_log = @select df_team_member begin
+	:date
+	:category
+	:hours
+	:student_name
+	:notes
+end
 
-**Total pay:** $(team_member_total_pay)
+# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
+function format_table(df)
+	s = pretty_table(String, df;
+		backend = Val(:latex),
+		tf = tf_latex_double,
+		show_subheader = false,
+		alignment = :l,
+		wrap_table = true,
+	)
+	replace(s,
+		"\\begin{table}" => "\\begin{table}[htb]",
+		"tabular" => "tabularx",
+		"{l" => "{\\linewidth}{l",
+		"l}" => "X}",
+	)
+end
 
-**Pay summary:** $(team_member_pay_summary)
+# ╔═╡ 815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+report = """
+\\documentclass{article}
+\\usepackage[margin=0.5in]{geometry}
+\\usepackage[utf8]{inputenc}
+\\usepackage{tabularx}
+\\usepackage[table]{xcolor}
 
-**Timesheet entries:** $(team_member_log)
+\\begin{document}
+\\rowcolors{1}{white}{gray!25}
+
+Name: $(team_member_name)
+
+Summary:
+
+$(format_table(team_member_pay_summary))
+
+Log:
+$(format_table(team_member_log))
+\\end{document}
 """
+
+# ╔═╡ ed0218a6-0ae3-483f-bd35-450a3a3e747b
+let
+	write("test.tex", report)
+	
+	tectonic() do bin
+		run(`$bin test.tex`)
+	end
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -69,11 +128,15 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+Tectonic = "9ac5f52a-99c6-489f-af81-462ef484790f"
 
 [compat]
 CSV = "~0.10.11"
 DataFramesMeta = "~0.14.1"
 PlutoUI = "~0.7.54"
+PrettyTables = "~2.3.1"
+Tectonic = "~0.8.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -82,7 +145,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.4"
 manifest_format = "2.0"
-project_hash = "061502f7479f5772de62f74613de92b7f8e8956f"
+project_hash = "867046793e36b5964d6b6382a1c3ef7728b948e6"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -446,6 +509,12 @@ deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 version = "1.10.0"
 
+[[deps.Tectonic]]
+deps = ["Pkg"]
+git-tree-sha1 = "0b3881685ddb3ab066159b2ce294dc54fcf3b9ee"
+uuid = "9ac5f52a-99c6-489f-af81-462ef484790f"
+version = "0.8.0"
+
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -514,10 +583,14 @@ version = "17.4.0+0"
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
-# ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
 # ╟─9e8a9329-a85d-407d-8289-c79477bf2162
-# ╠═ab491bd9-50a0-45a4-9104-7935afecb5e9
-# ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
-# ╠═aa30b0b2-481a-4e12-8923-8f64d42aa21e
+# ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
+# ╟─8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+# ╠═4df7bcbb-3412-4be6-a086-5353d46b5765
+# ╠═8d607e10-d489-4bf3-8cff-898aa32cf36a
+# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+# ╠═ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╠═1c038be2-e06e-4d17-b880-b705ae469d1a
+# ╠═73273c8e-2147-4612-9819-45f573c11c00
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
