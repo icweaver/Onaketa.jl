@@ -43,7 +43,7 @@ function table_width(linewidth)
 	if linewidth
 		"{\\linewidth}{l"
 	else
-		"{0.5\\linewidth}{l"
+		"{0.33\\linewidth}{l"
 	end
 end
 
@@ -57,14 +57,23 @@ function format_table(df; linewidth=false)
 		# wrap_table = true,
 		wrap_table = true,
 		# wrap_table_environment = "table",
-		formatters = ft_printf("%.2f")
+		formatters = ft_printf("%.2f"),
 	)
-	replace(s,
+	s = replace(s,
 		"\\begin{table}" => "\\begin{table}[h!]",
 		"tabular" => "tabularx",
 		"{l" => table_width(linewidth),
 		"l}" => ">{\\raggedright\\arraybackslash}X}",
 	)
+
+	# Hacky workaround to align around decimal points in each table
+	s = if linewidth
+		replace(s, "{lll"=>"{llr")
+	else
+		replace(s, "{lll"=>"{lrr", "raggedright" => "raggedleft")
+	end
+
+	return s
 end
 
 # ╔═╡ 266ee10b-299e-42f0-b9b1-c4dd9e10a545
@@ -116,16 +125,25 @@ report = """
 \\usepackage{tabularx}
 \\usepackage[table]{xcolor}
 \\usepackage{array}
+\\usepackage{tikz}
+\\usepackage{tikzpagenodes}
 
+\\setlength{\\parindent}{0pt}
+\\definecolor{onaketa-pink}{HTML}{ec008c}
+\\arrayrulecolor {onaketa-pink}
 \\rowcolors{1}{white}{gray!25}
 \\def\\arraystretch{1.5}%
 
 \\begin{document}
+\\begin{tikzpicture}[remember picture,overlay]
+   \\node[anchor=north east,inner sep=0pt] at (current page text area.north east)
+              {\\includegraphics[scale=0.4]{logo}};
+\\end{tikzpicture}%
 \\textbf{Pay period:} $(pay_year) $(monthname(pay_month))
 
 \\textbf{Name:} $(team_member_name)
 
-\\textbf{Total (USD):} $(@sprintf("%.2f", team_member_total_pay))
+{\\color{onaketa-pink}\\textbf{Total (USD): $(@sprintf("%.2f", team_member_total_pay))}}
 
 $(format_table(team_member_pay_summary))
 $(format_table(team_member_log; linewidth=true))
@@ -606,9 +624,9 @@ version = "17.4.0+0"
 # ╠═9e8a9329-a85d-407d-8289-c79477bf2162
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
 # ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
 # ╟─9d19194a-5bb6-4857-88ef-ddd638ed4e6a
-# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
