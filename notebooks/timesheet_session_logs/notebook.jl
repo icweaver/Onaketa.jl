@@ -38,6 +38,9 @@ pay_year, pay_month = (2023, 11);
 # ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
 const RATE = 35.00;
 
+# ╔═╡ 99009569-177e-47f0-a386-3a221afefc79
+replace(team_member_name, " "=>"_")
+
 # ╔═╡ 9d19194a-5bb6-4857-88ef-ddd638ed4e6a
 function table_width(linewidth)
 	if linewidth
@@ -152,10 +155,12 @@ $(format_table(team_member_log; linewidth=true))
 
 # ╔═╡ ed0218a6-0ae3-483f-bd35-450a3a3e747b
 let
-	write("test.tex", report)
+	name = replace(team_member_name, " "=>"_")
+	fname = "pay_summary_$(pay_year)_$(pay_month)_$(name).tex"
+	write(fname, report)
 	
 	tectonic() do bin
-		run(`$bin test.tex`)
+		run(`$(bin) $(fname)`)
 	end
 end
 
@@ -618,12 +623,13 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╠═1f8ba080-95d6-4e60-871e-1929aaf59ddf
-# ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
+# ╠═ab491bd9-50a0-45a4-9104-7935afecb5e9
 # ╠═3afefd61-24af-4547-b969-2c98729e916b
 # ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╠═9e8a9329-a85d-407d-8289-c79477bf2162
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
-# ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╠═99009569-177e-47f0-a386-3a221afefc79
+# ╠═ed0218a6-0ae3-483f-bd35-450a3a3e747b
 # ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
 # ╟─9d19194a-5bb6-4857-88ef-ddd638ed4e6a
