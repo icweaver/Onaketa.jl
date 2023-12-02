@@ -129,7 +129,7 @@ report = """
 
 \\setlength{\\parindent}{0pt}
 \\definecolor{onaketa-pink}{HTML}{ec008c}
-\\arrayrulecolor {onaketa-pink}
+
 \\rowcolors{1}{white}{gray!25}
 \\def\\arraystretch{1.5}%
 
@@ -144,7 +144,10 @@ report = """
 
 {\\color{onaketa-pink}\\textbf{Total (USD): $(@sprintf("%.2f", team_member_total_pay))}}
 
+\\arrayrulecolor{onaketa-pink}
 $(format_summary(team_member_pay_summary))
+
+\\arrayrulecolor{black}
 $(format_log(team_member_log))
 \\end{document}
 """
