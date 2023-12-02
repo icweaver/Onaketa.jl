@@ -15,16 +15,57 @@ macro bind(def, element)
 end
 
 # ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
-using CSV, DataFramesMeta, PlutoUI, Dates
+begin
+	using CSV, DataFramesMeta, PlutoUI, Dates
+	using Tectonic, PrettyTables
+end
 
-# ╔═╡ 1c038be2-e06e-4d17-b880-b705ae469d1a
-using Tectonic
+# ╔═╡ 1f8ba080-95d6-4e60-871e-1929aaf59ddf
+pay_year, pay_month = (2023, 11);
 
-# ╔═╡ 73273c8e-2147-4612-9819-45f573c11c00
-using PrettyTables
+# ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
+@bind team_member_name Select([
+	"Adia Imara",
+	"Chima McGruder",
+	"Filipe Cerqueira",
+	"Gianni Sims",
+	"Greg Cunningham",
+	"Haley Carrasco",
+	"Ian Weaver",
+	"LaNell Williams",
+]; default="Ian Weaver")
 
 # ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
-const RATE = 35.00
+const RATE = 35.00;
+
+# ╔═╡ 9d19194a-5bb6-4857-88ef-ddd638ed4e6a
+function table_width(linewidth)
+	if linewidth
+		"{\\linewidth}{l"
+	else
+		"{0.5\\linewidth}{l"
+	end
+end
+
+# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
+function format_table(df; linewidth=false)
+	s = pretty_table(String, df;
+		backend = Val(:latex),
+		tf = tf_latex_double,
+		show_subheader = false,
+		alignment = :l,
+		# wrap_table = true,
+		wrap_table = true,
+		# wrap_table_environment = "table",
+		formatters = ft_printf("%5.2f")
+	)
+	replace(s,
+		"\\begin{table}" => "\\begin{table}[h!]",
+		"tabular" => "tabularx",
+		"{l" => table_width(linewidth),
+		"l}" => ">{\\raggedright\\arraybackslash}X}",
+	)
+end
 
 # ╔═╡ 266ee10b-299e-42f0-b9b1-c4dd9e10a545
 df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
@@ -39,35 +80,16 @@ gdf = @chain df begin
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
-# ╔═╡ 0b5d7cb1-d326-41e1-82a3-6e837e46758d
-md"""
-|           |               |
-|-----------|---------------|
-| Something | This is a very long line that breaks into two. This is a very long line that breaks into two.This is a very long line that breaks into two.This is a very long line that breaks into two.|
-"""
-
-# ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
-@bind team_member_name Select([
-	"Adia Imara",
-	"Chima McGruder",
-	"Filipe Cerqueira",
-	"Gianni Sims",
-	"Greg Cunningham",
-	"Haley Carrasco",
-	"Ian Weaver",
-	"LaNell Williams",
-]; default="Ian Weaver")
-
 # ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
-df_team_member = gdf[(team_member_name, 2023, 11)];
+df_team_member = gdf[(team_member_name, pay_year, pay_month)];
 
 # ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
 team_member_pay_summary = @chain df_team_member begin
 	groupby(:category)
-	@combine :total_hrs = sum(:hours)
+	@combine :hours = sum(:hours)
 	@transform begin
 		:rate = 35.00
-		:pay = RATE * :total_hrs
+		:pay = RATE * :hours
 	end
 end
 
@@ -83,44 +105,29 @@ team_member_log = @select df_team_member begin
 	:notes
 end
 
-# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
-function format_table(df)
-	s = pretty_table(String, df;
-		backend = Val(:latex),
-		tf = tf_latex_double,
-		show_subheader = false,
-		alignment = :l,
-		wrap_table = true,
-	)
-	replace(s,
-		"\\begin{table}" => "\\begin{table}[htb]",
-		"tabular" => "tabularx",
-		"{l" => "{\\linewidth}{l",
-		"l}" => ">{\\raggedright\\arraybackslash}X}",
-	)
-end
-
 # ╔═╡ 815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 report = """
 \\documentclass{article}
 \\usepackage[margin=0.5in]{geometry}
 \\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{charter}
 \\usepackage{tabularx}
 \\usepackage[table]{xcolor}
 \\usepackage{array}
 
 \\begin{document}
 \\rowcolors{1}{white}{gray!25}
+\\def\\arraystretch{1.5}%
 
-Name: $(team_member_name)
+\\textbf{Pay period:} $(pay_year) $(monthname(pay_month))
 
-Summary:
+\\textbf{Name:} $(team_member_name)
+
+\\textbf{Total (USD):} $(team_member_total_pay)
+
 $(format_table(team_member_pay_summary))
-
-Total: $(team_member_total_pay)
-
-Log:
-$(format_table(team_member_log))
+$(format_table(team_member_log; linewidth=true))
 \\end{document}
 """
 
@@ -200,9 +207,9 @@ version = "0.11.4"
 
 [[deps.Compat]]
 deps = ["UUIDs"]
-git-tree-sha1 = "8a62af3e248a8c4bad6b32cbbe663ae02275e32c"
+git-tree-sha1 = "886826d76ea9e72b35fcd000e535588f7b60f21d"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "4.10.0"
+version = "4.10.1"
 weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
@@ -590,20 +597,19 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╠═1f8ba080-95d6-4e60-871e-1929aaf59ddf
+# ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
 # ╠═3afefd61-24af-4547-b969-2c98729e916b
-# ╠═b458a412-8fdf-11ee-21fc-39ca9d7aec91
+# ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
+# ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
+# ╟─ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
+# ╟─9d19194a-5bb6-4857-88ef-ddd638ed4e6a
+# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
-# ╠═0b5d7cb1-d326-41e1-82a3-6e837e46758d
-# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
-# ╟─ab491bd9-50a0-45a4-9104-7935afecb5e9
-# ╟─8e00d97a-26c2-4b68-a971-e32f51a7d9d1
-# ╠═4df7bcbb-3412-4be6-a086-5353d46b5765
-# ╠═8d607e10-d489-4bf3-8cff-898aa32cf36a
-# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
-# ╠═ed0218a6-0ae3-483f-bd35-450a3a3e747b
-# ╠═1c038be2-e06e-4d17-b880-b705ae469d1a
-# ╠═73273c8e-2147-4612-9819-45f573c11c00
+# ╠═b458a412-8fdf-11ee-21fc-39ca9d7aec91
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
