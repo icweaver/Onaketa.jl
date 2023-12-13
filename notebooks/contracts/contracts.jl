@@ -7,28 +7,104 @@ using InteractiveUtils
 # ╔═╡ 70bfa856-99fb-11ee-012b-8b2e755cc541
 using Tectonic
 
+# ╔═╡ 6197a49c-e09c-4e4b-86d7-2644cd084d06
+contract = raw"""
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage[parfill]{parskip}
+\usepackage{
+    charter,
+    graphicx,
+    hyperref,
+    xcolor,
+    fancyhdr,
+    enumitem,
+}
+
+% Form field
+\definecolor{onaketa-pink}{HTML}{ec008c}
+\def\DefaultOptionsofText{
+    borderstyle = U,
+    bordercolor = black,
+    backgroundcolor = {},
+    align = 0,
+}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhead[L]{\textcolor{onaketa-pink}{\Large{Agreement between student* and tutor-mentor}} \\ \normalsize \textit{*If the student is a minor, a guardian must also sign this document.}}
+\fancyhead[R]{\includegraphics{logo.png}}
+\setlength{\headheight}{36pt}
+\fancyfoot{}
+
+% Global
+\setlength{\parindent}{0pt}
+\setlist[1]{itemsep=-0.125ex}
+
+\begin{document}
+This document represents an agreement between tutor-mentor and program participant(s) regarding their working relationship.
+
+\begin{center}
+***
+\end{center}
+
+\subsubsection*{Frequency of meetings}
+Regular one-on-one meetings will be held at least once a week over the semester. During the first or second session, students/guardians and tutor-mentors should come to a mutual agreement on their final session of the semester.
+
+\textit{Holidays} -- If the tutor-mentoring session falls on a national holiday, that session will be postponed or canceled. The student and/or guardian and tutor-mentor will take the initiative to either reschedule the session for the same week, or cancel it entirely.
+
+\subsubsection*{Expectations of the student}
+As the student, I will do my best to:
+\begin{itemize}
+\item Show up on time to my tutor-mentoring sessions.
+\item Provide my tutor-mentor with class materials that will help them to help me (e.g., syllabus, homework assignments, name of textbook).
+\item Come to each session prepared to participate in my learning.
+\item Be courteous and respectful to my tutor-mentor.
+\item Keep my video turned on during our virtual sessions, whenever possible.
+\end{itemize}
+
+\subsubsection*{Expectations of the tutor-mentor}
+As the tutor-mentor, I will always:
+
+\begin{itemize}
+\item Be kind, courteous, and respectful to my student.
+\item Do my best to help the student excel in their class and reach their academic goals.
+\item Show up on time to our sessions. If I am running late to a session due to unforeseen circumstances, I will contact the student and/or guardian as soon as possible.
+\item If I have to miss a tutor-mentoring session, I will contact the student and/or guardian at least 24 hours in advance. If possible, I will either (1) reschedule for a different time during that same week or (2) find a substitute tutor-mentor.
+\end{itemize}
+
+\subsubsection*{Canceled sessions \& absences}
+\begin{itemize}
+\item If the student needs to cancel or reschedule a session, it is the responsibility of the student or guardian to inform the tutor-mentor at least 24 hours before that next session.
+\item If the student misses a session without telling their tutor-mentor ahead of time, this will count as an absence.
+\item If a student misses three sessions during a semester, they will be asked to leave the Onaketa program for that semester. This is necessary so that our tutor-mentors can be available to help other students who show up consistently. 
+\end{itemize}
+
+\subsubsection*{Continuation beyond the first semester}
+Continuation with Onaketa for the coming semester will be contingent upon good attendance and good standing during the previous semester.
+
+\subsubsection*{Acknowledgement}
+I acknowledge with my signature typed below that I have read this document and understand the expectations of me.
+
+\vspace*{1.5cm}
+
+\begin{tabular}{ll}
+\makebox[0.5\textwidth]{\TextField[width=0.5\textwidth]{}} & \makebox[0.3\textwidth]{\TextField[width=0.3\textwidth]{}}\\
+Student & Date\\[8ex]
+\makebox[0.5\textwidth]{\TextField[width=0.5\textwidth]{}} & \makebox[0.3\textwidth]{\TextField[width=0.3\textwidth]{}}\\
+Guardian & Date\\[8ex]
+\makebox[0.5\textwidth]{\TextField[width=0.5\textwidth]{}} & \makebox[0.3\textwidth]{\TextField[width=0.3\textwidth]{}}\\
+Tutor-mentor & Date
+\end{tabular}
+
+\end{document}
+"""
+
 # ╔═╡ e67c0f52-5f98-4855-bc72-c01dd461b2ee
-begin
-	contract = raw"""
-	\documentclass{article}
-
-	\usepackage{hyperref, xcolor}
-	
-	\definecolor{onaketa-pink}{HTML}{ec008c}
-
-	\begin{document}
-	
-	    Name: \TextField[bordercolor=onaketa-pink,borderstyle=U]{}
-		Signature: \TextField[bordercolor=onaketa-pink,borderstyle=U]{}
-	
-	\end{document}
-	"""
-	
+tectonic() do bin
 	write("src/contract.tex", contract)
-
-	tectonic() do bin
-		run(`$(bin) -o pdfs src/contract.tex`)
-	end
+	run(`$(bin) -o pdfs src/contract.tex`)
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -184,6 +260,7 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╠═70bfa856-99fb-11ee-012b-8b2e755cc541
+# ╟─6197a49c-e09c-4e4b-86d7-2644cd084d06
 # ╠═e67c0f52-5f98-4855-bc72-c01dd461b2ee
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
