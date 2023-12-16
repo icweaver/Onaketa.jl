@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.32
+# v0.19.36
 
 using Markdown
 using InteractiveUtils
@@ -103,6 +103,11 @@ end
 # ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 team_member_total_pay = sum(team_member_pay_summary.pay)
 
+# ╔═╡ adfba62a-bf64-4506-ad6a-e371a72436cb
+for row ∈ eachrow(team_member_pay_summary)
+	@info row.category
+end
+
 # ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
 team_member_log = @select df_team_member begin
 	:date
@@ -164,6 +169,97 @@ let
 		run(`$(bin) -o pdfs $(fpath)/$(fname)`)
 	end
 end
+
+# ╔═╡ 6c1f3bbf-c033-41af-ac88-7949ac2284f3
+md"""
+## LaTeX
+"""
+
+# ╔═╡ 693e39ab-1db5-4eb8-929e-2b177ad256b0
+md"""
+## Typst
+"""
+
+# ╔═╡ d9fccc47-47fc-4f88-8ac6-49e502041d09
+txt = """
+```typ
+#set page(
+  margin: 0.5in,
+)
+
+#grid(
+  columns: (2fr, 1fr),
+  [
+    *Pay period:* 2023 November\
+    *Name:* Ian Weaver\
+    *Total (USD)* 516.2
+
+    #table(
+      columns: 4,
+      align: (left, right, right, right),
+      stroke: 0.5pt + rgb("#ec008c"),
+      [*Category*], [*Hours*], [*Rate*], [*Pay*], 
+      [Tutoring], [6.25], [35], [218.75],
+      [Tutor Coordinator], [8.5], [35.0], [97.50],
+    )
+  ],
+  [#image("logo.png")],
+)
+
+#table(
+  columns: 5,
+  align: (
+    center + horizon,
+    center + horizon,
+    center + horizon,
+    center + horizon,
+    left + horizon,
+  ),
+  fill: (_, row) => if calc.odd(row) {luma(240)},
+  stroke: 0.1pt,
+  [*Date*], [*Category*], [*Hours*], [*Student*], [*Notes*],
+  [2023-11-01], [Tutoring], [1.5], [David Oche], [Greene Scholars program science fair project, slope-interecept, point-slope form. Comfortable with the algebra, just needed to see the connection between these two forms for an equation for a line. A in physics, hopes to get an A in math after his next quiz.],
+[2023-11-06], [Tutor Coordinator], [1.0], [], [Admin meeting],
+[2023-11-06], [Tutor Coordinator], [1.0], [], [Tutor meeting],
+[2023-11-07], [Tutoring], [0.5], [Nahla Kaplan Rasheed], [No-show. Update: Seemed like an honest mistake, she was retaking a test after school and lost track of time. We were able to reschedule for the following day.],
+[2023-11-08], [Tutoring], [1.0], [Nahla Kaplan Rasheed], [Intro'd frequency tables. Re-took math test yesterday, will get grades next week],
+[2023-11-06], [Tutoring], [0.75], [Judah Worthy], [1-D Kinematics, time of collision problems. Great handle on the algebra! ],
+[2023-11-08], [Tutoring], [0.75], [Judah Worthy], [Reviewed speed vs. velocity. Feels much better with scalar vs. vector definitions now. Will do a mini-module on vector algebra next time we meet],
+[2023-11-10], [Tutoring], [0.75], [David Oche], [Reviewed slope-intercept, point-slope form, and perpendicular lines. Waiting on materials for science fair project. Ended a bit early],
+[2023-11-10], [Tutoring], [1.0], [Joëlle], [Subbing for Filipe. Reviewed slope-intercept, point-slope form, and perpendicular lines. Great handle on the material! Meeting again next week],
+[2023-11-15], [Tutoring], [0.75], [Judah Worthy], [Reviewed motion graphs, great handle! Off for break, meeting again on the 29th],
+[2023-11-16], [Tutoring], [0.5], [Nahla Kaplan Rasheed], [Reviewed simple functions for total cost of goods, and motion graphs. Hasn't received updated grades yet. Shorter session due to their family getting stuck in traffic. On break next couple weeks, will meet again November 30th (time tbd).],
+[2023-11-20], [Tutor Coordinator], [2.0], [], [Admin + tutor meetings],
+[2023-11-24], [Tutoring], [1.0], [David Oche], [Re-taking math test. Reviewed linear inequalities. Science fair equipment coming in the mail.],
+[2023-11-29], [Tutor Coordinator], [0.25], [], [Met with Nia and Pheona to discuss Jordyn],
+[2023-11-30], [Tutor Coordinator], [2.0], [], [Timesheets],
+)
+```
+""";
+
+# ╔═╡ a81fadc1-7916-4af8-b231-22a55a66a139
+open("yee.typ", "w") do io
+	write(io, "Hey\n")
+	# write_logs!(io, team_member_log)
+end
+
+# ╔═╡ 64b6d9b4-da65-4b15-9b70-054e560d4837
+function write_logs!(io, df)
+	for row ∈ eachrow(df)
+		write(io, "[$(row.date)], [$(row.category)], [$(row.hours)], [$(row.student_name)], [$(row.notes)],\n")
+	end
+end
+
+# ╔═╡ 53420176-49b4-479d-996d-e0d0f7f71325
+stake! = String ∘ take!
+
+# ╔═╡ 47d52ed3-0514-476f-aed8-a8218f73361a
+md"""
+# Notebook setup 🔧
+"""
+
+# ╔═╡ 02b59743-a150-41e5-afab-35d54d010380
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -629,14 +725,23 @@ version = "17.4.0+0"
 # ╠═3afefd61-24af-4547-b969-2c98729e916b
 # ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
 # ╟─9e8a9329-a85d-407d-8289-c79477bf2162
+# ╠═adfba62a-bf64-4506-ad6a-e371a72436cb
 # ╟─4df7bcbb-3412-4be6-a086-5353d46b5765
-# ╠═815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
-# ╠═d141b6c5-11fc-4984-b1cf-5801426fc255
-# ╠═8d607e10-d489-4bf3-8cff-898aa32cf36a
-# ╠═68df12c9-0dfc-426a-80dd-e4bf55d1d181
+# ╟─815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+# ╟─d141b6c5-11fc-4984-b1cf-5801426fc255
+# ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
+# ╟─68df12c9-0dfc-426a-80dd-e4bf55d1d181
 # ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
 # ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
 # ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
+# ╟─6c1f3bbf-c033-41af-ac88-7949ac2284f3
+# ╟─693e39ab-1db5-4eb8-929e-2b177ad256b0
+# ╠═d9fccc47-47fc-4f88-8ac6-49e502041d09
+# ╠═a81fadc1-7916-4af8-b231-22a55a66a139
+# ╠═64b6d9b4-da65-4b15-9b70-054e560d4837
+# ╠═53420176-49b4-479d-996d-e0d0f7f71325
+# ╟─47d52ed3-0514-476f-aed8-a8218f73361a
+# ╠═02b59743-a150-41e5-afab-35d54d010380
 # ╠═b458a412-8fdf-11ee-21fc-39ca9d7aec91
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
