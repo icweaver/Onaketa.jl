@@ -14,17 +14,15 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 454d5a84-3f1d-4789-bfe9-a45a21ed202f
-using DataFramesMeta, CSV, Printf, PlutoUI, Dates
+# ╔═╡ b458a412-8fdf-11ee-21fc-39ca9d7aec91
+begin
+	using CSV, DataFramesMeta, PlutoUI, Dates
+	using Tectonic, PrettyTables, Printf
+end
 
-# ╔═╡ 51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-md"""
-# Timesheets ⌛
-"""
-
-# ╔═╡ 6745f346-e48e-4f0a-a735-414e37901def
-members = [
-	# "Adia Imara",
+# ╔═╡ ab491bd9-50a0-45a4-9104-7935afecb5e9
+@bind team_member_name Select([
+	"Adia Imara",
 	"Chima McGruder",
 	"Filipe Cerqueira",
 	"Gianni Sims",
@@ -32,34 +30,67 @@ members = [
 	"Haley Carrasco",
 	"Ian Weaver",
 	"LaNell Williams",
-]
+]; default="Ian Weaver")
 
-# ╔═╡ 423a3da9-67e0-4c2f-996e-91e88c9ab9fe
-let
-current_year, current_month = yearmonth(today())
-md"""
-$(@bind member Select(members; default="Ian Weaver")
-)
-$(@bind year Select(2020:2024; default=current_year))
-$(@bind month Select(1:12; default=current_month))
-"""
+# ╔═╡ ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# let
+# 	name = replace(team_member_name, " "=>"_")
+# 	fname = "pay_summary_$(pay_date.year)_$(monthname(pay_date.month))_$(name).tex"
+# 	fpath = "src"
+# 	write("$(fpath)/$(fname)", report)
+	
+# 	mkpath("pdfs")
+# 	tectonic() do bin
+# 		run(`$(bin) -o pdfs $(fpath)/$(fname)`)
+# 	end
+# end
+
+# ╔═╡ 1f8ba080-95d6-4e60-871e-1929aaf59ddf
+pay_date = (year=2023, month=11);
+
+# ╔═╡ 3afefd61-24af-4547-b969-2c98729e916b
+const RATE = 35.00;
+
+# ╔═╡ d141b6c5-11fc-4984-b1cf-5801426fc255
+function to_latex(df; wrap_table=false)
+	pretty_table(String, df;
+		backend = Val(:latex),
+		tf = tf_latex_double,
+		show_subheader = false,
+		alignment = :l,
+		wrap_table = wrap_table,
+		formatters = ft_printf("%.2f"),
+	)
 end
 
-# ╔═╡ e66318e3-626a-442a-b659-719e0c46ccdd
-pay_date = (;year, month)
+# ╔═╡ 8d607e10-d489-4bf3-8cff-898aa32cf36a
+function format_summary(df)
+	s = replace(to_latex(df; wrap_table=true),
+		"\\begin{table}" => "\\begin{table}[h!]",
+		"lll}" => "rrr}",
+	)
+	return s
+end
 
-# ╔═╡ f81815ed-5209-48e9-810a-4529927eed29
-const RATE = 35.00
+# ╔═╡ 68df12c9-0dfc-426a-80dd-e4bf55d1d181
+function format_log(df)
+	s = replace(to_latex(df),
+		"\\begin{table}" => "\\begin{table}[h!]",
+		"tabular" => "xltabular",
+		"{l" => "{\\linewidth}{l",
+		"l}" => ">{\\raggedright\\arraybackslash}X}",
+	)
 
-# ╔═╡ db3d661f-1623-4c9a-9d52-70f37f9c528d
-md"""
-## Load data
-"""
+	# Hacky workaround to align around decimal points
+	s = replace(s, "{lll"=>"{llr")
 
-# ╔═╡ 618d232b-d236-40a9-8ee1-5983934d325f
+	return s
+end
+
+# ╔═╡ 266ee10b-299e-42f0-b9b1-c4dd9e10a545
 df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
 
-# ╔═╡ 60f0c785-63fa-40f5-999f-b4d606d7e8d6
+# ╔═╡ 398a2202-f6ff-4ae1-a01f-2150966e7524
 gdf = @chain df begin
 	@rtransform begin
 		$[:y, :m, :d] = yearmonthday(:date)
@@ -69,23 +100,93 @@ gdf = @chain df begin
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
-# ╔═╡ cede75ac-35a3-4764-a356-f5421fb25792
-md"""
-## Generate reports
+# ╔═╡ cecbf414-0a0c-4d45-beb9-284751d84b12
+df_team_member = gdf[(team_member_name, pay_date.year, pay_date.month)];
+
+# ╔═╡ 9e8a9329-a85d-407d-8289-c79477bf2162
+team_member_pay_summary = @chain df_team_member begin
+	groupby(:category)
+	@combine :hours = sum(:hours)
+	@transform begin
+		:rate = 35.00
+		:pay = RATE * :hours
+	end
+end
+
+# ╔═╡ 8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+team_member_total_pay = sum(team_member_pay_summary.pay)
+
+# ╔═╡ 4df7bcbb-3412-4be6-a086-5353d46b5765
+team_member_log = @select df_team_member begin
+	:date
+	:category
+	:hours
+	:student_name
+	:notes
+end
+
+# ╔═╡ 815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+report = """
+\\documentclass{article}
+
+\\usepackage[margin=0.5in]{geometry}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{charter}
+\\usepackage{xltabular}
+\\usepackage{booktabs}
+\\usepackage[table]{xcolor}
+\\usepackage{array}
+\\usepackage{tikz}
+\\usepackage{tikzpagenodes}
+
+\\setlength{\\parindent}{0pt}
+\\definecolor{onaketa-pink}{HTML}{ec008c}
+
+\\rowcolors{1}{white}{gray!25}
+\\def\\arraystretch{1.5}%
+
+\\begin{document}
+\\begin{tikzpicture}[remember picture,overlay]
+   \\node[anchor=north east,inner sep=0pt] at (current page text area.north east)
+              {\\includegraphics[scale=0.4]{../logo}};
+\\end{tikzpicture}%
+\\textbf{Pay period:} $(pay_date.year) $(monthname(pay_date.month))
+
+\\textbf{Name:} $(team_member_name)
+
+{\\color{onaketa-pink}\\textbf{Total (USD): $(@sprintf("%.2f", team_member_total_pay))}}
+
+\\arrayrulecolor{onaketa-pink}
+$(format_summary(team_member_pay_summary))
+
+\\arrayrulecolor{black}
+$(format_log(team_member_log))
+\\end{document}
 """
 
-# ╔═╡ 04497d9f-1e83-4fdf-a15c-537cade5db57
+# ╔═╡ 6c1f3bbf-c033-41af-ac88-7949ac2284f3
 md"""
-# Notebook setup 🔧
+## LaTeX
 """
 
-# ╔═╡ 922bbe02-738d-496b-ba93-82a51e700c21
+# ╔═╡ 693e39ab-1db5-4eb8-929e-2b177ad256b0
+md"""
+## Typst
+"""
+
+# ╔═╡ a3052c2c-cce3-450d-b05a-659f04d59509
+open("yee.typ", "w") do f
+	write(f, yee)
+end
+
+# ╔═╡ 196bcf90-135b-45cf-9e5d-55e1ec4e15e7
 r2(x) = @sprintf("%.2f", x)
 
-# ╔═╡ 62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
+# ╔═╡ 53420176-49b4-479d-996d-e0d0f7f71325
 stake! = String ∘ take!
 
-# ╔═╡ c4116830-9bd3-11ee-1039-135c5ef7c31d
+# ╔═╡ cf493f74-bb38-4808-8da7-e8fff9461c73
 function write_summary(df)
 	io = IOBuffer()
 	indent = ""
@@ -98,7 +199,7 @@ function write_summary(df)
 	stake!(io)
 end
 
-# ╔═╡ c8e52fd2-3856-4ace-8bef-94161da14587
+# ╔═╡ 64b6d9b4-da65-4b15-9b70-054e560d4837
 function write_log(df)
 	io = IOBuffer()
 	indent = ""
@@ -109,81 +210,48 @@ function write_log(df)
 	stake!(io)
 end
 
-# ╔═╡ 4f5c0918-29f1-4702-8e07-8f4a148e5a55
-function report_src(df_summary, df_log)
-	total_pay = sum(df_summary.pay)
-	
-	"""
-	#set page(margin: 0.5in)
-	
-	#grid(
-		columns: (2fr, 1fr),
-		[
-			*Pay period:* 2023 November\\
-			*Name:* Ian Weaver\\
-			#text(rgb("#ec008c"))[*Total (USD): $(r2(total_pay))*]
-			
-			#table(
-				columns: 4,
-				align: (left, right, right, right),
-				stroke: 0.5pt + rgb("#ec008c"),
-				[*Category*], [*Hours*], [*Rate*], [*Pay*],
-				$(write_summary(df_summary))\t\t)
-		],
-		[#image("../figures/logo.png")],
-	)
-	
-	#table(
-		columns: 5,
-		align: (
-			center + horizon,
-			center + horizon,
-			center + horizon,
-			center + horizon,
-			left + horizon,
-		),
-		fill: (_, row) => if calc.odd(row) {luma(240)},
-		stroke: 0.5pt + luma(200),
-		[*Date*], [*Category*], [*Hours*], [*Student*], [*Notes*],
-		$(write_log(df_log)))
-	"""
-end
+# ╔═╡ d9fccc47-47fc-4f88-8ac6-49e502041d09
+report2 = """
+#set page(margin: 0.5in)
 
-# ╔═╡ 184bece7-c9d7-4c32-9fbf-be19221369c6
-function generate_report(gdf, member, pay_date)
-	df_log = gdf[(member, pay_date.year, pay_date.month)]
-	
-	df_summary = @chain df_log begin
-		groupby(:category)
-		@combine :hours = sum(:hours)
-		@transform begin
-			:rate = 35.00
-			:pay = RATE * :hours
-		end
-	end
-	
-	report = report_src(df_summary, df_log)
-	
-	mkpath("./src")
-	name = replace(member, " "=>"")
-	fname = "pay_summary_$(pay_date.year)_$(monthname(pay_date.month))_$(name)"
-	spath = "src/$(fname).typ"
-	write(spath, report)
-	
-	mkpath("./pdfs")
-	ppath = "pdfs/$(fname).pdf"
-	cmd = `typst compile --root . $(spath) $(ppath)`
-	run(cmd)
+#grid(
+	columns: (2fr, 1fr),
+	[
+		*Pay period:* 2023 November\\
+		*Name:* Ian Weaver\\
+		#text(rgb("#ec008c"))[*Total (USD): $(r2(team_member_total_pay))*]
+		
+		#table(
+			columns: 4,
+			align: (left, right, right, right),
+			stroke: 0.5pt + rgb("#ec008c"),
+			[*Category*], [*Hours*], [*Rate*], [*Pay*],
+			$(write_summary(team_member_pay_summary))\t\t)
+	],
+	[#image("logo.png")],
+)
 
-	@debug "Report generated for $(member) $(pay_date)"
-end
+#table(
+	columns: 5,
+	align: (
+		center + horizon,
+		center + horizon,
+		center + horizon,
+		center + horizon,
+		left + horizon,
+	),
+	fill: (_, row) => if calc.odd(row) {luma(240)},
+	stroke: 0.5pt + luma(200),
+	[*Date*], [*Category*], [*Hours*], [*Student*], [*Notes*],
+	$(write_log(team_member_log)))
+"""
 
-# ╔═╡ 54453326-0746-4546-8526-2971956b9991
-for member ∈ members
-	generate_report(gdf, member, pay_date)
-end
+# ╔═╡ 47d52ed3-0514-476f-aed8-a8218f73361a
+md"""
+# Notebook setup 🔧
+"""
 
-# ╔═╡ 14b94f98-d03f-4b46-b608-e0d9b7dc22cf
+# ╔═╡ 02b59743-a150-41e5-afab-35d54d010380
 TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -193,12 +261,16 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Tectonic = "9ac5f52a-99c6-489f-af81-462ef484790f"
 
 [compat]
 CSV = "~0.10.11"
 DataFramesMeta = "~0.14.1"
 PlutoUI = "~0.7.54"
+PrettyTables = "~2.3.1"
+Tectonic = "~0.8.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -207,7 +279,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.4"
 manifest_format = "2.0"
-project_hash = "4cebaf3f75b5b85bb849a3c8a04b6272f7055b0c"
+project_hash = "af91023f1d5dfaccb9e8a5877ad209bf2e32c593"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -571,6 +643,12 @@ deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 version = "1.10.0"
 
+[[deps.Tectonic]]
+deps = ["Pkg"]
+git-tree-sha1 = "0b3881685ddb3ab066159b2ce294dc54fcf3b9ee"
+uuid = "9ac5f52a-99c6-489f-af81-462ef484790f"
+version = "0.8.0"
+
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -634,24 +712,30 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-# ╟─423a3da9-67e0-4c2f-996e-91e88c9ab9fe
-# ╟─6745f346-e48e-4f0a-a735-414e37901def
-# ╟─e66318e3-626a-442a-b659-719e0c46ccdd
-# ╟─f81815ed-5209-48e9-810a-4529927eed29
-# ╟─db3d661f-1623-4c9a-9d52-70f37f9c528d
-# ╠═618d232b-d236-40a9-8ee1-5983934d325f
-# ╠═60f0c785-63fa-40f5-999f-b4d606d7e8d6
-# ╟─cede75ac-35a3-4764-a356-f5421fb25792
-# ╟─4f5c0918-29f1-4702-8e07-8f4a148e5a55
-# ╠═54453326-0746-4546-8526-2971956b9991
-# ╟─184bece7-c9d7-4c32-9fbf-be19221369c6
-# ╟─04497d9f-1e83-4fdf-a15c-537cade5db57
-# ╟─c4116830-9bd3-11ee-1039-135c5ef7c31d
-# ╟─c8e52fd2-3856-4ace-8bef-94161da14587
-# ╟─922bbe02-738d-496b-ba93-82a51e700c21
-# ╟─62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
-# ╠═14b94f98-d03f-4b46-b608-e0d9b7dc22cf
-# ╠═454d5a84-3f1d-4789-bfe9-a45a21ed202f
+# ╠═ab491bd9-50a0-45a4-9104-7935afecb5e9
+# ╠═ed0218a6-0ae3-483f-bd35-450a3a3e747b
+# ╠═1f8ba080-95d6-4e60-871e-1929aaf59ddf
+# ╠═3afefd61-24af-4547-b969-2c98729e916b
+# ╠═8e00d97a-26c2-4b68-a971-e32f51a7d9d1
+# ╠═9e8a9329-a85d-407d-8289-c79477bf2162
+# ╠═4df7bcbb-3412-4be6-a086-5353d46b5765
+# ╟─815e7e18-78cb-43c5-a93a-7b8fd6b8df1a
+# ╟─d141b6c5-11fc-4984-b1cf-5801426fc255
+# ╟─8d607e10-d489-4bf3-8cff-898aa32cf36a
+# ╟─68df12c9-0dfc-426a-80dd-e4bf55d1d181
+# ╠═266ee10b-299e-42f0-b9b1-c4dd9e10a545
+# ╠═398a2202-f6ff-4ae1-a01f-2150966e7524
+# ╠═cecbf414-0a0c-4d45-beb9-284751d84b12
+# ╟─6c1f3bbf-c033-41af-ac88-7949ac2284f3
+# ╟─693e39ab-1db5-4eb8-929e-2b177ad256b0
+# ╠═d9fccc47-47fc-4f88-8ac6-49e502041d09
+# ╠═a3052c2c-cce3-450d-b05a-659f04d59509
+# ╠═cf493f74-bb38-4808-8da7-e8fff9461c73
+# ╠═64b6d9b4-da65-4b15-9b70-054e560d4837
+# ╠═196bcf90-135b-45cf-9e5d-55e1ec4e15e7
+# ╠═53420176-49b4-479d-996d-e0d0f7f71325
+# ╟─47d52ed3-0514-476f-aed8-a8218f73361a
+# ╠═02b59743-a150-41e5-afab-35d54d010380
+# ╠═b458a412-8fdf-11ee-21fc-39ca9d7aec91
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
