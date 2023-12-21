@@ -4,16 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
 # ╔═╡ 454d5a84-3f1d-4789-bfe9-a45a21ed202f
 using DataFramesMeta, CSV, Printf, PlutoUI, Dates, PDFmerger
 
@@ -34,22 +24,8 @@ members = [
 	"LaNell Williams",
 ]
 
-# ╔═╡ 423a3da9-67e0-4c2f-996e-91e88c9ab9fe
-let
-current_year, current_month = yearmonth(today())
-md"""
-$(@bind member Select(members; default="Ian Weaver")
-)
-$(@bind year Select(2020:2024; default=current_year))
-$(@bind month Select(1:12; default=current_month))
-"""
-end
-
 # ╔═╡ e66318e3-626a-442a-b659-719e0c46ccdd
-pay_date = (;year, month)
-
-# ╔═╡ f81815ed-5209-48e9-810a-4529927eed29
-const RATE = 35.00
+pay_date = (year=2023, month=12)
 
 # ╔═╡ db3d661f-1623-4c9a-9d52-70f37f9c528d
 md"""
@@ -74,8 +50,14 @@ md"""
 ## Generate reports
 """
 
-# ╔═╡ 8149393b-866b-49d0-94f0-ce4527420e07
-readdir("pdfs/")
+# ╔═╡ 9c8fa7f6-4517-4f03-8190-2dd554768cc8
+function rate(cat)
+	if cat ∈ ("Tutor Coordinator", "Social Media and Outreach Coordinator")
+		40.00
+	else
+		35.00
+	end
+end
 
 # ╔═╡ 04497d9f-1e83-4fdf-a15c-537cade5db57
 md"""
@@ -116,7 +98,7 @@ end
 function report_src(df_summary, df_log, member, pay_date)
 	total_pay = sum(df_summary.pay)
 	year = pay_date.year
-	month = monthname(pay_date.month)
+	month = monthabbr(pay_date.month)
 	"""
 	#set page(margin: 0.5in)
 	
@@ -160,9 +142,9 @@ function generate_report(gdf, member, pay_date)
 	df_summary = @chain df_log begin
 		groupby(:category)
 		@combine :hours = sum(:hours)
-		@transform begin
-			:rate = 35.00
-			:pay = RATE * :hours
+		@rtransform begin
+			:rate = rate(:category)
+			:pay = rate(:category) * :hours
 		end
 	end
 	
@@ -170,7 +152,7 @@ function generate_report(gdf, member, pay_date)
 	
 	mkpath("./src")
 	name = replace(member, " "=>"")
-	fname = "pay_summary_$(pay_date.year)_$(monthname(pay_date.month))_$(name)"
+	fname = "pay_summary_$(pay_date.year)_$(monthabbr(pay_date.month))_$(name)"
 	spath = "src/$(fname).typ"
 	write(spath, report)
 	
@@ -188,7 +170,7 @@ begin
 		generate_report(gdf, member, pay_date)
 	end
 	
-	merge_pdfs(readdir("pdfs/"; join=true), "merged.pdf")
+	merge_pdfs(readdir("pdfs/"; join=true), "pay_summaries_$(pay_date.year)_$(monthabbr(pay_date.month)).pdf")
 end
 
 # ╔═╡ 14b94f98-d03f-4b46-b608-e0d9b7dc22cf
@@ -866,17 +848,15 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-# ╟─423a3da9-67e0-4c2f-996e-91e88c9ab9fe
 # ╟─6745f346-e48e-4f0a-a735-414e37901def
-# ╟─e66318e3-626a-442a-b659-719e0c46ccdd
-# ╟─f81815ed-5209-48e9-810a-4529927eed29
+# ╠═e66318e3-626a-442a-b659-719e0c46ccdd
 # ╟─db3d661f-1623-4c9a-9d52-70f37f9c528d
 # ╠═618d232b-d236-40a9-8ee1-5983934d325f
 # ╠═60f0c785-63fa-40f5-999f-b4d606d7e8d6
 # ╟─cede75ac-35a3-4764-a356-f5421fb25792
 # ╟─4f5c0918-29f1-4702-8e07-8f4a148e5a55
-# ╠═8149393b-866b-49d0-94f0-ce4527420e07
 # ╠═54453326-0746-4546-8526-2971956b9991
+# ╠═9c8fa7f6-4517-4f03-8190-2dd554768cc8
 # ╟─184bece7-c9d7-4c32-9fbf-be19221369c6
 # ╟─04497d9f-1e83-4fdf-a15c-537cade5db57
 # ╟─c4116830-9bd3-11ee-1039-135c5ef7c31d
