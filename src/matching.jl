@@ -139,7 +139,7 @@ function plot_matches(N_common_matrix, dt_common_matrix;
             autorange = "reversed",
             title = "Students",
         ),
-        height = 800,
+        # height = 800,
     ))
 
     add_trace!(fig,
