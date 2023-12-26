@@ -38,7 +38,10 @@ df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
 # ╔═╡ 60f0c785-63fa-40f5-999f-b4d606d7e8d6
 gdf = @chain df begin
 	@rtransform begin
-		$[:y, :m, :d] = yearmonthday(:date)
+		# $[:y, :m, :d] = yearmonthday(:date)
+		:y = year(:date)
+		:m = month(:date)
+		:d = day(:date)
 		:student_name = coalesce(:student_name, :student_name_other)
 	end
 	# sort([:category, :student_name])
@@ -521,9 +524,9 @@ version = "0.1.4"
 
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
-git-tree-sha1 = "9ee1618cbf5240e6d4e0371d6f24065083f60c48"
+git-tree-sha1 = "b211c553c199c111d998ecdaf7623d1b89b69f93"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.11"
+version = "0.5.12"
 
 [[deps.Markdown]]
 deps = ["Base64"]
@@ -854,10 +857,10 @@ version = "17.4.0+0"
 # ╠═618d232b-d236-40a9-8ee1-5983934d325f
 # ╠═60f0c785-63fa-40f5-999f-b4d606d7e8d6
 # ╟─cede75ac-35a3-4764-a356-f5421fb25792
-# ╟─4f5c0918-29f1-4702-8e07-8f4a148e5a55
 # ╠═54453326-0746-4546-8526-2971956b9991
-# ╠═9c8fa7f6-4517-4f03-8190-2dd554768cc8
+# ╟─9c8fa7f6-4517-4f03-8190-2dd554768cc8
 # ╟─184bece7-c9d7-4c32-9fbf-be19221369c6
+# ╟─4f5c0918-29f1-4702-8e07-8f4a148e5a55
 # ╟─04497d9f-1e83-4fdf-a15c-537cade5db57
 # ╟─c4116830-9bd3-11ee-1039-135c5ef7c31d
 # ╟─c8e52fd2-3856-4ace-8bef-94161da14587
