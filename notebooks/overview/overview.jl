@@ -32,7 +32,7 @@ We read the data in from a simple csv file stored with this notebook.
 """
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df_raw = CSV.read("data/anon.csv", DataFrame);
+df_raw = CSV.read("./data/students.csv", DataFrame);
 
 # ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
 md"""
@@ -121,17 +121,6 @@ end
 # ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
 CSV.write("data/data_cleaned.csv", df_clean)
 
-# ╔═╡ 3d551209-6a0c-4f35-885d-63a5a7c6a320
-md"""
-* `id`: Anonymized id for each student
-* `course_subject`: Subject category
-* `student_grade`: Current grade student is in school
-* `student_race_ethnicity`: Self-reported race/ethnicity of student
-* `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
-* `active_X`: A flag indicating whether the student was active in our program during semester X. We define fall to be the first semester of the year and spring to be the second.
-* `drop_status`: A flag indicating whether the student was unable to join or remain in our program
-"""
-
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
 ## Insights 🔎
@@ -153,10 +142,12 @@ function active_terms_count(arr)
 		"spring_2022" => 0,
 		"fall_2022" => 0,
 		"spring_2023" => 0,
+		"fall_2023" => 0,
+		"spring_2024" => 0,
 	)
 	
 	for terms in arr
-		for term ∈ split(terms, ',')
+		for term ∈ strip.(split(terms, ','))
 			d[term] += 1
 		end
 	end
@@ -236,9 +227,6 @@ update_theme!(
 	)
 )
 end
-
-# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-TableOfContents()
 
 # ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
 md"""
@@ -1929,12 +1917,12 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─57d9df05-e2bd-4b8c-9ed4-06c09920165a
+# ╠═57d9df05-e2bd-4b8c-9ed4-06c09920165a
 # ╟─4b64ccc5-b606-4ae2-9764-73529be867f6
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-# ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
-# ╟─ff20fcd3-0c30-46a7-a09e-586d05300d5c
+# ╠═4e055d5f-248d-42ee-8270-fd59bd9c178e
+# ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
@@ -1942,28 +1930,26 @@ version = "3.5.0+0"
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
 # ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
-# ╟─3d551209-6a0c-4f35-885d-63a5a7c6a320
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
+# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─28a62b38-7b91-4dc7-8480-de491470128e
-# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╠═cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
-# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
 # ╟─9a642fe3-29a7-4ef0-8786-2830c615cd25
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81

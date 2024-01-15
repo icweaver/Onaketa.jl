@@ -4,9 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 15ba6dc9-2eaf-41c6-b4b4-0dc67b190822
-using PrettyTables
-
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using AlgebraOfGraphics, CairoMakie
@@ -19,7 +16,9 @@ end
 
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
 md"""
-# Application responses - Fall 2023 🚀
+# 🍎 Onaketa students
+
+Below are some general insights into the anonymized data collected about our students.
 """
 
 # ╔═╡ 2fbfc13b-6f4e-4741-a0de-e03701e00bf6
@@ -27,12 +26,33 @@ md"""
 ## Load data
 """
 
+# ╔═╡ 3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
+df_all = CSV.read("data/students.csv", DataFrame;
+	normalizenames = true,
+);
+
 # ╔═╡ 0265500d-d6f0-4cdb-af4f-257bee7a917f
 to_cat(field, levels) = categorical(field;
 	levels,
 	ordered = true,
 	compress = true,
 )
+
+# ╔═╡ 7e616848-c385-482d-bb97-b893414258bb
+md"""
+Here are what the first few rows look like:
+"""
+
+# ╔═╡ bfb915e1-168d-4245-9763-1f1b8281e968
+md"""
+* `id`: Anonymized id for each student
+* `course_subject`: Subject category
+* `student_grade`: Current grade student is in school
+* `student_race_ethnicity`: Self-reported race/ethnicity of student
+* `us_census`: A somewhat standardized attempt at converting `student_race_ethnicity` to categories based on the [2020 US Census](https://www.census.gov/newsroom/blogs/random-samplings/2021/08/measuring-racial-ethnic-diversity-2020-census.html). This will be updated for the upcoming [2030 census](https://www.census.gov/programs-surveys/decennial-census/decade/2030/2030-census-main.html) when these categories are released
+* `active_X`: A flag indicating whether the student was active in our program during semester X. We define fall to be the first semester of the year and spring to be the second.
+* `drop_status`: A flag indicating whether the student was unable to join or remain in our program
+"""
 
 # ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
 md"""
@@ -81,98 +101,6 @@ function generate_report(num, row)
 		**Other questions:** $(row.question_other)
 	"""
 end
-
-# ╔═╡ ab379bec-ed51-4ffe-9603-18f766334cd0
-md"""
-# Sorting =\
-
-Sorted by the specified `features` in the data below for students that submitted their application before the priority deadline
-"""
-
-# ╔═╡ 794418de-4912-435c-8386-3e67d724b62f
-# This order determines what is sorted first
-features = [
-	:student_age,
-	:question_performance,
-	:house_size,
-	:house_income,
-]
-
-# ╔═╡ 5e2823df-75b6-42c1-816c-df081bc0df66
-md"""
-No immediate red flags stood out to me in the free response sections of the application responses. Instead, I just ranked responses in descending order of priority along the following axes above:
-
-1. `student_age`: Age of the student. Younger students prioritzed.
-2. `question_performance`: Self reported performance in class. Weaker students prioritized.
-3. `house_size`: Number of members in student's household. Larger households prioritized.
-4. `house_income`: Annual household income. Lower income households prioritized.
-
-While the ranking within each feature is fairly objective, the feature priority order certainly is not. For example, switching the order of whether sorting by household size or household income first significantly changes which students land in the top 18, and I have no objective measure for which one should be a higher priority. I hate this part of the job.
-"""
-
-# ╔═╡ 6618ab98-78de-432b-bb34-d94b2feb9fbe
-selected_students = [
-	"Aaron Sandiford",
-	"Abigail Wilson",
-	"Aleeya Ortega",
-	"Alyssa Ortega",
-	"Brooklyn Thomas",
-	"Brycen Eason",
-	"Channing Brisbane",
-	"David Oche",
-	"David Singleton",
-	"Dorien Omar Hughes",
-	"Ethan Barlay",
-	# "Gabriel Hassan",
-	"Jordyn Loud",
-	"Judah Worthy",
-	"Kaliyah Benton",
-	"Keilana Alfaro",
-	"Kennedy Burks",
-	"Markayla Lejoi Denson",
-	"Miles Banks",
-	"Nahla Kaplan Rasheed",
-	"Nailah Gabrielle Cannon",
-	# "Narhaniiel Eshete", # No scheduling link, inbox full
-	# "Nova Abdulla",
-	"Omega Harris",
-	"Saphere",
-	"Simone Hopson",
-]
-
-# ╔═╡ ed474fa7-250a-419b-b9ca-c6f8bbec14bd
-waitlist_students = [
-	"Davion C Brown",
-	"Nadia Juma",
-	"Léonie Mendy",
-	"Joëlle Mendy",
-	"Narhaniiel Eshete",
-	"Zenze Taylor",
-	"Gabriel Hassan",
-	"Nova Abdulla",
-	"Meshack Juma",
-]
-
-# ╔═╡ bd429138-aca3-4b53-90d7-16f41b17c572
-reject_students = [
-	"Cristian E Santos",
-	"Jasmine Bellinger",
-	"Gavin Mosi Morrison",
-	"Lee'Asha Imary Pough Alequin",
-	"Zaniya Bryant",
-]
-
-# ╔═╡ 95cd60d4-7e19-468e-9b34-0d4e5012b655
-md"""
-From Filipe waitlist (high to low priority)
-
-```
-Gabriel Hassan
-Abigail Wilson
-Narhaniiel Eshete
-Brooklyn Thomas
-```
-"""
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -228,7 +156,7 @@ update_theme!(
 	Theme(
 		fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, -0.5, 35),
+			limits = (nothing, nothing, -0.5, 40),
 			titlesize = 26,
 			titlecolor = "#ec008c",
 			titlegap = -60,
@@ -247,9 +175,6 @@ update_theme!(
 	)
 )
 end
-
-# ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-# TableOfContents()
 
 # ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
 md"""
@@ -318,11 +243,10 @@ function clean_re(s)
 end
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df = let
-	df_raw = CSV.read("data/students.csv", DataFrame;
-	normalizenames = true,
-	);
-	@transform! df_raw begin
+df = @chain df_all begin
+	@rsubset !(:drop_status)
+	
+	@transform begin
 		:guardian1_name = clean_name.(:guardian1_name)
 		:guardian2_name = clean_name.(:guardian2_name)
 		:student_name = clean_grade.(:student_name)
@@ -344,70 +268,13 @@ df = let
 			],
 		)
 		:house_size = to_cat(:house_size,
-			reverse(["1", "2", "3", "4", "5", "6+"])
+			["1", "2", "3", "4", "5", "6+"]
 		)
 	end
 end
 
-# ╔═╡ 0b62a929-5f18-4b67-9c9b-85d86a749a6c
-df_sorted = @chain df begin
-	# @rsubset begin
-	# 	:Submitted_at < DateTime(2023, 08, 13)
-	# end
-	# select(:student_name, features)
-	sort(features)
-	# first(18)
-end
-
-# ╔═╡ 97ab6cd7-b8e1-4419-af92-497dc0c4dce9
-df_extra = @chain df_sorted begin
-	@rsubset :student_name ∉ selected_students
-	select(:student_name, features, :Submitted_at)
-end
-
-# ╔═╡ 86b5ef05-112b-4f2f-853c-3bf574de2cf0
-clipboard(sprint(show, "text/csv", df_extra))
-
-# ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
-df_selected = @chain df begin
-	@rsubset :student_name ∈ selected_students
-	sort(:student_name)
-end
-
-# ╔═╡ c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
-foreach(println, antijoin(df_sorted, df_selected; on=:student_name).student_name)
-
-# ╔═╡ d5a1de0d-415f-4710-a770-9411df75c523
-clipboard(sprint(show, "text/csv", select(df_selected, :student_email, :guardian1_email, :student_name)))
-
-# ╔═╡ e6b17509-f625-474f-83c9-ffeb8d9e1eb8
-for row ∈ eachrow(df_selected)
-	println(row.student_name)
-	println(row.student_age)
-	println(row.student_race_ethnicity)
-	println(row.course_name)
-	println(row.student_state)
-	println()
-end
-
-# ╔═╡ 6b04c951-4e16-4dbd-a151-ace92a0f197e
-df_waitlist = @chain df begin
-	@rsubset :student_name ∈ waitlist_students
-	@select :student_email :guardian1_email :student_name
-end
-
-# ╔═╡ a0a4c75f-ee74-4104-971f-c777ce01d617
-clipboard(sprint(show, "text/csv", df_waitlist))
-
-# ╔═╡ bd213ad4-d18e-486b-bb16-26b70300fbe2
-df_reject = @chain df begin
-	@rsubset :student_name ∈ reject_students
-	@select :student_email :guardian1_email :student_name
-	@transform :guardian1_email = "ian@oanketa.org"
-end
-
-# ╔═╡ 5ff2e3db-e302-44c6-aca3-05428a8ad820
-clipboard(sprint(show, "text/csv", df_reject))
+# ╔═╡ a55de046-3b60-4e4a-a59a-fc13446c8a16
+first(df, 3)
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -431,6 +298,53 @@ function bargroups(df, x;
 	return fg, plt, axis
 end
 
+# ╔═╡ 080a6044-29f6-46a5-8b01-1503694e0026
+begin
+df_served = DataFrame(
+	term = to_cat(
+		[
+			x
+			for terms ∈ df.term_active
+			for x ∈ strip.(split(terms, ','))
+		],
+		[
+			"Spring 2021",
+			"Fall 2021",
+			"Spring 2022",
+			"Fall 2022",
+			"Spring 2023",
+			"Fall 2023",
+			"Spring 2024",
+		]
+	)
+)
+
+fg_served, plt_served, axis_served = bargroups(df_served, :term;
+		title = " Students served",
+		titlealign = :left,
+		subtitle = " Number of active students each semester",
+	)
+
+	fg_served |> as_svg
+end
+
+# ╔═╡ c3727e37-885a-4280-872f-d85abecf1d86
+percent_growth = let
+	df_terms = combine(groupby(df_served, :term), nrow)
+
+	n_terms = nrow(df_terms)
+	percent_diffs = 100.0 * diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
+
+	mean(percent_diffs)
+end
+
+# ╔═╡ 22a7406e-07fa-4f6c-8c26-70092be6a724
+md"""
+### Semester
+
+Cumulative number of students served by our program each semester. We have seen an explosive $(round(Int, percent_growth))% growth rate on average over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
+"""
+
 # ╔═╡ 9a642fe3-29a7-4ef0-8786-2830c615cd25
 function save_fig(fg, fname)
 	mkpath("./figures")
@@ -441,22 +355,9 @@ end
 
 # ╔═╡ bcbe2191-4dec-4bbd-b327-18367f7914dd
 begin
-	fg_hear, plt_hear, axis_hear = let
-	# labels = [
-	# 	"Recommended by friend or colleague" => "Recommended by\nfriend or colleague",
-	# 	"Search engine (Google, Yahoo, etc.)" => "Search engine\n(Google, Yahoo, etc.)",
-	# 	"Social media" => "Social media",
-	# ]
-	
-	bargroups(df, :question_hear_about;
-		title = " Discoverability",
-		titlealign = :left,
-		subtitle = " How applicants heard about the program",
-		f = wrap_string,
-		# f = renamer(labels)
-		# xticklabelrotation = π/8,
+	fg_hear, plt_hear, axis_hear = bargroups(df_all, :question_hear_about;
+		xticklabelrotation = π / 8,
 	)
-	end
 
 	save_fig(fg_hear, "Discoverability")
 	fg_hear |> as_svg
@@ -465,15 +366,15 @@ end
 # ╔═╡ 50560612-b24b-4369-ae25-a9e045858198
 begin
 	fg_subject, plt_subject, axis_subject = let	
-	labels = [
-		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
-	]
+	# labels = [
+	# 	"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
+	# ]
 
 	bargroups(df, :course_subject;
 		title = "Course subject",
 		titlealign = :right,
 		subtitle = "General category requested",
-		f = sorter(labels)
+		# f = sorter(labels),
 	)
 	end
 
@@ -562,7 +463,6 @@ MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
@@ -575,7 +475,6 @@ MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.0"
 PlutoUI = "~0.7.50"
-PrettyTables = "~2.2.7"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -584,7 +483,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.0"
 manifest_format = "2.0"
-project_hash = "689abb5bff713447dd54ba4258f13a1d02879ef6"
+project_hash = "32f9dd3f44577aa2ab9b60b8a9e9d6fd6d8fd293"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -2084,47 +1983,34 @@ version = "3.5.0+0"
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
 # ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
-# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
+# ╠═3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
+# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╠═0265500d-d6f0-4cdb-af4f-257bee7a917f
+# ╟─7e616848-c385-482d-bb97-b893414258bb
+# ╟─a55de046-3b60-4e4a-a59a-fc13446c8a16
+# ╟─bfb915e1-168d-4245-9763-1f1b8281e968
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
 # ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
-# ╟─ab379bec-ed51-4ffe-9603-18f766334cd0
-# ╠═794418de-4912-435c-8386-3e67d724b62f
-# ╟─5e2823df-75b6-42c1-816c-df081bc0df66
-# ╠═c08d6817-71b9-4fbf-b35b-d75ef6dc0d81
-# ╠═0b62a929-5f18-4b67-9c9b-85d86a749a6c
-# ╠═15ba6dc9-2eaf-41c6-b4b4-0dc67b190822
-# ╠═97ab6cd7-b8e1-4419-af92-497dc0c4dce9
-# ╠═86b5ef05-112b-4f2f-853c-3bf574de2cf0
-# ╠═0f98b77a-7370-40c1-bab0-369afa95310e
-# ╠═d5a1de0d-415f-4710-a770-9411df75c523
-# ╠═e6b17509-f625-474f-83c9-ffeb8d9e1eb8
-# ╠═6618ab98-78de-432b-bb34-d94b2feb9fbe
-# ╠═ed474fa7-250a-419b-b9ca-c6f8bbec14bd
-# ╠═6b04c951-4e16-4dbd-a151-ace92a0f197e
-# ╠═a0a4c75f-ee74-4104-971f-c777ce01d617
-# ╠═bd429138-aca3-4b53-90d7-16f41b17c572
-# ╠═bd213ad4-d18e-486b-bb16-26b70300fbe2
-# ╠═5ff2e3db-e302-44c6-aca3-05428a8ad820
-# ╟─95cd60d4-7e19-468e-9b34-0d4e5012b655
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
+# ╟─22a7406e-07fa-4f6c-8c26-70092be6a724
+# ╟─c3727e37-885a-4280-872f-d85abecf1d86
+# ╟─080a6044-29f6-46a5-8b01-1503694e0026
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd
 # ╠═03ec0b88-8206-4637-bc7e-4099bd3b2ace
 # ╠═1c1bdf8b-d6de-4f9b-9de5-81aa59930d83
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╟─50560612-b24b-4369-ae25-a9e045858198
+# ╠═50560612-b24b-4369-ae25-a9e045858198
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
-# ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
+# ╠═ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
-# ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
