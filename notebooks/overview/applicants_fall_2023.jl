@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.36
 
 using Markdown
 using InteractiveUtils
@@ -184,6 +184,18 @@ md"""
 ### Discoverability
 """
 
+# ╔═╡ 03ec0b88-8206-4637-bc7e-4099bd3b2ace
+function wrap_string(s)
+	if occursin(" ", s)
+		replace(s, " " => "\n")
+	else
+		s
+	end
+end
+
+# ╔═╡ 1c1bdf8b-d6de-4f9b-9de5-81aa59930d83
+wrap_string(s::Missing) = s
+
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
 ### Subject
@@ -237,7 +249,7 @@ update_theme!(
 end
 
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-TableOfContents()
+# TableOfContents()
 
 # ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
 md"""
@@ -253,19 +265,19 @@ clean_name(s) = ismissing(s) ? s : s |> strip |> lowercase
 function clean_grade(s)
 	s_clean = clean_name(s)
 	if occursin("6", s_clean)
-		"6th grade"
+		"6th"
 	elseif occursin("7", s_clean)
-		"7th grade"
+		"7th"
 	elseif occursin("8", s_clean)
-		"8th grade"
+		"8th"
 	elseif occursin("9", s_clean)
-		"9th grade"
+		"9th"
 	elseif occursin("10", s_clean)
-		"10th grade"
+		"10th"
 	elseif occursin("11", s_clean)
-		"11th grade"
+		"11th"
 	elseif occursin("12", s_clean)
-		"12th grade"
+		"12th"
 	elseif occursin("under", s_clean)
 		"Undergrad"
 	else
@@ -307,7 +319,7 @@ end
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
 df = let
-	df_raw = CSV.read("data/student_application_2023_08 - Sheet1.csv", DataFrame;
+	df_raw = CSV.read("data/students.csv", DataFrame;
 	normalizenames = true,
 	);
 	@transform! df_raw begin
@@ -328,6 +340,7 @@ df = let
 				"Between \$50,000 - \$100,000",
 				"Between \$100,000 - \$150,000",
 				"Above \$150,000",
+				"Would prefer not to provide",
 			],
 		)
 		:house_size = to_cat(:house_size,
@@ -409,7 +422,7 @@ function bargroups(df, x;
 	titlealign = :left,
 	subtitle = "Subtitle",
 	xticklabelrotation = 0.0,
-	f = (x -> x)
+	f = x -> x
 )
 	plt = data(df) * frequency() * mapping(x => f => "")
 	
@@ -424,6 +437,48 @@ function save_fig(fg, fname)
 	fpath = "./figures/$(fname).png"
 	save(fpath, fg; px_per_unit=3)
 	@debug "Saved to $(fpath)"
+end
+
+# ╔═╡ bcbe2191-4dec-4bbd-b327-18367f7914dd
+begin
+	fg_hear, plt_hear, axis_hear = let
+	# labels = [
+	# 	"Recommended by friend or colleague" => "Recommended by\nfriend or colleague",
+	# 	"Search engine (Google, Yahoo, etc.)" => "Search engine\n(Google, Yahoo, etc.)",
+	# 	"Social media" => "Social media",
+	# ]
+	
+	bargroups(df, :question_hear_about;
+		title = " Discoverability",
+		titlealign = :left,
+		subtitle = " How applicants heard about the program",
+		f = wrap_string,
+		# f = renamer(labels)
+		# xticklabelrotation = π/8,
+	)
+	end
+
+	save_fig(fg_hear, "Discoverability")
+	fg_hear |> as_svg
+end
+
+# ╔═╡ 50560612-b24b-4369-ae25-a9e045858198
+begin
+	fg_subject, plt_subject, axis_subject = let	
+	labels = [
+		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
+	]
+
+	bargroups(df, :course_subject;
+		title = "Course subject",
+		titlealign = :right,
+		subtitle = "General category requested",
+		f = sorter(labels)
+	)
+	end
+
+	save_fig(fg_subject, "Course_subject")
+	fg_subject |> as_svg
 end
 
 # ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
@@ -445,13 +500,14 @@ fg_grade, plt_grade, axis_grade = let
 end
 
 # ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-begin 
+begin
 fg_re, plt_re, axis_re = let
 	labels = [
 		"Black or African American" => "Black or\nAfrican American",
 		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
 		"Multiracial" => "Multiracial",
 		"Native American" => "Native American",
+		"Southeast Asian or Pacific Islander" => "Southeast Asian or Pacific Islander",
 		"Not reported" => "Not reported",
 	]
 
@@ -460,51 +516,11 @@ fg_re, plt_re, axis_re = let
 		titlealign = :right,
 		subtitle = "Self-reported identity",
 		f = renamer(labels),
+		xticklabelrotation = π / 6,
 	)
 	end
 	
 	save_fig(fg_re, "Race_and_ethnicity")
-	fg_re |> as_svg
-end
-
-# ╔═╡ bcbe2191-4dec-4bbd-b327-18367f7914dd
-begin
-	fg_hear, plt_hear, axis_hear = let
-	labels = [
-		"Recommended by friend or colleague" => "Recommended by\nfriend or colleague",
-		"Search engine (Google, Yahoo, etc.)" => "Search engine\n(Google, Yahoo, etc.)",
-		"Social media" => "Social media",
-	]
-	
-	bargroups(df, :question_hear_about;
-		title = " Discoverability",
-		titlealign = :left,
-		subtitle = " How applicants heard about the program",
-		f = renamer(labels)
-		# xticklabelrotation = π/8,
-	)
-	end
-
-	save_fig(fg_re, "Discoverability")
-	fg_hear |> as_svg
-end
-
-# ╔═╡ 50560612-b24b-4369-ae25-a9e045858198
-begin
-	fg_subject, plt_subject, axis_subject = let	
-	labels = [
-		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
-	]
-
-	bargroups(df, :course_subject;
-		title = "Course subject",
-		titlealign = :right,
-		subtitle = "General category requested",
-		f = sorter(labels)
-	)
-	end
-
-	save_fig(fg_re, "Course_subject")
 	fg_re |> as_svg
 end
 
@@ -566,7 +582,7 @@ PrettyTables = "~2.2.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.3"
+julia_version = "1.10.0"
 manifest_format = "2.0"
 project_hash = "689abb5bff713447dd54ba4258f13a1d02879ef6"
 
@@ -761,7 +777,7 @@ version = "4.6.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.5+1"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -1224,21 +1240,26 @@ version = "0.3.1"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
+version = "0.6.4"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
+version = "8.4.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
 
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
+version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1366,7 +1387,7 @@ version = "0.5.4"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.MiniQhull]]
 deps = ["QhullMiniWrapper_jll"]
@@ -1391,7 +1412,7 @@ version = "0.3.4"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1434,7 +1455,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+2"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -1451,7 +1472,7 @@ version = "3.1.1+0"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
+version = "0.8.1+2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1479,7 +1500,7 @@ version = "1.6.0"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+0"
+version = "10.42.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1526,7 +1547,7 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.10.0"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1608,7 +1629,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeArrays]]
@@ -1739,6 +1760,7 @@ version = "1.1.0"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
@@ -1776,7 +1798,7 @@ version = "1.4.0"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
@@ -1826,9 +1848,9 @@ deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.1+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -1987,7 +2009,7 @@ version = "1.4.0+3"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.isoband_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2010,7 +2032,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.8.0+1"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2039,12 +2061,12 @@ version = "1.3.7+1"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
+version = "1.52.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2088,13 +2110,15 @@ version = "3.5.0+0"
 # ╟─95cd60d4-7e19-468e-9b34-0d4e5012b655
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
-# ╟─bcbe2191-4dec-4bbd-b327-18367f7914dd
+# ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd
+# ╠═03ec0b88-8206-4637-bc7e-4099bd3b2ace
+# ╠═1c1bdf8b-d6de-4f9b-9de5-81aa59930d83
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─50560612-b24b-4369-ae25-a9e045858198
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
@@ -2106,7 +2130,7 @@ version = "3.5.0+0"
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
 # ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╟─78d1d0c0-0ed2-44fc-b556-851abfe4c04a
+# ╠═78d1d0c0-0ed2-44fc-b556-851abfe4c04a
 # ╟─9a642fe3-29a7-4ef0-8786-2830c615cd25
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 # ╠═fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
