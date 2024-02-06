@@ -82,7 +82,7 @@ def make_plot(theme="stamen-watercolor"):
 make_plot = @pyeval "make_plot"
 end
 
-# ╔═╡ c078178e-7875-4cfd-80cc-db2eb44a72e2
+# ╔═╡ 1709a951-66d5-44cf-b305-941d32e97bdc
 make_plot()
 
 # ╔═╡ 86297aa9-abca-424f-89b9-f5e2b70f05e0
@@ -94,10 +94,10 @@ TableOfContents(title="Fun with Maps")
 # ╔═╡ Cell order:
 # ╟─a46a4d3a-b2f8-45d6-b4d9-84f4370142a5
 # ╟─21303cff-f213-4de8-8aee-da5b984c7c29
-# ╠═c078178e-7875-4cfd-80cc-db2eb44a72e2
+# ╠═1709a951-66d5-44cf-b305-941d32e97bdc
 # ╟─cbc0ee52-4e86-4bd3-ae6d-a4959bfc278b
 # ╠═86297aa9-abca-424f-89b9-f5e2b70f05e0
 # ╟─f07d998c-8a22-44f6-918b-48f0e6a7463a
 # ╠═b6ae9280-6a2c-4a91-9684-a05e3c6f5e5d
-# ╟─e4512aa0-0960-11ee-15b1-8dc2c22dabaa
-# ╟─62a9ab93-ee3a-485f-8d7a-a4545e2b9af0
+# ╠═e4512aa0-0960-11ee-15b1-8dc2c22dabaa
+# ╠═62a9ab93-ee3a-485f-8d7a-a4545e2b9af0

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.36
+# v0.19.37
 
 using Markdown
 using InteractiveUtils
@@ -14,7 +14,7 @@ md"""
 
 # ╔═╡ 6745f346-e48e-4f0a-a735-414e37901def
 members = [
-	# "Adia Imara",
+	"Adia Imara",
 	"Chima McGruder",
 	"Filipe Cerqueira",
 	"Gianni Sims",
@@ -25,7 +25,7 @@ members = [
 ]
 
 # ╔═╡ e66318e3-626a-442a-b659-719e0c46ccdd
-pay_date = (year=2023, month=12)
+pay_date = (year=2024, month=1)
 
 # ╔═╡ db3d661f-1623-4c9a-9d52-70f37f9c528d
 md"""
@@ -34,6 +34,9 @@ md"""
 
 # ╔═╡ 618d232b-d236-40a9-8ee1-5983934d325f
 df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
+
+# ╔═╡ f2e5be9a-b621-4988-ae59-1e501a3d73af
+df
 
 # ╔═╡ 60f0c785-63fa-40f5-999f-b4d606d7e8d6
 gdf = @chain df begin
@@ -44,7 +47,7 @@ gdf = @chain df begin
 		:d = day(:date)
 		:student_name = coalesce(:student_name, :student_name_other)
 	end
-	# sort([:category, :student_name])
+	sort([:category, :student_name])
 	groupby([:team_member, :y, :m]; sort=true)
 end;
 
@@ -861,6 +864,7 @@ version = "17.4.0+2"
 # ╠═e66318e3-626a-442a-b659-719e0c46ccdd
 # ╟─db3d661f-1623-4c9a-9d52-70f37f9c528d
 # ╠═618d232b-d236-40a9-8ee1-5983934d325f
+# ╠═f2e5be9a-b621-4988-ae59-1e501a3d73af
 # ╠═60f0c785-63fa-40f5-999f-b4d606d7e8d6
 # ╟─cede75ac-35a3-4764-a356-f5421fb25792
 # ╠═54453326-0746-4546-8526-2971956b9991
