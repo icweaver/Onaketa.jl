@@ -15,10 +15,11 @@ const TDY = today()
 
 # ╔═╡ 91db6fa1-01ee-4546-8ae3-44de35ea34c3
 person = (
-	name = "Alice",
-	amount = 100.015,
-	amount_date = Date(2024, 2, 2),
-	address = "123 Main St., Oakland, CA 00000, US",
+	name = "",
+	email = "",
+	amount = 255.58,
+	amount_date = Date(2024, 2, 6),
+	address = "",
 )
 
 # ╔═╡ 274360dc-6081-4c14-8da4-f91b84106c4a
@@ -32,13 +33,28 @@ function tpl_email(p)
 	header_date = fmt_date(TDY)
 	
 	@mdx """
+	!!! note "subject:"
+		```
+		Thank you! (Tax receipt from Onaketa)
+		```
+	
+	!!! note "to:"
+		```
+		$(p.email)
+		```
+
+	!!! warning "cc:"
+		```
+		niaimara@gmail.com
+		```
+	
 	$(header_date)
 	
 	Dear $(p.name),
 	
 	Thank you for your generous donation of \$$(r2(p.amount)) to Onaketa! Your contribution will help us in our work of serving black and brown students with STEM tutoring, mentorship, and other free resources.
 	
-	Thanks to you, we’re able to further our vision of "education without limits"—together. We truly appreciate your support.
+	Thanks to you, we’re able to further our vision of "education without limits" — together. We truly appreciate your support.
 	
 	Gratefully, Onaketa
 	
@@ -84,7 +100,7 @@ function tpl_pdf(p)
 	#let DATE_LETTER = "$(fmt_date(TDY))"
 	#let NAME = "$(p.name)"
 	#let AMOUNT = "\$$(r2(p.amount))"
-	#let DATE_AMOUNT = "$(p.amount_date)"
+	#let DATE_AMOUNT = "$(fmt_date(p.amount_date))"
 	#let ADDRESS = "$(p.address)"
 	
 	#DATE_LETTER
