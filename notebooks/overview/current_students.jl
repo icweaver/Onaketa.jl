@@ -25,6 +25,8 @@ function generate_report(num, row)
 
 	!!! note " "
 		[**Schedule**]($(row.schedule))
+
+		**State:** $(row.student_state)
 		
 		**Grade:** $(row.student_grade)
 		
