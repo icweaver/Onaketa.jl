@@ -4,191 +4,106 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
+# ╔═╡ 8b7d1556-5d85-4fc4-a0a0-ad90cb08c006
+using PlutoUI, CommonMark
+
+# ╔═╡ a63e03b3-2fb3-4e81-bf84-ad65f41c8483
+md"""
+# Prealgebra problem bank ✏️
+"""
+
+# ╔═╡ 5c3e89b6-455b-4136-8e46-faa79cb7376c
+md"""
+## Chapter 1 Whole Numbers
+"""
+
+# ╔═╡ 8d1ef986-283c-44d5-8d99-778fe2e5e58f
+md"""
+# Notebook setup 🔧
+"""
+
+# ╔═╡ 68bfc65c-cdd8-11ee-17f5-774ea7de49ca
+struct Problem
+	number
+	kind
+	prompt
+	question
+	answer
 end
 
-# ╔═╡ a1ca2645-efe9-4472-a70b-c5a4989c9400
-begin
-	using PlutoUI
-	using Dates, Printf
-	using CommonMark
-end
+# ╔═╡ 75f9895e-f41f-4915-8819-b0a7e54f9491
+problems = Dict{Symbol, Problem}()
 
-# ╔═╡ 3c7b337a-66bd-468f-b7ca-a8874106ea0e
-const TDY = today()
+# ╔═╡ 8ad460d6-77f3-436f-9492-8452ce1b3cd1
+md"""
+## Convenience functions
+"""
 
-# ╔═╡ 716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-@bind person PlutoUI.combine() do Child
-	cm"""
-	**Name:** $(Child(:name, TextField()))
-	**Email:** $(Child(:email, TextField()))
-	
-	**Amount:** $(Child(:amount, NumberField(1:0.01:5_000)))
-	**Amount date:** $(Child(:amount_date, DatePicker()))
+# ╔═╡ 5e496305-ee76-4a47-ad70-cafacaf72c98
+add!(p) = problems[p.number] = p
 
-	**Address:** $(Child(:address, TextField()))
-	"""
-end |> confirm
+# ╔═╡ dcc5b312-5069-4cc7-b684-61be88cf44ed
+Problem(
+	:p1,
+	:language,
+	cm"Simplify",
+	cm"``5(3 + 2 \cdot 6) - 8^2``",
+	cm"``11``",
+) |> add!
 
-# ╔═╡ bdb64e58-abae-4415-9b01-2ccd3b5f1a18
-person.email
+# ╔═╡ 1e7d429d-c4ee-4f1f-a638-49a29804e2c6
+Problem(
+	:p2,
+	:language,
+	cm"Solve",
+	cm"``17 = y - 13``",
+	cm"``30``",
+) |> add!
 
-# ╔═╡ 274360dc-6081-4c14-8da4-f91b84106c4a
-r2(x) = @sprintf("%.2f", x)
+# ╔═╡ 37bc6af8-ed35-4197-9ca2-218a83b7bfae
+Problem(
+	:p3,
+	:language,
+	cm"Solve",
+	cm"``p + 14 = 23``",
+	cm"``9``",
+) |> add!
 
-# ╔═╡ f21f544a-9531-4a61-b29c-331d0b4ab491
-fmt_date(dt) = Dates.format(dt, dateformat"U dd, Y")
+# ╔═╡ 00974e52-9f14-4dd1-8e83-aa497519ca13
+Problem(
+	:p4,
+	:language,
+	cm"Translate into an algebraic expression",
+	cm"``11`` less than the product of ``7`` and ``x``",
+	cm"``7x - 11``",
+) |> add!
 
-# ╔═╡ dcaf492c-c476-11ee-2997-8d295a2527a5
-function tpl_email(p)
-	header_date = fmt_date(TDY)
-	
-	cm"""
-	!!! note "subject:"
-		```
-		Thank you! (Tax receipt from Onaketa)
-		```
-	
-	!!! note "to:"
-		```
-		$(p.email)
-		```
+# ╔═╡ 085ac0cf-56c4-414f-9aa2-ee05a1bdba8d
+Problem(
+	:p5,
+	:language,
+	cm"Translate into an algebraic equation and solve",
+	cm"The difference of ``y`` and ``7`` gives ``84``",
+	cm"91",
+) |> add!
 
-	!!! warning "bcc:"
-		```
-		niaimara@gmail.com, nehanda@onaketa.org
-		```
-	
-	$(header_date)
-	
-	Dear $(p.name),
-	
-	Thank you for your generous donation of \$$(r2(p.amount)) to Onaketa! Your contribution will help us in our work of serving black and brown students with STEM tutoring, mentorship, and other free resources.
-	
-	Thanks to you, we’re able to further our vision of "education without limits" — together. We truly appreciate your support.
-	
-	Gratefully, Onaketa
-	
-	Dr. Nia Imara, Founder and Director of Onaketa\
-	Dr. Siri Brown, Board Member\
-	Dr. LaNell Williams, Board Member
-	
-	
-	---
-	
-	**Tax Receipt from Onaketa Inc.**
+# ╔═╡ cdb3c0b5-7444-463e-b745-6097b27a4725
+md"""
+## Packages
+"""
 
-	**Name:** $(p.name)\
-	**Address:** $(p.address)\
-	**Gift Date:** $(fmt_date(p.amount_date))\
-	**Total Gift Amount:** $(r2(p.amount))
-	
-	*No goods or services were provided in exchange for this contribution.*
-
-	---
-	
-	**Donation information:**\
-	Onaketa, Inc. is a 501(c)(3) nonprofit organization; our federal tax ID # is 85-4282111.
-	Your donation is tax-deductible to the full extent provided by the law, as no goods or
-	services were exchanged nor provided in consideration of this gift and/or contribution.
-	"""
-end
-
-# ╔═╡ bfb61bd6-bbeb-4286-a732-fad9229b31f8
-!any(isnothing, person) && tpl_email(person);
-
-# ╔═╡ bfb8c0c2-ab68-4eeb-b001-535c4d3c3373
-tpl_email(person)
-
-# ╔═╡ cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
-function tpl_pdf(p)
-	"""
-	#set text(font: "TeX Gyre Schola")
-	
-	#align(center)[
-	  #image("/logo.png", width: 50%)
-	  #link("https://www.onaketa.org")[onaketa.org] |
-	  #link("mailto:info@onaketa.org")
-	]
-	
-	#let DATE_LETTER = "$(fmt_date(TDY))"
-	#let NAME = "$(p.name)"
-	#let AMOUNT = "\$$(r2(p.amount))"
-	#let DATE_AMOUNT = "$(fmt_date(p.amount_date))"
-	#let ADDRESS = "$(p.address)"
-	
-	#DATE_LETTER
-	\\
-	\\
-	\\
-	Dear #NAME,
-	
-	Thank you for your generous donation of #AMOUNT to Onaketa! Your contribution will help us in our work of serving black and brown students with STEM tutoring, mentorship, and other free resources.
-	
-	Thanks to you, we’re able to further our vision of "education without limits" --- together. We truly appreciate your support.
-	\\
-	\\
-	Gratefully, Onaketa
-	\\
-	\\
-	Dr. Nia Imara, Founder and Director of Onaketa\\
-	Dr. Siri Brown, Board Member\\
-	Dr. LaNell Williams, Board Member
-	\\
-	\\
-	\\
-	#line(length: 100%)
-	*Tax Receipt from Onaketa Inc.*
-	
-	*Name:* #NAME\\
-	*Address:* #ADDRESS\\
-	*Gift Date:* #DATE_AMOUNT\\
-	*Total Gift Amount:* #AMOUNT
-	
-	_No goods or services were provided in exchange for this contribution._
-	#line(length: 100%)
-	\\
-	*Donation information:*\\
-	Onaketa, Inc. is a 501(c)(3) nonprofit organization; our federal tax ID \\# is 85-4282111. Your donation is tax-deductible to the full extent provided by the law, as no goods or services were exchanged nor provided in consideration of this gift and/or contribution.
-	"""
-end
-
-# ╔═╡ 8ddc461d-410e-435b-a05b-a268da330aec
-if !any(isnothing, person)
-	mkpath("./src")
-	# name = replace(member, " "=>"")
-	# fname = "pay_summary_$(pay_date.year)_$(monthabbr(pay_date.month))_$(name)"
-	fname = "Tax_receipt_letter_$(replace(person.name, ' '=>'_'))_$(TDY)"
-	spath = "src/$(fname).typ"
-	write(spath, tpl_pdf(person))
-
-	mkpath("./pdfs")
-	ppath = "pdfs/$(fname).pdf"
-	cmd = `typst compile --root . $(spath) $(ppath)`
-	run(cmd)
-
-	@debug "Report generated for $(ppath)"
-
-end
+# ╔═╡ a83e5073-8bae-4bdd-9843-ed486a3f5af5
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 CommonMark = "~0.8.12"
-PlutoUI = "~0.7.55"
+PlutoUI = "~0.7.56"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -197,7 +112,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.1"
 manifest_format = "2.0"
-project_hash = "7e31b6f660afa539f3410b83ce4c70875c88e898"
+project_hash = "0ee720302a742548f4f0956c86a2280b34805152"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -360,9 +275,9 @@ version = "1.10.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "68723afdb616445c6caaef6255067a8339f91325"
+git-tree-sha1 = "211cdf570992b0d977fda3745f72772e0d5423f2"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.55"
+version = "0.7.56"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
@@ -471,16 +386,20 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═3c7b337a-66bd-468f-b7ca-a8874106ea0e
-# ╟─716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-# ╠═bfb61bd6-bbeb-4286-a732-fad9229b31f8
-# ╠═bdb64e58-abae-4415-9b01-2ccd3b5f1a18
-# ╠═bfb8c0c2-ab68-4eeb-b001-535c4d3c3373
-# ╠═8ddc461d-410e-435b-a05b-a268da330aec
-# ╠═dcaf492c-c476-11ee-2997-8d295a2527a5
-# ╟─cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
-# ╟─274360dc-6081-4c14-8da4-f91b84106c4a
-# ╟─f21f544a-9531-4a61-b29c-331d0b4ab491
-# ╠═a1ca2645-efe9-4472-a70b-c5a4989c9400
+# ╟─a63e03b3-2fb3-4e81-bf84-ad65f41c8483
+# ╟─5c3e89b6-455b-4136-8e46-faa79cb7376c
+# ╟─dcc5b312-5069-4cc7-b684-61be88cf44ed
+# ╟─1e7d429d-c4ee-4f1f-a638-49a29804e2c6
+# ╟─37bc6af8-ed35-4197-9ca2-218a83b7bfae
+# ╟─00974e52-9f14-4dd1-8e83-aa497519ca13
+# ╟─085ac0cf-56c4-414f-9aa2-ee05a1bdba8d
+# ╟─8d1ef986-283c-44d5-8d99-778fe2e5e58f
+# ╠═68bfc65c-cdd8-11ee-17f5-774ea7de49ca
+# ╠═75f9895e-f41f-4915-8819-b0a7e54f9491
+# ╟─8ad460d6-77f3-436f-9492-8452ce1b3cd1
+# ╠═5e496305-ee76-4a47-ad70-cafacaf72c98
+# ╟─cdb3c0b5-7444-463e-b745-6097b27a4725
+# ╠═a83e5073-8bae-4bdd-9843-ed486a3f5af5
+# ╠═8b7d1556-5d85-4fc4-a0a0-ad90cb08c006
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
