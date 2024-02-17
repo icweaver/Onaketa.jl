@@ -23,23 +23,14 @@ md"""
 ## Diagnostic generation
 """
 
-# ╔═╡ 74dad85c-7f67-4688-b176-3e6f762c4034
-# for (topic, problems) ∈ problems
-# 	println(topic)
-# 	for problem ∈ problems
-# 		println(problem.question)
-# 	end
-# 	println()
-# end
-
 # ╔═╡ 5c3e89b6-455b-4136-8e46-faa79cb7376c
 md"""
-## Chapter 2 The Language of Algebra
+## Chapter 2: The Language of Algebra
 """
 
 # ╔═╡ 7a0cbb7f-eb11-48ca-b71d-ee33b169f738
 md"""
-## Chapter 3 Integers
+## Chapter 3: Integers
 """
 
 # ╔═╡ 8d1ef986-283c-44d5-8d99-778fe2e5e58f
@@ -49,98 +40,107 @@ md"""
 
 # ╔═╡ 68bfc65c-cdd8-11ee-17f5-774ea7de49ca
 struct Problem
-	prompt_type
 	question
 	answer
 end
 
 # ╔═╡ dcc5b312-5069-4cc7-b684-61be88cf44ed
-ch2 = [
-	Problem(
-		:simplify,
-		cm"``5(3 + 2 \cdot 6) - 8^2``",
-		cm"``11``",
+ch2 = (
+	:simplify => (
+		Problem(
+			cm"``5(3 + 2 \cdot 6) - 8^2``",
+			cm"``11``",
+		),
 	),
-	Problem(
-		:solve,
-		cm"``17 = y - 13``",
-		cm"``30``",
+	:solve => (
+		Problem(
+			cm"``17 = y - 13``",
+			cm"``30``",
+		),
+		Problem(
+			cm"``p + 14 = 23``",
+			cm"``9``",
+		),
 	),
-	Problem(
-		:solve,
-		cm"``p + 14 = 23``",
-		cm"``9``",
+	:translate_algebraic_expr => (
+		Problem(
+			cm"``11`` less than the product of ``7`` and ``x``",
+			cm"``7x - 11``",
+		),
 	),
-	Problem(
-		:translate_algebraic_expr,
-		cm"``11`` less than the product of ``7`` and ``x``",
-		cm"``7x - 11``",
-	),
-	Problem(
-		:translate_solve_algebraic_eqn,
-		cm"The difference of ``y`` and ``7`` gives ``84``",
-		cm"91",
-	),
-	Problem(
-		:translate_solve_algebraic_eqn,
-		cm"Find all the factors of ``72``",
-		cm"``1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72``",
-	),
-	Problem(
-		:translate_solve_algebraic_eqn,
-		cm"Find the prime factorization of ``132``",
-		cm"``2^2 \times 3 \times 11``",
-	),
-	Problem(
-		:translate_solve_algebraic_eqn,
-		cm"Find the least common multiple of ``12`` and ``20``",
-		cm"``60``",
-	),
-]
+	:translate_solve_algebraic_eqn => (
+		Problem(
+			cm"The difference of ``y`` and ``7`` gives ``84``",
+			cm"91",
+		),
+		Problem(
+			cm"Find all the factors of ``72``",
+			cm"``1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72``",
+		),
+		Problem(
+			cm"Find the prime factorization of ``132``",
+			cm"``2^2 \times 3 \times 11``",
+		),
+		Problem(
+			cm"Find the least common multiple of ``12`` and ``20``",
+			cm"``60``",
+		),
+	)
+)
 
 # ╔═╡ 76f8c347-e581-4421-8e47-687eadc9ecbe
-ch3 = [
-	Problem(
-		:simplify,
-		cm"``|8 - 9| - |3 - 8|``",
-		cm"``-4``",
+ch3 = (
+	:simplify => (
+		Problem(
+			cm"``|8 - 9| - |3 - 8|``",
+			cm"``-4``",
+		),
+		Problem(
+			cm"``-2 + 4(-3 + 7)``",
+			cm"``14``",
+		),
+		Problem(
+			cm"``27 - (-4 - 7)``",
+			cm"``38``",
+		),
+		Problem(
+			cm"``28 \div (-4) - 7``",
+			cm"``-14``",
+		),
 	),
-	Problem(
-		:simplify,
-		cm"``-2 + 4(-3 + 7)``",
-		cm"``14``",
+	:translate_algebraic_expr_or_eqn => (
+		Problem(
+			cm"The product of ``−11`` and ``8``",
+			cm"``-88``",
+		),
+		Problem(
+			cm"The quotient of ``7`` and the sum of ``−4`` and ``m``",
+			cm"``7 \div (-4 + m)``",
+		),
+		Problem(
+			cm"The product of ``−3`` and ``x`` is ``−51``",
+			cm"``-3x = -51``",
+		),
 	),
-	Problem(
-		:simplify,
-		cm"``27 - (-4 - 7)``",
-		cm"``38``",
-	),
-	Problem(
-		:simplify,
-		cm"``28 \div (-4) - 7``",
-		cm"``-14``",
-	),
-	Problem(
-		:translate_algebraic_expr_or_eqn,
-		cm"The product of ``−11`` and ``8``",
-		cm"``-88``",
-	),
-	Problem(
-		:translate_algebraic_expr_or_eqn,
-		cm"The quotient of ``7`` and the sum of ``−4`` and ``m``",
-		cm"``7 \div (-4 + m)``",
-	),
-	Problem(
-		:translate_algebraic_expr_or_eqn,
-		cm"The product of ``−3`` and ``x`` is ``−51``",
-		cm"``-3x = -51``",
-	),
-	Problem(
-		:solve,
-		cm"``-6r = 24``",
-		cm"``4``",
-	),
-]
+	:solve => (
+		Problem(
+			cm"``-6r = 24``",
+			cm"``4``",
+		),
+	)
+)
+
+# ╔═╡ 74dad85c-7f67-4688-b176-3e6f762c4034
+for (title, ch) ∈ (
+	"Chapter 2: The Language of Algebra" => ch2,
+	"Chapter 3: Integers" => ch3
+)
+	println(title)
+	for p ∈ ch
+		# println(p.prompt_type)
+	end
+	println()
+end
 
 # ╔═╡ 8ad460d6-77f3-436f-9492-8452ce1b3cd1
 md"""
@@ -451,9 +451,9 @@ version = "17.4.0+2"
 # ╟─b3c6d9e8-cb15-4a4e-92ed-b4b8825a5978
 # ╠═74dad85c-7f67-4688-b176-3e6f762c4034
 # ╟─5c3e89b6-455b-4136-8e46-faa79cb7376c
-# ╠═dcc5b312-5069-4cc7-b684-61be88cf44ed
+# ╟─dcc5b312-5069-4cc7-b684-61be88cf44ed
 # ╟─7a0cbb7f-eb11-48ca-b71d-ee33b169f738
-# ╠═76f8c347-e581-4421-8e47-687eadc9ecbe
+# ╟─76f8c347-e581-4421-8e47-687eadc9ecbe
 # ╟─8d1ef986-283c-44d5-8d99-778fe2e5e58f
 # ╠═68bfc65c-cdd8-11ee-17f5-774ea7de49ca
 # ╟─8ad460d6-77f3-436f-9492-8452ce1b3cd1
