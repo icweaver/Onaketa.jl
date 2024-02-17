@@ -12,9 +12,34 @@ md"""
 # Prealgebra problem bank ✏️
 """
 
+# ╔═╡ 0933b2c6-29a3-4f1c-9c6c-b13ac6f84b88
+cm"""
+!!! note
+	Adapted from [here](https://openstax.org/books/prealgebra-2e/pages/a-cumulative-review).
+"""
+
+# ╔═╡ b3c6d9e8-cb15-4a4e-92ed-b4b8825a5978
+md"""
+## Diagnostic generation
+"""
+
+# ╔═╡ 74dad85c-7f67-4688-b176-3e6f762c4034
+# for (topic, problems) ∈ problems
+# 	println(topic)
+# 	for problem ∈ problems
+# 		println(problem.question)
+# 	end
+# 	println()
+# end
+
 # ╔═╡ 5c3e89b6-455b-4136-8e46-faa79cb7376c
 md"""
-## Chapter 1 Whole Numbers
+## Chapter 2 The Language of Algebra
+"""
+
+# ╔═╡ 7a0cbb7f-eb11-48ca-b71d-ee33b169f738
+md"""
+## Chapter 3 Integers
 """
 
 # ╔═╡ 8d1ef986-283c-44d5-8d99-778fe2e5e58f
@@ -24,68 +49,95 @@ md"""
 
 # ╔═╡ 68bfc65c-cdd8-11ee-17f5-774ea7de49ca
 struct Problem
-	number
-	kind
-	prompt
+	topic
+	prompt_type
 	question
 	answer
 end
 
-# ╔═╡ 75f9895e-f41f-4915-8819-b0a7e54f9491
-problems = Dict{Symbol, Problem}()
+# ╔═╡ dcc5b312-5069-4cc7-b684-61be88cf44ed
+ch2 = [
+	Problem(
+		:language,
+		:simplify,
+		cm"``5(3 + 2 \cdot 6) - 8^2``",
+		cm"``11``",
+	),
+	Problem(
+		:language,
+		:solve,
+		cm"``17 = y - 13``",
+		cm"``30``",
+	),
+	Problem(
+		:language,
+		:solve,
+		cm"``p + 14 = 23``",
+		cm"``9``",
+	),
+	Problem(
+		:language,
+		:translate_algebraic_expr,
+		cm"``11`` less than the product of ``7`` and ``x``",
+		cm"``7x - 11``",
+	),
+	Problem(
+		:language,
+		:translate_solve_algebraic_eqn,
+		cm"The difference of ``y`` and ``7`` gives ``84``",
+		cm"91",
+	),
+]
+
+# ╔═╡ 76f8c347-e581-4421-8e47-687eadc9ecbe
+ch3_integers = [
+	Problem(
+		:integers,
+		:simplify,
+		cm"``|8 - 9| - |3 - 8|``",
+		cm"``-4``",
+	),
+	Problem(
+		:integers,
+		:simplify,
+		cm"``-2 + 4(-3 + 7)``",
+		cm"``14``",
+	),
+	Problem(
+		:integers,
+		:simplify,
+		cm"``27 - (-4 - 7)``",
+		cm"``38``",
+	),
+]
+
+# ╔═╡ 46710453-e888-4c73-bab2-3d0bcf6ecfec
+begin
+	problems = Dict{Symbol, Dict{Symbol, Problem}}()
+	problems[:language] = Dict{Symbol, Problem}()
+end
+
+# ╔═╡ ee88775f-ab28-4537-bd48-71f6a0f50969
+px = Problem(
+	:language,
+	cm"Translate into an algebraic equation and solve",
+	cm"The difference of ``y`` and ``7`` gives ``84``",
+	cm"91",
+)
+
+# ╔═╡ a400826a-0f4b-403a-94eb-aa50cb4a8a27
+problems[px.kind][] = Dict(Symbol)
+
+# ╔═╡ 3aebf31d-a44d-4569-abe0-629045298e07
+problems[:language]
 
 # ╔═╡ 8ad460d6-77f3-436f-9492-8452ce1b3cd1
 md"""
 ## Convenience functions
 """
 
-# ╔═╡ 5e496305-ee76-4a47-ad70-cafacaf72c98
-add!(p) = problems[p.number] = p
-
-# ╔═╡ dcc5b312-5069-4cc7-b684-61be88cf44ed
-Problem(
-	:p1,
-	:language,
-	cm"Simplify",
-	cm"``5(3 + 2 \cdot 6) - 8^2``",
-	cm"``11``",
-) |> add!
-
-# ╔═╡ 1e7d429d-c4ee-4f1f-a638-49a29804e2c6
-Problem(
-	:p2,
-	:language,
-	cm"Solve",
-	cm"``17 = y - 13``",
-	cm"``30``",
-) |> add!
-
-# ╔═╡ 37bc6af8-ed35-4197-9ca2-218a83b7bfae
-Problem(
-	:p3,
-	:language,
-	cm"Solve",
-	cm"``p + 14 = 23``",
-	cm"``9``",
-) |> add!
-
-# ╔═╡ 00974e52-9f14-4dd1-8e83-aa497519ca13
-Problem(
-	:p4,
-	:language,
-	cm"Translate into an algebraic expression",
-	cm"``11`` less than the product of ``7`` and ``x``",
-	cm"``7x - 11``",
-) |> add!
-
-# ╔═╡ 085ac0cf-56c4-414f-9aa2-ee05a1bdba8d
-Problem(
-	:p5,
-	:language,
-	cm"Translate into an algebraic equation and solve",
-	cm"The difference of ``y`` and ``7`` gives ``84``",
-	cm"91",
-) |> add!
+# ╔═╡ 42b2c497-c63c-4964-b424-087cdd2cd12d
+add!(x) = error("Not implemented")
 
 # ╔═╡ cdb3c0b5-7444-463e-b745-6097b27a4725
 md"""
@@ -387,17 +439,21 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─a63e03b3-2fb3-4e81-bf84-ad65f41c8483
+# ╟─0933b2c6-29a3-4f1c-9c6c-b13ac6f84b88
+# ╟─b3c6d9e8-cb15-4a4e-92ed-b4b8825a5978
+# ╠═74dad85c-7f67-4688-b176-3e6f762c4034
 # ╟─5c3e89b6-455b-4136-8e46-faa79cb7376c
 # ╟─dcc5b312-5069-4cc7-b684-61be88cf44ed
-# ╟─1e7d429d-c4ee-4f1f-a638-49a29804e2c6
-# ╟─37bc6af8-ed35-4197-9ca2-218a83b7bfae
-# ╟─00974e52-9f14-4dd1-8e83-aa497519ca13
-# ╟─085ac0cf-56c4-414f-9aa2-ee05a1bdba8d
+# ╟─7a0cbb7f-eb11-48ca-b71d-ee33b169f738
+# ╠═76f8c347-e581-4421-8e47-687eadc9ecbe
 # ╟─8d1ef986-283c-44d5-8d99-778fe2e5e58f
 # ╠═68bfc65c-cdd8-11ee-17f5-774ea7de49ca
-# ╠═75f9895e-f41f-4915-8819-b0a7e54f9491
+# ╠═46710453-e888-4c73-bab2-3d0bcf6ecfec
+# ╟─ee88775f-ab28-4537-bd48-71f6a0f50969
+# ╠═a400826a-0f4b-403a-94eb-aa50cb4a8a27
+# ╠═3aebf31d-a44d-4569-abe0-629045298e07
 # ╟─8ad460d6-77f3-436f-9492-8452ce1b3cd1
-# ╠═5e496305-ee76-4a47-ad70-cafacaf72c98
+# ╠═42b2c497-c63c-4964-b424-087cdd2cd12d
 # ╟─cdb3c0b5-7444-463e-b745-6097b27a4725
 # ╠═a83e5073-8bae-4bdd-9843-ed486a3f5af5
 # ╠═8b7d1556-5d85-4fc4-a0a0-ad90cb08c006
