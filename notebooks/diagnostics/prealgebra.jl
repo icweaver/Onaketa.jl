@@ -120,6 +120,26 @@ ch3 = [
 		cm"``28 \div (-4) - 7``",
 		cm"``-14``",
 	),
+	Problem(
+		:translate_algebraic_expr_or_eqn,
+		cm"The product of ``−11`` and ``8``",
+		cm"``-88``",
+	),
+	Problem(
+		:translate_algebraic_expr_or_eqn,
+		cm"The quotient of ``7`` and the sum of ``−4`` and ``m``",
+		cm"``7 \div (-4 + m)``",
+	),
+	Problem(
+		:translate_algebraic_expr_or_eqn,
+		cm"The product of ``−3`` and ``x`` is ``−51``",
+		cm"``-3x = -51``",
+	),
+	Problem(
+		:solve,
+		cm"``-6r = 24``",
+		cm"``4``",
+	),
 ]
 
 # ╔═╡ 8ad460d6-77f3-436f-9492-8452ce1b3cd1
