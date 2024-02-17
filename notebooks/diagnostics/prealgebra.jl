@@ -49,7 +49,6 @@ md"""
 
 # ╔═╡ 68bfc65c-cdd8-11ee-17f5-774ea7de49ca
 struct Problem
-	topic
 	prompt_type
 	question
 	answer
@@ -58,86 +57,75 @@ end
 # ╔═╡ dcc5b312-5069-4cc7-b684-61be88cf44ed
 ch2 = [
 	Problem(
-		:language,
 		:simplify,
 		cm"``5(3 + 2 \cdot 6) - 8^2``",
 		cm"``11``",
 	),
 	Problem(
-		:language,
 		:solve,
 		cm"``17 = y - 13``",
 		cm"``30``",
 	),
 	Problem(
-		:language,
 		:solve,
 		cm"``p + 14 = 23``",
 		cm"``9``",
 	),
 	Problem(
-		:language,
 		:translate_algebraic_expr,
 		cm"``11`` less than the product of ``7`` and ``x``",
 		cm"``7x - 11``",
 	),
 	Problem(
-		:language,
 		:translate_solve_algebraic_eqn,
 		cm"The difference of ``y`` and ``7`` gives ``84``",
 		cm"91",
 	),
+	Problem(
+		:translate_solve_algebraic_eqn,
+		cm"Find all the factors of ``72``",
+		cm"``1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72``",
+	),
+	Problem(
+		:translate_solve_algebraic_eqn,
+		cm"Find the prime factorization of ``132``",
+		cm"``2^2 \times 3 \times 11``",
+	),
+	Problem(
+		:translate_solve_algebraic_eqn,
+		cm"Find the least common multiple of ``12`` and ``20``",
+		cm"``60``",
+	),
 ]
 
 # ╔═╡ 76f8c347-e581-4421-8e47-687eadc9ecbe
-ch3_integers = [
+ch3 = [
 	Problem(
-		:integers,
 		:simplify,
 		cm"``|8 - 9| - |3 - 8|``",
 		cm"``-4``",
 	),
 	Problem(
-		:integers,
 		:simplify,
 		cm"``-2 + 4(-3 + 7)``",
 		cm"``14``",
 	),
 	Problem(
-		:integers,
 		:simplify,
 		cm"``27 - (-4 - 7)``",
 		cm"``38``",
 	),
+	Problem(
+		:simplify,
+		cm"``28 \div (-4) - 7``",
+		cm"``-14``",
+	),
 ]
-
-# ╔═╡ 46710453-e888-4c73-bab2-3d0bcf6ecfec
-begin
-	problems = Dict{Symbol, Dict{Symbol, Problem}}()
-	problems[:language] = Dict{Symbol, Problem}()
-end
-
-# ╔═╡ ee88775f-ab28-4537-bd48-71f6a0f50969
-px = Problem(
-	:language,
-	cm"Translate into an algebraic equation and solve",
-	cm"The difference of ``y`` and ``7`` gives ``84``",
-	cm"91",
-)
-
-# ╔═╡ a400826a-0f4b-403a-94eb-aa50cb4a8a27
-problems[px.kind][] = Dict(Symbol)
-
-# ╔═╡ 3aebf31d-a44d-4569-abe0-629045298e07
-problems[:language]
 
 # ╔═╡ 8ad460d6-77f3-436f-9492-8452ce1b3cd1
 md"""
 ## Convenience functions
 """
-
-# ╔═╡ 42b2c497-c63c-4964-b424-087cdd2cd12d
-add!(x) = error("Not implemented")
 
 # ╔═╡ cdb3c0b5-7444-463e-b745-6097b27a4725
 md"""
@@ -443,17 +431,12 @@ version = "17.4.0+2"
 # ╟─b3c6d9e8-cb15-4a4e-92ed-b4b8825a5978
 # ╠═74dad85c-7f67-4688-b176-3e6f762c4034
 # ╟─5c3e89b6-455b-4136-8e46-faa79cb7376c
-# ╟─dcc5b312-5069-4cc7-b684-61be88cf44ed
+# ╠═dcc5b312-5069-4cc7-b684-61be88cf44ed
 # ╟─7a0cbb7f-eb11-48ca-b71d-ee33b169f738
 # ╠═76f8c347-e581-4421-8e47-687eadc9ecbe
 # ╟─8d1ef986-283c-44d5-8d99-778fe2e5e58f
 # ╠═68bfc65c-cdd8-11ee-17f5-774ea7de49ca
-# ╠═46710453-e888-4c73-bab2-3d0bcf6ecfec
-# ╟─ee88775f-ab28-4537-bd48-71f6a0f50969
-# ╠═a400826a-0f4b-403a-94eb-aa50cb4a8a27
-# ╠═3aebf31d-a44d-4569-abe0-629045298e07
 # ╟─8ad460d6-77f3-436f-9492-8452ce1b3cd1
-# ╠═42b2c497-c63c-4964-b424-087cdd2cd12d
 # ╟─cdb3c0b5-7444-463e-b745-6097b27a4725
 # ╠═a83e5073-8bae-4bdd-9843-ed486a3f5af5
 # ╠═8b7d1556-5d85-4fc4-a0a0-ad90cb08c006
