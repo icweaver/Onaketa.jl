@@ -37,9 +37,6 @@ const TDY = today()
 	"""
 end |> confirm
 
-# ╔═╡ bdb64e58-abae-4415-9b01-2ccd3b5f1a18
-person.email
-
 # ╔═╡ 274360dc-6081-4c14-8da4-f91b84106c4a
 r2(x) = @sprintf("%.2f", x)
 
@@ -102,10 +99,7 @@ function tpl_email(p)
 end
 
 # ╔═╡ bfb61bd6-bbeb-4286-a732-fad9229b31f8
-!any(isnothing, person) && tpl_email(person);
-
-# ╔═╡ bfb8c0c2-ab68-4eeb-b001-535c4d3c3373
-tpl_email(person)
+!any(isnothing, person) && tpl_email(person)
 
 # ╔═╡ cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
 function tpl_pdf(p)
@@ -474,8 +468,6 @@ version = "17.4.0+2"
 # ╠═3c7b337a-66bd-468f-b7ca-a8874106ea0e
 # ╟─716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
 # ╠═bfb61bd6-bbeb-4286-a732-fad9229b31f8
-# ╠═bdb64e58-abae-4415-9b01-2ccd3b5f1a18
-# ╠═bfb8c0c2-ab68-4eeb-b001-535c4d3c3373
 # ╠═8ddc461d-410e-435b-a05b-a268da330aec
 # ╠═dcaf492c-c476-11ee-2997-8d295a2527a5
 # ╟─cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
