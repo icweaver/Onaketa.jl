@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.37
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -14,7 +14,7 @@ md"""
 
 # ╔═╡ 6745f346-e48e-4f0a-a735-414e37901def
 members = [
-	"Adia Imara",
+	# "Adia Imara",
 	"Chima McGruder",
 	"Filipe Cerqueira",
 	"Gianni Sims",
@@ -22,10 +22,10 @@ members = [
 	"Haley Carrasco",
 	"Ian Weaver",
 	"LaNell Williams",
-]
+];
 
 # ╔═╡ e66318e3-626a-442a-b659-719e0c46ccdd
-pay_date = (year=2024, month=1)
+pay_date = (year=2024, month=2)
 
 # ╔═╡ db3d661f-1623-4c9a-9d52-70f37f9c528d
 md"""
@@ -33,7 +33,7 @@ md"""
 """
 
 # ╔═╡ 618d232b-d236-40a9-8ee1-5983934d325f
-df = CSV.read("data/timesheet_log.csv", DataFrame; missingstring=["Other"]);
+df = CSV.read("data/timesheet_session_logs.csv", DataFrame; missingstring=["Other"]);
 
 # ╔═╡ f2e5be9a-b621-4988-ae59-1e501a3d73af
 df
@@ -94,7 +94,7 @@ function write_log(df)
 	io = IOBuffer()
 	indent = ""
 	for row ∈ eachrow(df)
-		write(io, "$(indent)[$(row.date)], [$(row.category)], [$(r2(row.hours))], [$(row.student_name)], [$(row.notes)],\n")
+		write(io, "$(indent)[$(row.date)], [$(row.category)], [$(r2(row.hours))], [$(row.student_name)], [`$(row.notes)`],\n")
 		indent = "\t"
 	end
 	stake!(io)
@@ -203,7 +203,7 @@ PlutoUI = "~0.7.54"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.1"
 manifest_format = "2.0"
 project_hash = "e45c64aadc99a0aa8b69370e45b113d4cf0871a9"
 
@@ -271,7 +271,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.0+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -565,7 +565,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OpenJpeg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libtiff_jll", "LittleCMS_jll", "Pkg", "libpng_jll"]
@@ -860,7 +860,7 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-# ╟─6745f346-e48e-4f0a-a735-414e37901def
+# ╠═6745f346-e48e-4f0a-a735-414e37901def
 # ╠═e66318e3-626a-442a-b659-719e0c46ccdd
 # ╟─db3d661f-1623-4c9a-9d52-70f37f9c528d
 # ╠═618d232b-d236-40a9-8ee1-5983934d325f
@@ -873,7 +873,7 @@ version = "17.4.0+2"
 # ╟─4f5c0918-29f1-4702-8e07-8f4a148e5a55
 # ╟─04497d9f-1e83-4fdf-a15c-537cade5db57
 # ╟─c4116830-9bd3-11ee-1039-135c5ef7c31d
-# ╟─c8e52fd2-3856-4ace-8bef-94161da14587
+# ╠═c8e52fd2-3856-4ace-8bef-94161da14587
 # ╟─922bbe02-738d-496b-ba93-82a51e700c21
 # ╟─62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
 # ╠═14b94f98-d03f-4b46-b608-e0d9b7dc22cf
