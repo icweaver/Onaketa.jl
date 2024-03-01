@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.39
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -25,13 +25,13 @@ end
 const TDY = today()
 
 # ╔═╡ 716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-@bind person PlutoUI.combine() do Child
+x = @bind person PlutoUI.combine() do Child
 	cm"""
 	**Name:** $(Child(:name, TextField()))
 	**Email:** $(Child(:email, TextField()))
 	
 	**Amount:** $(Child(:amount, NumberField(1:0.01:5_000)))
-	**Amount date:** $(Child(:amount_date, DatePicker()))
+	**Amount date:** $(Child(:amount_date, DatePicker(; default=TDY)))
 
 	**Address:** $(Child(:address, TextField()))
 	"""
@@ -49,19 +49,13 @@ function tpl_email(p)
 	
 	cm"""
 	!!! note "subject:"
-		```
 		Thank you! (Tax receipt from Onaketa)
-		```
 	
 	!!! note "to:"
-		```
 		$(p.email)
-		```
 
 	!!! warning "bcc:"
-		```
 		niaimara@gmail.com, nehanda@onaketa.org
-		```
 	
 	$(header_date)
 	
@@ -85,7 +79,7 @@ function tpl_email(p)
 	**Name:** $(p.name)\
 	**Address:** $(p.address)\
 	**Gift Date:** $(fmt_date(p.amount_date))\
-	**Total Gift Amount:** $(r2(p.amount))
+	**Total Gift Amount:** \$$(r2(p.amount))
 	
 	*No goods or services were provided in exchange for this contribution.*
 
@@ -155,7 +149,7 @@ function tpl_pdf(p)
 end
 
 # ╔═╡ 8ddc461d-410e-435b-a05b-a268da330aec
-if !any(isnothing, person)
+if !any(isempty, (person.name, person.email))
 	mkpath("./src")
 	# name = replace(member, " "=>"")
 	# fname = "pay_summary_$(pay_date.year)_$(monthabbr(pay_date.month))_$(name)"
@@ -465,11 +459,11 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═3c7b337a-66bd-468f-b7ca-a8874106ea0e
+# ╟─3c7b337a-66bd-468f-b7ca-a8874106ea0e
 # ╟─716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-# ╠═bfb61bd6-bbeb-4286-a732-fad9229b31f8
-# ╠═8ddc461d-410e-435b-a05b-a268da330aec
-# ╠═dcaf492c-c476-11ee-2997-8d295a2527a5
+# ╟─bfb61bd6-bbeb-4286-a732-fad9229b31f8
+# ╟─8ddc461d-410e-435b-a05b-a268da330aec
+# ╟─dcaf492c-c476-11ee-2997-8d295a2527a5
 # ╟─cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
 # ╟─274360dc-6081-4c14-8da4-f91b84106c4a
 # ╟─f21f544a-9531-4a61-b29c-331d0b4ab491
