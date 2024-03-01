@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.38
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -10,7 +10,7 @@ begin
 	using DataFramesMeta, CSV, Dates, NaturalSort, Statistics
 	using OrderedCollections
 	using PlutoUI
-	using MarkdownLiteral: @mdx
+	using CommonMark
 	using AlgebraOfGraphics: opensans, firasans
 end
 
@@ -137,13 +137,13 @@ df = @rsubset df_clean !(:drop_status);
 # ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
 function active_terms_count(arr)
 	d = OrderedDict(
-		"spring_2021" => 0,
-		"fall_2021" => 0,
-		"spring_2022" => 0,
-		"fall_2022" => 0,
-		"spring_2023" => 0,
-		"fall_2023" => 0,
-		"spring_2024" => 0,
+		"Spring 2021" => 0,
+		"Fall 2021" => 0,
+		"Spring 2022" => 0,
+		"Fall 2022" => 0,
+		"Spring 2023" => 0,
+		"Fall 2023" => 0,
+		"Spring 2024" => 0,
 	)
 	
 	for terms in arr
@@ -180,7 +180,7 @@ Self reported race/ethnicity for each student. Our largest demographics supporte
 """
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
-@mdx """
+md"""
 ## Summary
 
 Total number of applications received: $(nrow(df_clean))<br>
@@ -227,6 +227,9 @@ update_theme!(
 	)
 )
 end
+
+# ╔═╡ 083377c8-69c9-45fd-ae2f-1ed79d9fca87
+TableOfContents()
 
 # ╔═╡ ae1d2655-4c60-4d65-b359-9d90a0d356a7
 md"""
@@ -316,6 +319,19 @@ md"""
 
 Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
 """
+
+# ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
+avg_percent_growth = let
+	df_terms = df_served
+
+	n_terms = nrow(df_terms)
+	percent_diffs = diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
+
+	mean(percent_diffs) * 100
+end
+
+# ╔═╡ 3762a2f0-9f5c-4662-bac4-e98727cf62d5
+df_served
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
@@ -412,9 +428,9 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -424,8 +440,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 AlgebraOfGraphics = "~0.6.14"
 CSV = "~0.10.9"
 CairoMakie = "~0.10.2"
+CommonMark = "~0.8.12"
 DataFramesMeta = "~0.13.0"
-MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.0"
 PlutoUI = "~0.7.50"
@@ -435,9 +451,9 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.1"
 manifest_format = "2.0"
-project_hash = "47548eaab0e1e2aa43a6560588f743fd5e1878d8"
+project_hash = "94c9c6a988eb1d202b4373b63ccc8709810d9d93"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -685,7 +701,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.0+0"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -1387,12 +1403,6 @@ version = "0.4.2"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
-[[deps.MarkdownLiteral]]
-deps = ["CommonMark", "HypertextLiteral"]
-git-tree-sha1 = "0d3fa2dd374934b62ee16a4721fe68c418b92899"
-uuid = "736d6165-7244-6769-4267-6b50796e6954"
-version = "0.1.1"
-
 [[deps.MathOptInterface]]
 deps = ["BenchmarkTools", "CodecBzip2", "CodecZlib", "DataStructures", "ForwardDiff", "JSON", "LinearAlgebra", "MutableArithmetics", "NaNMath", "OrderedCollections", "PrecompileTools", "Printf", "SparseArrays", "SpecialFunctions", "Test", "Unicode"]
 git-tree-sha1 = "8b40681684df46785a0012d352982e22ac3be59e"
@@ -1495,7 +1505,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -2216,11 +2226,11 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═57d9df05-e2bd-4b8c-9ed4-06c09920165a
+# ╟─57d9df05-e2bd-4b8c-9ed4-06c09920165a
 # ╟─4b64ccc5-b606-4ae2-9764-73529be867f6
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-# ╠═4e055d5f-248d-42ee-8270-fd59bd9c178e
+# ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
@@ -2231,10 +2241,12 @@ version = "3.5.0+0"
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
+# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
+# ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
+# ╠═3762a2f0-9f5c-4662-bac4-e98727cf62d5
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─28a62b38-7b91-4dc7-8480-de491470128e
 # ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
@@ -2249,6 +2261,7 @@ version = "3.5.0+0"
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
+# ╟─083377c8-69c9-45fd-ae2f-1ed79d9fca87
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
 # ╟─9a642fe3-29a7-4ef0-8786-2830c615cd25
 # ╟─9ced090e-ebab-427c-b2f1-72a47d97fe81
