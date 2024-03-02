@@ -25,7 +25,7 @@ end
 const TDY = today()
 
 # ╔═╡ 716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-x = @bind person PlutoUI.combine() do Child
+@bind person PlutoUI.combine() do Child
 	cm"""
 	**Name:** $(Child(:name, TextField()))
 	**Email:** $(Child(:email, TextField()))
