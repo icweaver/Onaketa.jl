@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.36
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -9,7 +9,7 @@ begin
 	using DataFramesMeta, CSV, Dates, NaturalSort, Statistics
 	using OrderedCollections
 	using PlutoUI
-	using MarkdownLiteral: @mdx
+	using CommonMark
 end
 
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
@@ -158,7 +158,7 @@ function generate_report(i, row)
 end
 
 # ╔═╡ 68be47cf-e4f6-4600-8a78-ba6cb2c7aaee
-TableOfContents(; depth=4)
+# TableOfContents(; depth=4)
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
@@ -166,7 +166,7 @@ md"""
 """
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df = CSV.read("data/program_experience_survey_2023 - Sheet1.csv", DataFrame;
+df = CSV.read("data/program_experience_survey.csv", DataFrame;
 	normalizenames = true,
 );
 
@@ -179,9 +179,9 @@ let
 
 	for (nt, sdf) ∈ pairs(gdf)
 		tutor_block = []
-		push!(tutor_block, @mdx "<h2>$(nt.Tutor_s_name)</h2>")
+		push!(tutor_block, "<h2>$(nt.Tutor_s_name)</h2>")
 		for (i, row) ∈ enumerate(eachrow(sort(sdf, :Student_s_name)))
-			push!(tutor_block, @mdx "$(generate_report(i, row))")
+			# push!(tutor_block, @mdx "$(generate_report(i, row))")
 		end
 		push!(report, tutor_block)
 	end
@@ -195,9 +195,9 @@ end
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -205,8 +205,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 CSV = "~0.10.9"
+CommonMark = "~0.8.12"
 DataFramesMeta = "~0.13.0"
-MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.0"
 PlutoUI = "~0.7.50"
@@ -216,9 +216,9 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "f6c7e55e6cf91474b24fdf52592c4dc4c5a2833c"
+project_hash = "ca34b61d3b766b327343fad18ac3d48b8fe34fd4"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -260,10 +260,10 @@ uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.11.4"
 
 [[deps.CommonMark]]
-deps = ["Crayons", "JSON", "SnoopPrecompile", "URIs"]
-git-tree-sha1 = "e2f4627b0d3f2c1876360e0b242a7c23923b469d"
+deps = ["Crayons", "JSON", "PrecompileTools", "URIs"]
+git-tree-sha1 = "532c4185d3c9037c0237546d817858b23cf9e071"
 uuid = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
-version = "0.8.10"
+version = "0.8.12"
 
 [[deps.Compat]]
 deps = ["Dates", "LinearAlgebra", "UUIDs"]
@@ -274,7 +274,7 @@ version = "4.6.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.0+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -441,12 +441,6 @@ version = "0.5.10"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
-[[deps.MarkdownLiteral]]
-deps = ["CommonMark", "HypertextLiteral"]
-git-tree-sha1 = "0d3fa2dd374934b62ee16a4721fe68c418b92899"
-uuid = "736d6165-7244-6769-4267-6b50796e6954"
-version = "0.1.1"
-
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
@@ -477,7 +471,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "d321bf2de576bf25ec4d3e4360faca399afca282"
@@ -506,6 +500,12 @@ deps = ["DataAPI", "Future"]
 git-tree-sha1 = "a6062fe4063cdafe78f4a0a81cfffb89721b30e7"
 uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
 version = "1.4.2"
+
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "03b4c25b43cb84cee5c90aa9b5ea0a78fd848d2f"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.2.0"
 
 [[deps.Preferences]]
 deps = ["TOML"]
@@ -667,7 +667,7 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
-# ╟─3e9c3547-3238-4b21-ba63-f2738941e5a4
+# ╠═3e9c3547-3238-4b21-ba63-f2738941e5a4
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╠═68be47cf-e4f6-4600-8a78-ba6cb2c7aaee

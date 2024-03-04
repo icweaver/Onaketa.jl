@@ -503,7 +503,7 @@ WordCloud = "~0.12.1"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.1"
+julia_version = "1.10.2"
 manifest_format = "2.0"
 project_hash = "c030ee786abe232eaaf38c7cf07dba9c7831d67e"
 
@@ -2436,7 +2436,7 @@ version = "3.5.0+0"
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─22a7406e-07fa-4f6c-8c26-70092be6a724
 # ╟─c3727e37-885a-4280-872f-d85abecf1d86
-# ╠═080a6044-29f6-46a5-8b01-1503694e0026
+# ╟─080a6044-29f6-46a5-8b01-1503694e0026
 # ╟─e10530d2-7753-4c38-83b8-219a31f7f540
 # ╠═bcbe2191-4dec-4bbd-b327-18367f7914dd
 # ╠═03ec0b88-8206-4637-bc7e-4099bd3b2ace

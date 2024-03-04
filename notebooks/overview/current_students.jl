@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.38
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -56,11 +56,11 @@ end
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 gdf = let
-	df = CSV.read("data/roster.csv", DataFrame; normalizenames=true)
+	df = CSV.read("data/students.csv", DataFrame; normalizenames=true)
 	
 	@chain df begin
 		dropmissing!(:term_active)
-		@rsubset! occursin("Spring 2024", :term_active)
+		@rsubset! occursin("Spring 2020", :term_active)
 		sort!(:student_name)
 		groupby(:tutor_name; sort=true)
 	end
@@ -121,7 +121,7 @@ PlutoUI = "~0.7.55"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.2"
 manifest_format = "2.0"
 project_hash = "ec801f4238f3fae72015eea35ed3d3d3acaf7ff8"
 
@@ -183,7 +183,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.0+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -375,7 +375,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "dfdf5519f235516220579f949664f1bf44e741c5"
