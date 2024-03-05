@@ -20,7 +20,7 @@ end
 # ╔═╡ c4177879-10e9-4027-aa03-03e596ed6e84
 df = DataFrame(
 	county_name = ["Alameda", "Sonoma", "Marin"],
-	n_students = [10, 20, 30],
+	n_students = [1, 2, 3],
 )
 
 # ╔═╡ 2b381fbe-6a9f-43d8-a293-7b11cc0d28d1
