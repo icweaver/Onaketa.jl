@@ -4,135 +4,62 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 99ee8b1b-57d7-4eca-ad83-8800005bcb0b
-using PlutoPlotly, DataFramesMeta, CSV, JSON
-
-# ╔═╡ a46a4d3a-b2f8-45d6-b4d9-84f4370142a5
-Resource("https://github-production-user-asset-6210df.s3.amazonaws.com/25312320/245316948-6268c571-53eb-43d4-bcb5-5f80e1e3a5cf.svg")
-
-# ╔═╡ 21303cff-f213-4de8-8aee-da5b984c7c29
-md"""
-## 🌈 Mode
-"""
-
-# ╔═╡ cbc0ee52-4e86-4bd3-ae6d-a4959bfc278b
-md"""
-## 🌙 Mode
-"""
+# ╔═╡ c2ddbe37-41db-4c57-81e3-86390930f2f8
+using PlutoPlotly, PlutoUI, HTTP, DataFramesMeta, JSON
 
 # ╔═╡ f07d998c-8a22-44f6-918b-48f0e6a7463a
 md"""
 ## Scary Python stuff down here 🐍
 """
 
-# ╔═╡ b6ae9280-6a2c-4a91-9684-a05e3c6f5e5d
-begin
-@pyexec """
-global pd, px, json, counties, df, token, make_plot
-
-import pandas as pd
-import plotly.express as px
-import json
-
-# County
-with open("data/California_County_Boundaries.geojson") as f:
-	counties = json.load(f)
-
-# Sample regions to highlight (will connect to real data later)
-df = pd.DataFrame({
-	"State": ["CA", "CA", "CA"],
-	"CountyName": ["Alameda", "Santa Clara", "Contra Costa"]
-})
-
-# Plot
-token = open(".mapbox_token").read()
-def make_plot(theme="stamen-watercolor"):
-	fig = px.choropleth_mapbox(df, geojson=counties, locations="CountyName",
-		featureidkey = "properties.CountyName",
-		zoom = 11,
-		color_discrete_sequence = ["#ec008c"],
-		center = {"lat":37.78, "lon":-122.35},
-		opacity = 0.5,
-		hover_data = ["CountyName", "State"],
-		labels = {"CountyName": "County"},
-	)
-
-	fig = fig.update_traces(
-		marker_line_width = 3,
-		showlegend = False,
-	)
-
-	fig.update_layout(
-		margin = {"r":0, "t":0, "l":0, "b":0},
-		mapbox_style = theme,
-		mapbox_accesstoken = token,
-	)
-	
-	return fig
-"""
-	
-make_plot = @pyeval "make_plot"
+# ╔═╡ 49c1fbd0-f569-4fa9-8e67-8ffa68db38df
+counties = open(download("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json")) do f
+	JSON.parse(f)
 end
 
-# ╔═╡ 1709a951-66d5-44cf-b305-941d32e97bdc
-make_plot()
+# ╔═╡ c4177879-10e9-4027-aa03-03e596ed6e84
+df = DataFrame(
+	county_name = ["Alameda", "Sonoma", "Marin"],
+	n_students = [10, 20, 30],
+)
 
-# ╔═╡ 86297aa9-abca-424f-89b9-f5e2b70f05e0
-make_plot(; theme="dark")
+# ╔═╡ 2b381fbe-6a9f-43d8-a293-7b11cc0d28d1
+let
+	trace = choropleth(df;
+		geojson = counties,
+		locations = :county_name,
+		z = :n_students,
+		featureidkey = "properties.NAME",
+	)
 
-# ╔═╡ e4512aa0-0960-11ee-15b1-8dc2c22dabaa
-# begin
-# 	import Pkg
-# 	Pkg.activate("py"; shared=true)
+	geo = attr(
+		# scope = "usa",
+		fitbounds = "locations",
+	)
 
-# 	using PythonCall, CondaPkg, PlutoUI
+	layout = Layout(; geo)
 
-# 	CondaPkg.add.(("pandas", "plotly"); resolve=false)
-# 	CondaPkg.resolve()
-# end
+	plot(trace, layout)
+end
 
 # ╔═╡ 62a9ab93-ee3a-485f-8d7a-a4545e2b9af0
 TableOfContents(title="Fun with Maps")
 
-# ╔═╡ 6c052fff-e132-4c82-a9aa-06d22022417d
-df = DataFrame(
-	State = ["CA", "CA", "CA"],
-	CountyName = ["Alameda", "Santa Clara", "Contra Costa"]
-)
-
-# ╔═╡ 140448e0-bc96-4b32-a549-028b1c24fc60
-counties = open("data/California_County_Boundaries.geojson") do f
-	JSON.parse(f)
-end
-
-# ╔═╡ b9ac07e9-7966-40ea-8b7d-e7baedac0ebc
-plot(choroplethmapbox(df;
-	geojson = counties,
-	locations = "CountyName",
-	featureidkey = "properties.CountyName",
-	center = attr(lat=37.78, lon=-122.35),
-	hover_data = ["CountyName", "State"],
-	labels = attr(CountyName = "County"),
-),
-	Layout(
-		mapbox_style = "dark",
-		mapbox_accesstoken = "pk.eyJ1IjoiaWN3ZWF2ZXIiLCJhIjoiY2xpdGc4eGtzMDNmNzNmcGlvY3NtbWRidiJ9.c6gYQe_GvrOd8-aE83Q5cw",
-	),
-)
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
-CSV = "~0.10.13"
-DataFramesMeta = "~0.14.1"
+DataFramesMeta = "~0.15.0"
+HTTP = "~1.10.3"
 JSON = "~0.21.4"
 PlutoPlotly = "~0.4.5"
+PlutoUI = "~0.7.58"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -141,7 +68,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "c49406cf629cebba590129e11f4e8d772fc9f048"
+project_hash = "7cb79b3bf2b8da080de434214dd8221c716733ee"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -164,11 +91,10 @@ git-tree-sha1 = "3e93fcd95fe8db4704e98dbda14453a0bfc6f6c3"
 uuid = "18cc8868-cbac-4acf-b575-c8ff214dc66f"
 version = "1.2.3"
 
-[[deps.CSV]]
-deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
-git-tree-sha1 = "a44910ceb69b0d44fe262dd451ab11ead3ed0be8"
-uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.13"
+[[deps.BitFlags]]
+git-tree-sha1 = "2dc09997850d68179b69dafb58ae806167a32b1b"
+uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
+version = "0.1.8"
 
 [[deps.Chain]]
 git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
@@ -226,6 +152,12 @@ deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.0+0"
 
+[[deps.ConcurrentUtilities]]
+deps = ["Serialization", "Sockets"]
+git-tree-sha1 = "9c4708e3ed2b799e6124b5673a712dda0b596a9b"
+uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
+version = "2.3.1"
+
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
 uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
@@ -243,10 +175,10 @@ uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 version = "1.6.1"
 
 [[deps.DataFramesMeta]]
-deps = ["Chain", "DataFrames", "MacroTools", "OrderedCollections", "Reexport"]
-git-tree-sha1 = "6970958074cd09727b9200685b8631b034c0eb16"
+deps = ["Chain", "DataFrames", "MacroTools", "OrderedCollections", "Reexport", "TableMetadataTools"]
+git-tree-sha1 = "e3932524132a3fb215385f5bd7d7e8b2c7ead737"
 uuid = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
-version = "0.14.1"
+version = "0.15.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -280,11 +212,11 @@ deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
-[[deps.FilePathsBase]]
-deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
-git-tree-sha1 = "9f00e42f8d99fdde64d40c8ea5d14269a2e2c1aa"
-uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
-version = "0.9.21"
+[[deps.ExceptionUnwrapping]]
+deps = ["Test"]
+git-tree-sha1 = "dcb08a0d93ec0b1cdc4af184b26b591e9695423a"
+uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
+version = "0.1.10"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -299,11 +231,29 @@ version = "0.8.4"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[deps.HTTP]]
+deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "db864f2d91f68a5912937af80327d288ea1f3aee"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "1.10.3"
+
+[[deps.Hyperscript]]
+deps = ["Test"]
+git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
+uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+version = "0.0.5"
+
 [[deps.HypertextLiteral]]
 deps = ["Tricks"]
 git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
 uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 version = "0.9.5"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "8b72179abc660bfab5e28472e019392b97d0985c"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "0.2.4"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
@@ -324,6 +274,12 @@ version = "1.3.0"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
+
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "7e5d6779a1e09a36db2a7b6cff50942a0a7d0fca"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.5.0"
 
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
@@ -370,6 +326,17 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
+[[deps.LoggingExtras]]
+deps = ["Dates", "Logging"]
+git-tree-sha1 = "c1dd6d7978c12545b4179fb6153b9250c96b0075"
+uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+version = "1.0.3"
+
+[[deps.MIMEs]]
+git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "0.1.4"
+
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
 git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
@@ -379,6 +346,12 @@ version = "0.5.13"
 [[deps.Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[deps.MbedTLS]]
+deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "NetworkOptions", "Random", "Sockets"]
+git-tree-sha1 = "c067a280ddc25f196b5e7df3877c6b226d390aaf"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -406,6 +379,18 @@ version = "1.2.0"
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.23+4"
+
+[[deps.OpenSSL]]
+deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
+git-tree-sha1 = "af81a32750ebc831ee28bdaaba6e1067decef51e"
+uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+version = "1.4.2"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "60e3045590bd104a16fefb12836c00c0ef8c7f8c"
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.0.13+0"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "dfdf5519f235516220579f949664f1bf44e741c5"
@@ -449,6 +434,12 @@ version = "0.4.5"
     PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[[deps.PlutoUI]]
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "71a22244e352aa8c5f0f2adde4150f62368a3f2e"
+uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+version = "0.7.58"
+
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
 git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
@@ -463,9 +454,9 @@ version = "1.2.0"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "9e8fed0505b0c15b4c1295fd59ea47b411c019cf"
+git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.4.2"
+version = "1.4.3"
 
 [[deps.PrettyTables]]
 deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
@@ -509,6 +500,11 @@ version = "1.4.1"
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
+[[deps.SimpleBufferStream]]
+git-tree-sha1 = "874e8867b33a00e784c8a7e4b60afe9e037b74e1"
+uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
+version = "1.1.0"
+
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
@@ -544,6 +540,12 @@ deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
 
+[[deps.TableMetadataTools]]
+deps = ["DataAPI", "Dates", "TOML", "Tables", "Unitful"]
+git-tree-sha1 = "c0405d3f8189bb9a9755e429c6ea2138fca7e31f"
+uuid = "9ce81f87-eacc-4366-bf80-b621a3098ee2"
+version = "0.1.0"
+
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
 git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
@@ -572,9 +574,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "54194d92959d8ebaa8e26227dbe3cdefcdcd594f"
+git-tree-sha1 = "3caa21522e7efac1ba21834a03734c57b4611c7e"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.10.3"
+version = "0.10.4"
 weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]
@@ -584,6 +586,11 @@ weakdeps = ["Random", "Test"]
 git-tree-sha1 = "eae1bb484cd63b36999ee58be2de6c178105112f"
 uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.8"
+
+[[deps.URIs]]
+git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
+uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+version = "1.5.1"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -597,16 +604,19 @@ version = "1.0.2"
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
-[[deps.WeakRefStrings]]
-deps = ["DataAPI", "InlineStrings", "Parsers"]
-git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
-uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
-version = "1.4.2"
+[[deps.Unitful]]
+deps = ["Dates", "LinearAlgebra", "Random"]
+git-tree-sha1 = "3c793be6df9dd77a0cf49d80984ef9ff996948fa"
+uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
+version = "1.19.0"
 
-[[deps.WorkerUtilities]]
-git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
-uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
-version = "1.6.1"
+    [deps.Unitful.extensions]
+    ConstructionBaseUnitfulExt = "ConstructionBase"
+    InverseFunctionsUnitfulExt = "InverseFunctions"
+
+    [deps.Unitful.weakdeps]
+    ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -630,18 +640,11 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─a46a4d3a-b2f8-45d6-b4d9-84f4370142a5
-# ╟─21303cff-f213-4de8-8aee-da5b984c7c29
-# ╠═1709a951-66d5-44cf-b305-941d32e97bdc
-# ╟─cbc0ee52-4e86-4bd3-ae6d-a4959bfc278b
-# ╠═86297aa9-abca-424f-89b9-f5e2b70f05e0
 # ╟─f07d998c-8a22-44f6-918b-48f0e6a7463a
-# ╠═b6ae9280-6a2c-4a91-9684-a05e3c6f5e5d
-# ╠═e4512aa0-0960-11ee-15b1-8dc2c22dabaa
+# ╠═c2ddbe37-41db-4c57-81e3-86390930f2f8
+# ╠═49c1fbd0-f569-4fa9-8e67-8ffa68db38df
+# ╠═c4177879-10e9-4027-aa03-03e596ed6e84
+# ╠═2b381fbe-6a9f-43d8-a293-7b11cc0d28d1
 # ╠═62a9ab93-ee3a-485f-8d7a-a4545e2b9af0
-# ╠═6c052fff-e132-4c82-a9aa-06d22022417d
-# ╠═99ee8b1b-57d7-4eca-ad83-8800005bcb0b
-# ╠═140448e0-bc96-4b32-a549-028b1c24fc60
-# ╠═b9ac07e9-7966-40ea-8b7d-e7baedac0ebc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

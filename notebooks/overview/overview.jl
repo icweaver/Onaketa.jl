@@ -189,6 +189,25 @@ Total number of students supported: $(nrow(df))
 We combine all of the figures above into a single graphic for quick comparison.
 """
 
+# ╔═╡ c8a31c0c-0582-4a21-a959-69a148653e65
+histogram(skipm df.student_zip)
+
+# ╔═╡ 6c1e2792-b6e6-4734-9538-968b109b7755
+histogram(skipmissing(df.student_zip))
+
+# ╔═╡ 337ec688-6c36-4c3f-b8b2-ad91239e7808
+let
+	plt = data(df) * mapping(:student_zip) * visual(Hist)
+
+	draw(plt; axis=(; xticklabelrotation=45))
+end
+
+# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
+
+
+# ╔═╡ e38cdeca-27b3-44c8-bf2d-6aa785c6eca6
+df_county_zip = CSV.read(download("https://raw.githubusercontent.com/scpike/us-state-county-zip/master/geo-data.csv"), DataFrame)
+
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
 ## Notebook setup 🔧
@@ -2258,6 +2277,11 @@ version = "3.5.0+0"
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
+# ╠═c8a31c0c-0582-4a21-a959-69a148653e65
+# ╠═6c1e2792-b6e6-4734-9538-968b109b7755
+# ╠═337ec688-6c36-4c3f-b8b2-ad91239e7808
+# ╠═a90e2300-3e2e-48b9-9544-11178c925983
+# ╠═e38cdeca-27b3-44c8-bf2d-6aa785c6eca6
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
