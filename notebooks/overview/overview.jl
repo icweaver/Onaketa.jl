@@ -189,6 +189,12 @@ Total number of students supported: $(nrow(df))
 We combine all of the figures above into a single graphic for quick comparison.
 """
 
+# ╔═╡ 4fb57d7f-bfb2-410f-86b0-696e962af401
+to_county = let
+	df = CSV.read("data/uszips.csv", DataFrame; select=[:zip, :county_name])
+	Dict(zip(df.zip, df.county_name))
+end
+
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
 ## Notebook setup 🔧
@@ -417,14 +423,13 @@ let
 	fig
 end
 
-# ╔═╡ 4fb57d7f-bfb2-410f-86b0-696e962af401
-df_re
-
 # ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
 df_county_zip = @chain df begin
 	group_counts(_, :student_zip)
 	dropmissing
-	@transform :county_name = :variable
+	@rtransform :county_name = to_county[:variable]
+	@by :county_name :n_students = sum(:nrow)
+	sort(:county_name)
 end
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
