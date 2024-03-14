@@ -56,11 +56,11 @@ end
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 gdf = let
-	df = CSV.read("data/students.csv", DataFrame; normalizenames=true)
+	df = CSV.read("data/roster.csv", DataFrame; normalizenames=true)
 	
 	@chain df begin
 		dropmissing!(:term_active)
-		@rsubset! occursin("Spring 2020", :term_active)
+		@rsubset! occursin("Spring 2024", :term_active)
 		sort!(:student_name)
 		groupby(:tutor_name; sort=true)
 	end
@@ -568,7 +568,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─219b18a1-0f2b-4b0f-8ec8-746dff5ed485
+# ╠═219b18a1-0f2b-4b0f-8ec8-746dff5ed485
 # ╟─69a91b6b-b238-42dd-bdf3-eff01816d244
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╠═0f98b77a-7370-40c1-bab0-369afa95310e
