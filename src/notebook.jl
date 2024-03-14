@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.38
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -81,7 +81,7 @@ md"""
 @bind URL confirm(TextField(50;default="https://whenisgood.net/2xfibm8/onaketa2023/results/qjn7dng"))
 
 # ╔═╡ be646c2d-febe-448f-84cf-ee88072d33d0
-user_info = URL |> download_schedules |> extract_times;
+user_info = URL |> download_schedules  |> extract_times;
 
 # ╔═╡ 67ffd46f-707a-4875-a9e3-9e98fb0eb002
 md"""
@@ -90,18 +90,14 @@ md"""
 
 # ╔═╡ 9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
 student_names = [
-	"Alice",
-	"Bob",
-	"Charlie",
-	"Dee",
+	"Ramzi Abid",
+	"Esther Nyantika",
 ]
 
 # ╔═╡ 3edda429-067e-4c80-b5f8-33d9bd4c4b86
 tutor_names = [
-	"Ian",
-	"Reza",
-	"Greg",
-	"Haley"
+	"Ian Weaver",
+	"Chima McGruder",
 ]
 
 # ╔═╡ 70d09e5c-70b8-4792-8f1a-74a2220733f0
@@ -149,11 +145,11 @@ TableOfContents()
 # ╟─9dc32763-615b-4388-a32e-88f471b64a74
 # ╟─70d09e5c-70b8-4792-8f1a-74a2220733f0
 # ╟─ba563197-2c9d-481e-ad46-7934e12afb47
-# ╟─7486fc9a-4bf8-4094-8ab1-65bd3d566238
+# ╠═7486fc9a-4bf8-4094-8ab1-65bd3d566238
 # ╠═be646c2d-febe-448f-84cf-ee88072d33d0
 # ╟─67ffd46f-707a-4875-a9e3-9e98fb0eb002
-# ╟─9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
-# ╟─3edda429-067e-4c80-b5f8-33d9bd4c4b86
+# ╠═9ede7403-19d7-4f6d-b9ef-ac9c11a84eea
+# ╠═3edda429-067e-4c80-b5f8-33d9bd4c4b86
 # ╠═cd1ae99b-bacf-43ea-b5cb-40a78d177025
 # ╟─22a2fd6a-8ca1-4f32-88e1-1620c667ddb7
 # ╟─a0c531a5-ff2a-4939-a6a5-8ad31e7aae44
