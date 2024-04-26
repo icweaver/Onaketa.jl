@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.40
+# v0.19.41
 
 using Markdown
 using InteractiveUtils
@@ -32,7 +32,7 @@ We read the data in from a simple csv file stored with this notebook.
 """
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df_raw = CSV.read("./data/students.csv", DataFrame);
+df_raw = CSV.read("./data/roster.csv", DataFrame);
 
 # ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
 md"""
@@ -154,6 +154,19 @@ function active_terms_count(arr)
 
 	return d
 end
+
+# ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
+students_2023 = @chain df begin
+	@rsubset occursin("2023", :term_active)
+	unique(:student_name)
+	sort(:student_name)
+end
+
+# ╔═╡ 904baa61-019e-46cb-98fe-32f128f18eb7
+describe(students_2023; cols=:student_grade)
+
+# ╔═╡ 16fd25e9-b7d1-404f-996d-d82b23d59a00
+students_2023.student_grade
 
 # ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
 growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
@@ -2286,7 +2299,10 @@ version = "3.5.0+0"
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
+# ╠═904baa61-019e-46cb-98fe-32f128f18eb7
+# ╠═16fd25e9-b7d1-404f-996d-d82b23d59a00
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╠═3762a2f0-9f5c-4662-bac4-e98727cf62d5

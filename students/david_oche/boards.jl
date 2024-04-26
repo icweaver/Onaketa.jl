@@ -4,179 +4,56 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
-# ╔═╡ a1ca2645-efe9-4472-a70b-c5a4989c9400
+# ╔═╡ 1dedaa68-4f52-471a-ab41-c04ebbd793ca
 begin
 	using PlutoUI
-	using Dates, Printf
-	using CommonMark
+	using HypertextLiteral: @htl
 end
 
-# ╔═╡ 3c7b337a-66bd-468f-b7ca-a8874106ea0e
-const TDY = today()
+# ╔═╡ d0bd18f5-f50f-47cf-b39c-ec3ee9183304
+md"""
+Below are some boards from our sessions. Click and drag to move around, and hold control while scrolling to zoom 🚀
+"""
 
-# ╔═╡ 716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-@bind person PlutoUI.combine() do Child
-	cm"""
-	**Name:** $(Child(:name, TextField()))
-	**Email:** $(Child(:email, TextField()))
-	
-	**Amount:** $(Child(:amount, NumberField(1:0.01:5_000)))
-	**Amount date:** $(Child(:amount_date, DatePicker(; default=TDY)))
+# ╔═╡ c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
+md"""
+!!! note
+	[Past boards](https://docs.google.com/document/d/1VbkHtNdugk0vKbg7NwLoilR06OkxLso9SZAXn9egtGs/edit?usp=sharing)
+"""
 
-	**Address:** $(Child(:address, TextField()))
-	"""
-end |> confirm
+# ╔═╡ cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
+iframe(url) = @htl """
+<iframe src="$(url)?darkMode=true" width="100%" height=400 style="border: none;"></iframe>
+""";
 
-# ╔═╡ 274360dc-6081-4c14-8da4-f91b84106c4a
-r2(x) = @sprintf("%.2f", x)
+# ╔═╡ 45d0f413-6543-48b6-a269-3292c27261a6
+board(date, description, url) = md"""
+## $(date)
 
-# ╔═╡ f21f544a-9531-4a61-b29c-331d0b4ab491
-fmt_date(dt) = Dates.format(dt, dateformat"U dd, Y")
+$(description)
 
-# ╔═╡ dcaf492c-c476-11ee-2997-8d295a2527a5
-function tpl_email(p)
-	header_date = fmt_date(TDY)
-	
-	cm"""
-	!!! note "subject:"
-		Thank you! (Tax receipt from Onaketa)
-	
-	!!! note "to:"
-		$(p.email)
+$(iframe(url))
+""";
 
-	!!! warning "bcc:"
-		niaimara@gmail.com, nehanda@onaketa.org
-	
-	$(header_date)
-	
-	Dear $(p.name),
-	
-	Thank you for your generous donation of \$$(r2(p.amount)) to Onaketa! Your contribution will help us in our work of serving black and brown students with STEM tutoring, mentorship, and other free resources.
-	
-	Thanks to you, we’re able to further our vision of "education without limits" — together. We truly appreciate your support.
-	
-	Gratefully, Onaketa
-	
-	Dr. Nia Imara, Founder and Director of Onaketa\
-	Dr. Siri Brown, Board Member\
-	Dr. LaNell Williams, Board Member
-	
-	
-	---
-	
-	**Tax Receipt from Onaketa Inc.**
+# ╔═╡ 1144202e-0363-11ef-3e0d-03ce94bf2bb3
+board(
+	"2024-04-25",
+	md"Working with radicals",
+	"https://link.excalidraw.com/readonly/lp2hxSG0TjLhJshzsbY9",
+)
 
-	**Name:** $(p.name)\
-	**Address:** $(p.address)\
-	**Gift Date:** $(fmt_date(p.amount_date))\
-	**Total Gift Amount:** \$$(r2(p.amount))
-	
-	*No goods or services were provided in exchange for this contribution.*
-
-	---
-	
-	**Donation information:**\
-	Onaketa, Inc. is a 501(c)(3) nonprofit organization; our federal tax ID # is 85-4282111.
-	Your donation is tax-deductible to the full extent provided by the law, as no goods or
-	services were exchanged nor provided in consideration of this gift and/or contribution.
-	"""
-end
-
-# ╔═╡ bfb61bd6-bbeb-4286-a732-fad9229b31f8
-!any(isnothing, person) && tpl_email(person)
-
-# ╔═╡ cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
-function tpl_pdf(p)
-	"""
-	#set text(font: "TeX Gyre Schola")
-	
-	#align(center)[
-	  #image("/logo.png", width: 50%)
-	  #link("https://www.onaketa.org")[onaketa.org] |
-	  #link("mailto:info@onaketa.org")
-	]
-	
-	#let DATE_LETTER = "$(fmt_date(TDY))"
-	#let NAME = "$(p.name)"
-	#let AMOUNT = "\$$(r2(p.amount))"
-	#let DATE_AMOUNT = "$(fmt_date(p.amount_date))"
-	#let ADDRESS = "$(p.address)"
-	
-	#DATE_LETTER
-	\\
-	\\
-	\\
-	Dear #NAME,
-	
-	Thank you for your generous donation of #AMOUNT to Onaketa! Your contribution will help us in our work of serving black and brown students with STEM tutoring, mentorship, and other free resources.
-	
-	Thanks to you, we’re able to further our vision of "education without limits" --- together. We truly appreciate your support.
-	\\
-	\\
-	Gratefully, Onaketa
-	\\
-	\\
-	Dr. Nia Imara, Founder and Director of Onaketa\\
-	Dr. Siri Brown, Board Member\\
-	Dr. LaNell Williams, Board Member
-	\\
-	\\
-	\\
-	#line(length: 100%)
-	*Tax Receipt from Onaketa Inc.*
-	
-	*Name:* #NAME\\
-	*Address:* #ADDRESS\\
-	*Gift Date:* #DATE_AMOUNT\\
-	*Total Gift Amount:* #AMOUNT
-	
-	_No goods or services were provided in exchange for this contribution._
-	#line(length: 100%)
-	\\
-	*Donation information:*\\
-	Onaketa, Inc. is a 501(c)(3) nonprofit organization; our federal tax ID \\# is 85-4282111. Your donation is tax-deductible to the full extent provided by the law, as no goods or services were exchanged nor provided in consideration of this gift and/or contribution.
-	"""
-end
-
-# ╔═╡ 8ddc461d-410e-435b-a05b-a268da330aec
-if !any(isempty, (person.name, person.email))
-	mkpath("./src")
-	# name = replace(member, " "=>"")
-	# fname = "pay_summary_$(pay_date.year)_$(monthabbr(pay_date.month))_$(name)"
-	fname = "Tax_receipt_letter_$(replace(person.name, ' '=>'_'))_$(TDY)"
-	spath = "src/$(fname).typ"
-	write(spath, tpl_pdf(person))
-
-	mkpath("./pdfs")
-	ppath = "pdfs/$(fname).pdf"
-	cmd = `typst compile --root . $(spath) $(ppath)`
-	run(cmd)
-
-	@debug "Report generated for $(ppath)"
-
-end
+# ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
+TableOfContents(; title="Boards 📝")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-CommonMark = "~0.8.12"
-PlutoUI = "~0.7.55"
+HypertextLiteral = "~0.9.5"
+PlutoUI = "~0.7.59"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -185,13 +62,13 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "7e31b6f660afa539f3410b83ce4c70875c88e898"
+project_hash = "e7223c1a7ed85110e7a6918a8fa41e0f1158e7b8"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
-git-tree-sha1 = "c278dfab760520b8bb7e9511b968bf4ba38b7acc"
+git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.2.3"
+version = "1.3.2"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -205,25 +82,14 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
-git-tree-sha1 = "eb7f0f8307f71fac7c606984ea5fb2817275d6e4"
+git-tree-sha1 = "b10d0b65641d57b8b4d5e234446582de5047050d"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
-version = "0.11.4"
-
-[[deps.CommonMark]]
-deps = ["Crayons", "JSON", "PrecompileTools", "URIs"]
-git-tree-sha1 = "532c4185d3c9037c0237546d817858b23cf9e071"
-uuid = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
-version = "0.8.12"
+version = "0.11.5"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.0+0"
-
-[[deps.Crayons]]
-git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
-uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
-version = "4.1.1"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -348,21 +214,21 @@ version = "1.10.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "68723afdb616445c6caaef6255067a8339f91325"
+git-tree-sha1 = "ab55ee1510ad2af0ff674dbcced5e94921f867a9"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.55"
+version = "0.7.59"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "03b4c25b43cb84cee5c90aa9b5ea0a78fd848d2f"
+git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.2.0"
+version = "1.2.1"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "00805cd429dcb4870060ff49ef443486c262e38e"
+git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.4.1"
+version = "1.4.3"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -459,14 +325,12 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─3c7b337a-66bd-468f-b7ca-a8874106ea0e
-# ╟─716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
-# ╟─bfb61bd6-bbeb-4286-a732-fad9229b31f8
-# ╟─8ddc461d-410e-435b-a05b-a268da330aec
-# ╟─dcaf492c-c476-11ee-2997-8d295a2527a5
-# ╟─cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
-# ╟─274360dc-6081-4c14-8da4-f91b84106c4a
-# ╟─f21f544a-9531-4a61-b29c-331d0b4ab491
-# ╠═a1ca2645-efe9-4472-a70b-c5a4989c9400
+# ╟─d0bd18f5-f50f-47cf-b39c-ec3ee9183304
+# ╟─c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
+# ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
+# ╟─45d0f413-6543-48b6-a269-3292c27261a6
+# ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
+# ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
+# ╟─1dedaa68-4f52-471a-ab41-c04ebbd793ca
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
