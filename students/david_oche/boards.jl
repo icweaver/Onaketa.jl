@@ -12,7 +12,7 @@ end
 
 # ╔═╡ d0bd18f5-f50f-47cf-b39c-ec3ee9183304
 md"""
-Below are some boards from our sessions. Click and drag to move around, and hold control while scrolling to zoom 🚀
+Below are some boards from our sessions. Click and drag to move around, and hold control while scrolling to zoom. Tap-and-drag, and pinch-and-zoom if on mobile 🚀
 """
 
 # ╔═╡ c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
