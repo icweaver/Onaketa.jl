@@ -45,8 +45,8 @@ gdf = @chain df begin
 		:student_name = coalesce(:student_name, :student_name_other)
 	end
 	# sort([:category, :student_name])
-	sort([:date, "Submitted at"])
-	groupby([:team_member, :y, :m]; sort=true)
+	sort([:student_name, :date])
+	groupby([:team_member, :category]; sort=true)
 end;
 
 # ╔═╡ cede75ac-35a3-4764-a356-f5421fb25792
@@ -92,7 +92,7 @@ function write_log(df)
 	io = IOBuffer()
 	indent = ""
 	for row ∈ eachrow(df)
-		write(io, "$(indent)[$(row.date)], [$(row.category)], [$(r2(row.hours))], [$(row.student_name)], [`$(row.notes)`],\n")
+		write(io, "$(indent)[$(row.date)], [$(row.student_name)], [`$(row.notes)`],\n")
 		indent = "\t"
 	end
 	stake!(io)
@@ -109,39 +109,28 @@ function report_src(df_summary, df_log, member, pay_date)
 	#grid(
 		columns: (2fr, 1fr),
 		[
-			*Pay period:* $(year) $(month)\\
-			*Name:* $(member)\\
-			#text(rgb("#ec008c"))[*Total (USD): $(r2(total_pay))*]
-			
-			#table(
-				columns: 4,
-				align: (left, right, right, right),
-				stroke: 0.5pt + rgb("#ec008c"),
-				[*Category*], [*Hours*], [*Rate*], [*Pay*],
-				$(write_summary(df_summary))\t\t)
+			*Name:* $(member)
 		],
 		[#image("../figures/logo.png")],
 	)
 	
 	#table(
-		columns: 5,
+		columns: 3,
 		align: (
-			center + horizon,
-			center + horizon,
 			center + horizon,
 			center + horizon,
 			left + horizon,
 		),
 		fill: (_, row) => if calc.odd(row) {luma(240)},
 		stroke: 0.5pt + luma(200),
-		[*Date*], [*Category*], [*Hours*], [*Student*], [*Notes*],
+		[*Date*], [*Student*], [*Notes*],
 		$(write_log(df_log)))
 	"""
 end
 
 # ╔═╡ 184bece7-c9d7-4c32-9fbf-be19221369c6
 function generate_report(gdf, member, pay_date)
-	df_log = gdf[(member, pay_date.year, pay_date.month)]
+	df_log = gdf[(member, "Tutoring")]
 	
 	df_summary = @chain df_log begin
 		groupby(:category)

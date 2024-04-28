@@ -56,7 +56,7 @@ end
 
 # ╔═╡ 0f98b77a-7370-40c1-bab0-369afa95310e
 gdf = let
-	df = CSV.read("data/roster.csv", DataFrame; normalizenames=true)
+	df = CSV.read("data/timesheet_session_logs.csv", DataFrame; normalizenames=true)
 	
 	@chain df begin
 		dropmissing!(:term_active)
