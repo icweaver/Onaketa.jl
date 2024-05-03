@@ -121,6 +121,9 @@ end
 # ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
 CSV.write("data/data_cleaned.csv", df_clean)
 
+# ╔═╡ 063ee6bb-d862-4555-84c3-44b00dcb0e14
+df_clean.tutor_name |> unique
+
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
 ## Insights 🔎
@@ -133,6 +136,9 @@ With these definitions made, we go on to visualize different aspects of the data
 
 # ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 df = @rsubset df_clean !(:drop_status);
+
+# ╔═╡ fe4b329b-f8dd-49e8-bf54-b5940eab4305
+nrow(df)
 
 # ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
 function active_terms_count(arr)
@@ -161,6 +167,9 @@ students_2023 = @chain df begin
 	unique(:student_name)
 	sort(:student_name)
 end
+
+# ╔═╡ 1255f0de-776f-4dc4-af61-bcb9ce26c56f
+df.tutor_name |> unique |> length
 
 # ╔═╡ 904baa61-019e-46cb-98fe-32f128f18eb7
 describe(students_2023; cols=:student_grade)
@@ -191,6 +200,9 @@ md"""
 
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
+
+# ╔═╡ a84a88eb-5cf6-492b-a710-d11b8ced8bfd
+5 / 54
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -227,7 +239,7 @@ update_theme!(
 	Theme(
 		fontsize = 16,
 		Axis = (;
-			limits = (nothing, nothing, -0.5, 35),
+			limits = (nothing, nothing, -0.5, 45),
 			titlesize = 26,
 			titlecolor = "#ec008c",
 			titlegap = -60,
@@ -339,6 +351,9 @@ md"""
 Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
 """
 
+# ╔═╡ b3ddf365-e1ff-470e-9431-e08ebed80913
+df_served[end, :nrow]
+
 # ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
 avg_percent_growth = let
 	df_terms = df_served
@@ -416,6 +431,9 @@ begin
 	fg_re |> as_svg
 end
 
+# ╔═╡ bfbe9f1a-051e-4f5d-be2f-2782a09ef587
+df_re
+
 # ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 let
 	fig = Figure(resolution=(1400, 1200))
@@ -479,7 +497,7 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.2"
+julia_version = "1.10.3"
 manifest_format = "2.0"
 project_hash = "b1a1d6da9b07384299834ee11d6ce566db991012"
 
@@ -731,7 +749,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.0+0"
+version = "1.1.1+0"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -2295,12 +2313,16 @@ version = "3.5.0+0"
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
 # ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
+# ╠═063ee6bb-d862-4555-84c3-44b00dcb0e14
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═fe4b329b-f8dd-49e8-bf54-b5940eab4305
+# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═b3ddf365-e1ff-470e-9431-e08ebed80913
 # ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
 # ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
+# ╠═1255f0de-776f-4dc4-af61-bcb9ce26c56f
 # ╠═904baa61-019e-46cb-98fe-32f128f18eb7
 # ╠═16fd25e9-b7d1-404f-996d-d82b23d59a00
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
@@ -2314,7 +2336,9 @@ version = "3.5.0+0"
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╠═cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╠═bfbe9f1a-051e-4f5d-be2f-2782a09ef587
+# ╠═a84a88eb-5cf6-492b-a710-d11b8ced8bfd
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╠═a90e2300-3e2e-48b9-9544-11178c925983

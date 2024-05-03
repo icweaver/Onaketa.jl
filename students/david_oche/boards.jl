@@ -42,6 +42,13 @@ board(
 	"https://link.excalidraw.com/readonly/lp2hxSG0TjLhJshzsbY9",
 )
 
+# ╔═╡ 502b9fbc-ee9a-456f-b017-e8f88b53fb3a
+board(
+	"2024-05-02",
+	md"Working with radicals, continued",
+	"https://link.excalidraw.com/readonly/D8DcPDu0ME8im4u0Wd0r",
+)
+
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
 TableOfContents(; title="Boards 📝")
 
@@ -60,7 +67,7 @@ PlutoUI = "~0.7.59"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.2"
+julia_version = "1.10.3"
 manifest_format = "2.0"
 project_hash = "e7223c1a7ed85110e7a6918a8fa41e0f1158e7b8"
 
@@ -89,7 +96,7 @@ version = "0.11.5"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.0+0"
+version = "1.1.1+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -328,6 +335,7 @@ version = "17.4.0+2"
 # ╟─d0bd18f5-f50f-47cf-b39c-ec3ee9183304
 # ╟─c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
+# ╟─502b9fbc-ee9a-456f-b017-e8f88b53fb3a
 # ╟─45d0f413-6543-48b6-a269-3292c27261a6
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
