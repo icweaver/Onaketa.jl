@@ -53,7 +53,7 @@ board(
 board(
 	"2024-05-09",
 	md"Polynomial expressions",
-	"https://link.excalidraw.com/readonly/GOEaEaOLYgNyZcn0fZyh?",
+	"https://link.excalidraw.com/readonly/GOEaEaOLYgNyZcn0fZyh",
 )
 
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d

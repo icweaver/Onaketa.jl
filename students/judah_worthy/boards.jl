@@ -44,9 +44,16 @@ board(
 
 # ╔═╡ 502b9fbc-ee9a-456f-b017-e8f88b53fb3a
 board(
+	"2024-05-08",
+	md"Dynamics and kinematics review -- Work-Energy Theorem",
+	"https://link.excalidraw.com/readonly/nhNn2BAyB5m8Ys0l0MFV",
+)
+
+# ╔═╡ 6dfa585d-80ac-4b4a-b08a-20ed2b844ed0
+board(
 	"2024-05-09",
 	md"Dynamics and kinematics review",
-	"https://link.excalidraw.com/readonly/nhNn2BAyB5m8Ys0l0MFV",
+	"https://link.excalidraw.com/readonly/XG6bfzuTSf0UIK1VFBjD",
 )
 
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
@@ -336,6 +343,7 @@ version = "17.4.0+2"
 # ╟─c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
 # ╟─502b9fbc-ee9a-456f-b017-e8f88b53fb3a
+# ╟─6dfa585d-80ac-4b4a-b08a-20ed2b844ed0
 # ╟─45d0f413-6543-48b6-a269-3292c27261a6
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
