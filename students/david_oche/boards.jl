@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -47,6 +47,13 @@ board(
 	"2024-05-02",
 	md"Working with radicals, continued",
 	"https://link.excalidraw.com/readonly/D8DcPDu0ME8im4u0Wd0r",
+)
+
+# ╔═╡ 863b624d-df61-4127-95d7-eb28c8bd377e
+board(
+	"2024-05-09",
+	md"Polynomial expressions",
+	"https://link.excalidraw.com/readonly/GOEaEaOLYgNyZcn0fZyh?",
 )
 
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
@@ -336,6 +343,7 @@ version = "17.4.0+2"
 # ╟─c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
 # ╟─502b9fbc-ee9a-456f-b017-e8f88b53fb3a
+# ╟─863b624d-df61-4127-95d7-eb28c8bd377e
 # ╟─45d0f413-6543-48b6-a269-3292c27261a6
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
