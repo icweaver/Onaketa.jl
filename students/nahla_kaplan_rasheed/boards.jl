@@ -42,6 +42,13 @@ board(
 	"https://link.excalidraw.com/readonly/Wtoy7BSWf8GgwkpVvs8o"
 )
 
+# ╔═╡ b799de6e-6c83-49ca-8129-62f8ff02118e
+board(
+	"2024-05-15",
+	md"Analyzing functions",
+	"https://link.excalidraw.com/readonly/CNFmM1FzDSCqFqJQfEnL"
+)
+
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
 TableOfContents(; title="Boards 📝")
 
@@ -328,6 +335,7 @@ version = "17.4.0+2"
 # ╟─d0bd18f5-f50f-47cf-b39c-ec3ee9183304
 # ╟─c9ef3aa5-b300-43dd-a4c0-6fee6f35b01f
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
+# ╟─b799de6e-6c83-49ca-8129-62f8ff02118e
 # ╟─7e73c1cb-1842-4fab-9eaf-cf9db2e883da
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
