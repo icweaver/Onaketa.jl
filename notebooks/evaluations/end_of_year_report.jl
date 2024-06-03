@@ -78,7 +78,8 @@ begin
 			write_response!(report, row)
 		end
 		
-		# write(report, "\n")
+		# Add extra space between tutors
+		write(report, "\n")
 	end
 	
 	# merge_pdfs(readdir("pdfs/"; join=true), "pay_summaries_$(pay_date.year)_$(monthabbr(pay_date.month)).pdf")
