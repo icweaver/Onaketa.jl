@@ -47,28 +47,40 @@ md"""
 ## Generate reports
 """
 
-# ╔═╡ 5d2db096-b284-442c-b230-0e8920480a27
-gdf |> first
+# ╔═╡ 742a5add-0993-4430-b13e-0a9b4dc73f6a
+preamble = """
+#set page(numbering: "1 / 1", number-align: right)
+#set text(font: "TeX Gyre Schola")
+
+#set enum(numbering: "a)", spacing: 9em)
+
+#show math.equation: set text(font: "TeX Gyre Schola Math")
+#show link: set text(blue, font: "New Computer Modern Mono")
+
+#show heading.where(level: 1): it => {
+  set text(rgb("#ec008c"))
+  block(it)
+}
+
+#grid(
+  columns: (2fr, 1fr),
+  [],
+  [#image("fig/logo.png")],
+)
+""";
 
 # ╔═╡ 26fba730-d8f8-4ddf-af10-073cb6efb84f
 function write_response!(io, dfr::DataFrameRow)
+	write(io, "== $(dfr.:"Student name")\n")
 	for (fieldname, field) in zip(names(dfr), dfr)
-		write(io, "*$(fieldname):* `$(field)`\n\n")
+		write(io, "*$(fieldname):*\\ `$(field)`\n\n")
 	end
 end
 
-# ╔═╡ 04497d9f-1e83-4fdf-a15c-537cade5db57
-md"""
-# Notebook setup 🔧
-"""
-
-# ╔═╡ 62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
-stake! = String ∘ take!
-
 # ╔═╡ 54453326-0746-4546-8526-2971956b9991
 begin
-	report = IOBuffer()
-	
+open("report.typ", "w") do report
+	write(report, preamble)
 	for (nt, sdf) ∈ pairs(gdf)
 		# Tutor name
 		write(report, "= $(nt.:"Tutor name")\n")
@@ -78,14 +90,21 @@ begin
 			write_response!(report, row)
 		end
 		
-		# Add extra space between tutors
-		write(report, "\n")
+		# Put tutors on their own page
+		write(report, "#pagebreak()\n")
 	end
-	
-	# merge_pdfs(readdir("pdfs/"; join=true), "pay_summaries_$(pay_date.year)_$(monthabbr(pay_date.month)).pdf")
-
-	stake!(report) |> print
 end
+
+run(typst`compile report.typ report.pdf`)
+end;
+
+# ╔═╡ 04497d9f-1e83-4fdf-a15c-537cade5db57
+md"""
+# Notebook setup 🔧
+"""
+
+# ╔═╡ 62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
+stake! = String ∘ take!
 
 # ╔═╡ 14b94f98-d03f-4b46-b608-e0d9b7dc22cf
 TableOfContents()
@@ -814,7 +833,7 @@ version = "17.4.0+2"
 # ╠═60f0c785-63fa-40f5-999f-b4d606d7e8d6
 # ╠═9ac7786c-c0dd-48c0-a16b-37a3ab873623
 # ╟─cede75ac-35a3-4764-a356-f5421fb25792
-# ╠═5d2db096-b284-442c-b230-0e8920480a27
+# ╠═742a5add-0993-4430-b13e-0a9b4dc73f6a
 # ╠═54453326-0746-4546-8526-2971956b9991
 # ╠═26fba730-d8f8-4ddf-af10-073cb6efb84f
 # ╟─04497d9f-1e83-4fdf-a15c-537cade5db57
