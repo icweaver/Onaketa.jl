@@ -4,30 +4,24 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 145a845c-94c4-4c01-bcd0-fa099ec77472
-using MarkdownLiteral: @mdx
-
 # ╔═╡ 454d5a84-3f1d-4789-bfe9-a45a21ed202f
+begin
 using DataFramesMeta, CSV, PlutoUI, Dates, CommonMark
+using MarkdownLiteral: @mdx
+end;
+
+# ╔═╡ 1b3d1813-af8f-42ee-926a-d91565100331
+color(c, text) = """<span style="color:$(c)">$(text)</span>""";
 
 # ╔═╡ 51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-md"""
-# Rising stars application 2024 🌠
+cm"""
+# Rising stars applications 2024 🌠
+
+Color key:
+$(color("green", "Two letters")),
+$(color("goldenrod", "One letter")),
+$(color("red", "Zero letters"))
 """
-
-# ╔═╡ 6409b283-9a73-4616-b88e-10e1a975731f
-let
-	r = []
-	name = "Ian"
-	push!(r, cm"""<h2>$(name)</h2>""")
-	cm"$(r)"
-end
-
-# ╔═╡ 8942dda0-7610-42a2-b194-720e1d980926
-name = "yee"
-
-# ╔═╡ 62bbe87a-e3a4-4c84-a7f7-2c597b82ae29
-@mdx """<h2 style="color:blue">$(name)</h2>"""
 
 # ╔═╡ 26fba730-d8f8-4ddf-af10-073cb6efb84f
 function write_response!(report, row::DataFrameRow)
@@ -64,13 +58,14 @@ end;
 # ╔═╡ cf122576-0d9c-402d-8a29-89e4980b6bcf
 df_ref = let
 	df = CSV.read("data/rising_stars_references_2024.csv", DataFrame)
-end
+end;
 
 # ╔═╡ 54453326-0746-4546-8526-2971956b9991
 let
 	report = []
 	student_ref_names = df_ref.:"Student name"
 	for row in eachrow(df_app)
+		# Check for reference letters
 		student_name = row.:"First name"
 		df_ref_match = @rsubset df_ref occursin(student_name, :"Student name")
 		n_refs = nrow(df_ref_match)
@@ -78,16 +73,18 @@ let
 		color = if n_refs == 2
 			"green"
 		elseif n_refs == 1
-			"yellow"
+			"goldenrod"
 		else
 			"red"
 		end
 		
+		# Write student responses
 		push!(report, @mdx """<h2 style="color:$(color)">$(row.:"First name") $(row.:"Last name")</h2>""")
 		write_response!(report, row)
 		
+		# Write reference letters
 		if any(student_name .⊆ student_ref_names) 
-			write_response!(report, student_name, df_ref)
+			write_response!(report, student_name, df_ref_match)
 		end
 	end
 
@@ -584,17 +581,14 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-# ╠═54453326-0746-4546-8526-2971956b9991
-# ╠═6409b283-9a73-4616-b88e-10e1a975731f
-# ╠═8942dda0-7610-42a2-b194-720e1d980926
-# ╠═62bbe87a-e3a4-4c84-a7f7-2c597b82ae29
-# ╠═145a845c-94c4-4c01-bcd0-fa099ec77472
-# ╠═26fba730-d8f8-4ddf-af10-073cb6efb84f
-# ╠═109bbdad-5af1-4bab-aacb-058667137f4c
-# ╠═62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
-# ╠═14b94f98-d03f-4b46-b608-e0d9b7dc22cf
-# ╠═618d232b-d236-40a9-8ee1-5983934d325f
-# ╠═cf122576-0d9c-402d-8a29-89e4980b6bcf
-# ╠═454d5a84-3f1d-4789-bfe9-a45a21ed202f
+# ╟─1b3d1813-af8f-42ee-926a-d91565100331
+# ╟─54453326-0746-4546-8526-2971956b9991
+# ╟─26fba730-d8f8-4ddf-af10-073cb6efb84f
+# ╟─109bbdad-5af1-4bab-aacb-058667137f4c
+# ╟─62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
+# ╟─14b94f98-d03f-4b46-b608-e0d9b7dc22cf
+# ╟─618d232b-d236-40a9-8ee1-5983934d325f
+# ╟─cf122576-0d9c-402d-8a29-89e4980b6bcf
+# ╟─454d5a84-3f1d-4789-bfe9-a45a21ed202f
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
