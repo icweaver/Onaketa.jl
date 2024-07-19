@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 145a845c-94c4-4c01-bcd0-fa099ec77472
+using MarkdownLiteral: @mdx
+
 # ╔═╡ 454d5a84-3f1d-4789-bfe9-a45a21ed202f
 using DataFramesMeta, CSV, PlutoUI, Dates, CommonMark
 
@@ -11,6 +14,20 @@ using DataFramesMeta, CSV, PlutoUI, Dates, CommonMark
 md"""
 # Rising stars application 2024 🌠
 """
+
+# ╔═╡ 6409b283-9a73-4616-b88e-10e1a975731f
+let
+	r = []
+	name = "Ian"
+	push!(r, cm"""<h2>$(name)</h2>""")
+	cm"$(r)"
+end
+
+# ╔═╡ 8942dda0-7610-42a2-b194-720e1d980926
+name = "yee"
+
+# ╔═╡ 62bbe87a-e3a4-4c84-a7f7-2c597b82ae29
+@mdx """<h2 style="color:blue">$(name)</h2>"""
 
 # ╔═╡ 26fba730-d8f8-4ddf-af10-073cb6efb84f
 function write_response!(report, row::DataFrameRow)
@@ -24,9 +41,7 @@ function write_response!(report, row::DataFrameRow)
 end;
 
 # ╔═╡ 109bbdad-5af1-4bab-aacb-058667137f4c
-function write_response!(report, student_name, df_ref::DataFrame)
-	df = @rsubset df_ref occursin(student_name, :"Student name")
-	
+function write_response!(report, student_name, df::DataFrame)
 	_buf = []
 	for (i, row) in enumerate(eachrow(df))
 		write_response!(_buf, row)
@@ -55,22 +70,28 @@ end
 let
 	report = []
 	student_ref_names = df_ref.:"Student name"
-	
 	for row in eachrow(df_app)
-		push!(report, md"""## $(row.:"First name") $(row.:"Last name")""")
-		write_response!(report, row)
 		student_name = row.:"First name"
+		df_ref_match = @rsubset df_ref occursin(student_name, :"Student name")
+		n_refs = nrow(df_ref_match)
+		
+		color = if n_refs == 2
+			"green"
+		elseif n_refs == 1
+			"yellow"
+		else
+			"red"
+		end
+		
+		push!(report, @mdx """<h2 style="color:$(color)">$(row.:"First name") $(row.:"Last name")</h2>""")
+		write_response!(report, row)
+		
 		if any(student_name .⊆ student_ref_names) 
 			write_response!(report, student_name, df_ref)
 		end
 	end
 
 	cm"$(report)"
-end
-
-# ╔═╡ a37bec27-8e38-4b6f-a7d2-b44a1dd72e53
-x = @rsubset df_ref[:, 9:12] begin
-	occursin("Lizette", :"Student name")
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -80,12 +101,14 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 CSV = "~0.10.14"
 CommonMark = "~0.8.12"
 DataFramesMeta = "~0.15.2"
+MarkdownLiteral = "~0.1.1"
 PlutoUI = "~0.7.59"
 """
 
@@ -95,7 +118,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "da04839568ef357cbef4044b9801eb859f9ff253"
+project_hash = "e88fdb7901fbb742a6389fdb5402bac2efd73260"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -315,6 +338,12 @@ version = "0.5.13"
 [[deps.Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[deps.MarkdownLiteral]]
+deps = ["CommonMark", "HypertextLiteral"]
+git-tree-sha1 = "0d3fa2dd374934b62ee16a4721fe68c418b92899"
+uuid = "736d6165-7244-6769-4267-6b50796e6954"
+version = "0.1.1"
 
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -556,9 +585,12 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
 # ╠═54453326-0746-4546-8526-2971956b9991
+# ╠═6409b283-9a73-4616-b88e-10e1a975731f
+# ╠═8942dda0-7610-42a2-b194-720e1d980926
+# ╠═62bbe87a-e3a4-4c84-a7f7-2c597b82ae29
+# ╠═145a845c-94c4-4c01-bcd0-fa099ec77472
 # ╠═26fba730-d8f8-4ddf-af10-073cb6efb84f
 # ╠═109bbdad-5af1-4bab-aacb-058667137f4c
-# ╠═a37bec27-8e38-4b6f-a7d2-b44a1dd72e53
 # ╠═62172ef1-b56b-4f5d-ad6a-3b36e142fb2e
 # ╠═14b94f98-d03f-4b46-b608-e0d9b7dc22cf
 # ╠═618d232b-d236-40a9-8ee1-5983934d325f
