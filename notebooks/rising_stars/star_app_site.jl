@@ -27,7 +27,8 @@ $(color("red", "Zero letters"))
 function write_response!(report, row::DataFrameRow)
 	for (fieldname, field) in zip(names(row), row)
 		if occursin("http", string(field))
-			push!(report, cm"**$(fieldname)**: [view]($(field))")
+			# https://github.com/JuliaLang/julia/issues/38298
+			push!(report, Markdown.parse("**$(fieldname)**: [view]($(field))"))
 		else
 			push!(report, cm"**$(fieldname)**: $(field)")
 		end
@@ -36,8 +37,8 @@ end;
 
 # ╔═╡ 109bbdad-5af1-4bab-aacb-058667137f4c
 function write_response!(report, student_name, df::DataFrame)
-	_buf = []
 	for (i, row) in enumerate(eachrow(df))
+		_buf = []
 		write_response!(_buf, row)
 		push!(report, details("Reference #$(i)", _buf))
 	end
@@ -64,6 +65,7 @@ end;
 let
 	report = []
 	student_ref_names = df_ref.:"Student name"
+	lock = 0
 	for row in eachrow(df_app)
 		# Check for reference letters
 		student_name = row.:"First name"
@@ -83,7 +85,7 @@ let
 		write_response!(report, row)
 		
 		# Write reference letters
-		if any(student_name .⊆ student_ref_names) 
+		if any(student_name .⊆ student_ref_names)
 			write_response!(report, student_name, df_ref_match)
 		end
 	end
