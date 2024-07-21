@@ -18,8 +18,44 @@ end
 begin
 	using CSV, DataFramesMeta, CategoricalArrays, Dates
 	using CairoMakie, AlgebraOfGraphics
+	using AlgebraOfGraphics: opensans, firasans
 	using PlutoUI
 end
+
+# ╔═╡ 974dbb8b-3198-48f3-84f8-dfb78efcb2ce
+md"""
+# Program Experience Survey 🪐
+
+Year: $(@bind program_year Select([2023, 2024]; default=2024))
+"""
+
+# ╔═╡ 286bffce-f63a-4c40-b720-70376c086f73
+md"""
+## Student
+"""
+
+# ╔═╡ 20146b67-290e-4bcd-8a1e-8a1811312e7f
+md"""
+## Tutor
+"""
+
+# ╔═╡ 22781208-ab90-4008-81df-73f01b4aeaf3
+md"""
+## Grade improvement
+"""
+
+# ╔═╡ 20876724-4ad4-436f-a040-354ccc9363c0
+md"""
+## Student growth
+
+Please comment on the student's growth while participating in the Onaketa tutoring program.
+
+"""
+
+# ╔═╡ 6a904735-680b-40f6-b4dc-e1b0e7f41d4d
+md"""
+## Data handling
+"""
 
 # ╔═╡ 32d109dd-0969-4959-8a69-9029fb7bbe9b
 df_all = let
@@ -32,29 +68,33 @@ df_all = let
 	# end
 end
 
-# ╔═╡ 95576397-04c6-4369-8886-1d89b3a4a6d8
-@bind program_year Select([2023, 2024]; default=2024)
-
 # ╔═╡ a33073ea-6919-4a11-aaa4-e229534d259f
 df = @rsubset df_all year(:"Submitted at") == program_year;
-
-# ╔═╡ 20146b67-290e-4bcd-8a1e-8a1811312e7f
-md"""
-## Tutor
-"""
-
-# ╔═╡ c0165c11-76c4-436d-bb30-ff2b76638a22
-df_sentiment_tutor = @select df $(r"(The|this) tutor");
-
-# ╔═╡ 286bffce-f63a-4c40-b720-70376c086f73
-md"""
-## Student
-"""
 
 # ╔═╡ 0da528e1-22fe-4d6b-849c-df0f10e98dce
 df_sentiment_student = @select df $(r"(The|this) student");
 
-# ╔═╡ 2f415676-cf34-4c4c-8464-6b84d4289b5a
+# ╔═╡ c0165c11-76c4-436d-bb30-ff2b76638a22
+df_sentiment_tutor = @select df $(r"(The|this) tutor");
+
+# ╔═╡ 97c216ef-9e5f-4117-b9b2-d066dbb67430
+let
+	gdf = groupby(df, :"Tutor's name"; sort=true)
+	for df in gdf
+		for comment in eachrow(df)
+			@debug(comment.:"Student's name",
+				tutor = comment.:"Tutor's name",
+				guardian = comment.:"Guardian name",
+				response = comment.:"Please comment on the student's growth while participating in the Onaketa tutoring program."
+			)
+		end
+	end
+end
+
+# ╔═╡ ab41886e-2a3e-4f2f-9ad7-97f4a5be04d8
+student_growth_comments = df.:"Please comment on the student's growth while participating in the Onaketa tutoring program.";
+
+# ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
 md"""
 ### Helper functions
 """
@@ -67,6 +107,13 @@ const sentiment_levels = [
 	"Agree",
 	"Strongly Agree",
 ]
+
+# ╔═╡ 54c3853c-1b09-4155-9c62-660f23363699
+const grade_map = let
+	d = Dict(string(g) => i for (i, g) in enumerate('A':'F'))
+	d["N/A"] = 7
+	d
+end
 
 # ╔═╡ 334320f5-1684-4e03-a927-a4469a7ece1d
 sentiment_mat(df, sentiment_levels) = stack(
@@ -102,28 +149,11 @@ function sentiment_plot(df, sentiment_levels)
 	fig
 end
 
-# ╔═╡ 4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
-sentiment_plot(df_sentiment_tutor, sentiment_levels)
-
 # ╔═╡ 13e2d0f5-0a47-4468-8b04-d59bcba62183
 sentiment_plot(df_sentiment_student, sentiment_levels)
 
-# ╔═╡ 22781208-ab90-4008-81df-73f01b4aeaf3
-md"""
-## Grade improvement
-"""
-
-# ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
-md"""
-### Helper functions
-"""
-
-# ╔═╡ 54c3853c-1b09-4155-9c62-660f23363699
-grade_map = let
-	d = Dict(string(g) => i for (i, g) in enumerate('A':'F'))
-	d["N/A"] = 7
-	d
-end
+# ╔═╡ 4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+sentiment_plot(df_sentiment_tutor, sentiment_levels)
 
 # ╔═╡ 61625f08-5745-46a1-96e4-d7e8b808f92e
 function grade2num(g)
@@ -133,6 +163,14 @@ function grade2num(g)
 		return 7
 	end
 end
+
+# ╔═╡ 3ce94b2d-c777-410b-b6e2-e32159beb105
+md"""
+## Notebook setup 🔧
+"""
+
+# ╔═╡ 3f27256a-ffd8-42bf-81b8-0e00ef38d736
+const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"])
 
 # ╔═╡ f25405a1-e857-4f88-a904-34f684b7dc29
 let
@@ -144,33 +182,26 @@ let
 		histogram(; bins=6)
 
 	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
-	colormap = cgrad([colorant"white", colorant"#ec008c"], 5; categorical=true)
-	draw(plt, scales(Color = (; colormap, colorrange=(-0.5, 4.5))); axis=(; xticks=xyaxis, yticks=xyaxis))
+	colormap = cgrad(onaketa_cmap, 5; categorical=true)
+	draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
+		axis = (; xticks=xyaxis, yticks=xyaxis),
+	)
 end
-
-# ╔═╡ 3ce94b2d-c777-410b-b6e2-e32159beb105
-md"""
-### Notebook setup
-"""
-
-# ╔═╡ 7055c674-75c7-4409-9bc8-872b747c3ff6
-TableOfContents()
-
-# ╔═╡ 61e9517e-dd23-4d00-bde2-446ce985bace
-const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"]);
-
-# ╔═╡ 4cee869c-ec2d-45b8-a4b9-c4233bd60051
-# const onaketa_cmap = cgrad(:cividis, categorical=true)
 
 # ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
 begin
-	set_theme!(theme_light())
+	# set_theme!(theme_light())
+	set_aog_theme!()
 	update_theme!(
-		Text = (; word_wrap_width=150, justification=:right),
+		Text = (; word_wrap_width=180, justification=:right, font=firasans("Regular")),
 		# Axis = (; xticksvisible=true, yticksvisible=true),
 		Heatmap = (; colormap=onaketa_cmap),
+		Colorbar = (; flip_vertical_label = false),
 	)
 end
+
+# ╔═╡ 7055c674-75c7-4409-9bc8-872b747c3ff6
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1797,29 +1828,31 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
-# ╟─95576397-04c6-4369-8886-1d89b3a4a6d8
-# ╠═a33073ea-6919-4a11-aaa4-e229534d259f
-# ╟─20146b67-290e-4bcd-8a1e-8a1811312e7f
-# ╠═c0165c11-76c4-436d-bb30-ff2b76638a22
-# ╟─4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+# ╟─974dbb8b-3198-48f3-84f8-dfb78efcb2ce
 # ╟─286bffce-f63a-4c40-b720-70376c086f73
-# ╠═0da528e1-22fe-4d6b-849c-df0f10e98dce
 # ╟─13e2d0f5-0a47-4468-8b04-d59bcba62183
-# ╟─2f415676-cf34-4c4c-8464-6b84d4289b5a
-# ╟─bb271e73-275c-46f9-b19a-12a2eebd8e7d
-# ╟─334320f5-1684-4e03-a927-a4469a7ece1d
-# ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
+# ╟─0da528e1-22fe-4d6b-849c-df0f10e98dce
+# ╟─20146b67-290e-4bcd-8a1e-8a1811312e7f
+# ╟─4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+# ╟─c0165c11-76c4-436d-bb30-ff2b76638a22
 # ╟─22781208-ab90-4008-81df-73f01b4aeaf3
 # ╟─f25405a1-e857-4f88-a904-34f684b7dc29
+# ╟─20876724-4ad4-436f-a040-354ccc9363c0
+# ╟─97c216ef-9e5f-4117-b9b2-d066dbb67430
+# ╟─ab41886e-2a3e-4f2f-9ad7-97f4a5be04d8
+# ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
+# ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
+# ╠═a33073ea-6919-4a11-aaa4-e229534d259f
 # ╟─58db40e9-a478-4807-bb68-247c91b1a351
+# ╟─bb271e73-275c-46f9-b19a-12a2eebd8e7d
 # ╟─54c3853c-1b09-4155-9c62-660f23363699
+# ╟─334320f5-1684-4e03-a927-a4469a7ece1d
+# ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
 # ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
-# ╠═7055c674-75c7-4409-9bc8-872b747c3ff6
-# ╠═61e9517e-dd23-4d00-bde2-446ce985bace
-# ╠═4cee869c-ec2d-45b8-a4b9-c4233bd60051
-# ╠═8b48c3dc-46d6-11ef-091b-4b11496a509e
+# ╠═3f27256a-ffd8-42bf-81b8-0e00ef38d736
 # ╠═a9bceafd-010a-4393-af7f-982008af28bc
+# ╠═7055c674-75c7-4409-9bc8-872b747c3ff6
+# ╠═8b48c3dc-46d6-11ef-091b-4b11496a509e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
