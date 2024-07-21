@@ -56,33 +56,61 @@ end
 # ╔═╡ a33073ea-6919-4a11-aaa4-e229534d259f
 df = @rsubset df_all year(:"Submitted at") == program_year;
 
-# ╔═╡ 227218c0-ddc1-417e-9739-8c6b7f3b91c2
-names(df)
+# ╔═╡ 20146b67-290e-4bcd-8a1e-8a1811312e7f
+md"""
+## Tutor
+"""
 
 # ╔═╡ c0165c11-76c4-436d-bb30-ff2b76638a22
-df_sentiment_tutor = @select df $(r"(The|this) tutor")
+df_sentiment_tutor = @select df $(r"(The|this) tutor");
 
-# ╔═╡ 371d23f7-2dcc-4129-9f21-efd3c52bf74a
-Z = stack([count.(==(sentiment), eachcol(df_sentiment_tutor)) for sentiment in sentiment_levels]; dims=1)
+# ╔═╡ 286bffce-f63a-4c40-b720-70376c086f73
+md"""
+## Student
+"""
+
+# ╔═╡ 0da528e1-22fe-4d6b-849c-df0f10e98dce
+df_sentiment_student = @select df $(r"(The|this) student")
+
+# ╔═╡ 334320f5-1684-4e03-a927-a4469a7ece1d
+sentiment_mat(df, sentiment_levels) = stack(
+	[
+		count.(==(sentiment), eachcol(df))
+		for sentiment in sentiment_levels
+	]; dims=1
+)
 
 # ╔═╡ c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
-let
-	fig = Figure(size = (800, 1200))
-	ax = Axis(fig[1, 1]; yreversed=true)
-	hm = heatmap!(ax, Z)
+function sentiment_plot(df, sentiment_levels)
+	Z = sentiment_mat(df, sentiment_levels)
+	
+	fig, ax, hm = heatmap(Z; colormap=:cividis)
 
 	ax.xticks = (eachindex(sentiment_levels), sentiment_levels)
-	ax.yticks = (eachindex(names(df_sentiment_tutor)), names(df_sentiment_tutor))
+	prompts = names(df_sentiment_tutor)
+	ax.yticks = (eachindex(prompts), prompts)
+	ax.yreversed = true
+	
 	Colorbar(fig[1, 2], hm; label=rich("Number of responses"))
-	N_prompts = sum(@view(Z[:, 1]))
+	
+	N_responses = sum(@view(Z[:, 1]))
 	for (coord, val) in pairs(Z)
-		sentiment_percent = round(Int, 100 * val / N_prompts)
+		sentiment_percent = round(Int, 100 * val / N_responses)
 		txt = "$(val) ($(sentiment_percent) %)"
-		text!(ax, txt; position=Tuple(coord), align=(:center, :center), justification=:center)
+		txtcolor = sentiment_percent < 50 ? :white : :black
+		text!(ax, txt; color=txtcolor, position=Tuple(coord), align=(:center, :center), justification=:center)
 	end
 	
+	resize!(fig.scene, (800, 1200))
+
 	fig
 end
+
+# ╔═╡ 4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+sentiment_plot(df_sentiment_tutor, sentiment_levels)
+
+# ╔═╡ 13e2d0f5-0a47-4468-8b04-d59bcba62183
+sentiment_plot(df_sentiment_student, sentiment_levels)
 
 # ╔═╡ f47e395e-8699-4dfc-8224-310e09b9331e
 # begin
@@ -1672,10 +1700,14 @@ version = "3.5.0+0"
 # ╠═32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╟─95576397-04c6-4369-8886-1d89b3a4a6d8
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
-# ╠═227218c0-ddc1-417e-9739-8c6b7f3b91c2
+# ╟─20146b67-290e-4bcd-8a1e-8a1811312e7f
 # ╠═c0165c11-76c4-436d-bb30-ff2b76638a22
-# ╠═371d23f7-2dcc-4129-9f21-efd3c52bf74a
-# ╠═c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
+# ╠═4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+# ╟─286bffce-f63a-4c40-b720-70376c086f73
+# ╠═0da528e1-22fe-4d6b-849c-df0f10e98dce
+# ╟─13e2d0f5-0a47-4468-8b04-d59bcba62183
+# ╟─334320f5-1684-4e03-a927-a4469a7ece1d
+# ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╠═f47e395e-8699-4dfc-8224-310e09b9331e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
