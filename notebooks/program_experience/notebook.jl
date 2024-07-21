@@ -17,21 +17,9 @@ end
 # ╔═╡ 8b48c3dc-46d6-11ef-091b-4b11496a509e
 begin
 	using CSV, DataFramesMeta, CategoricalArrays, Dates
-	using CairoMakie
+	using CairoMakie, AlgebraOfGraphics
 	using PlutoUI
 end
-
-# ╔═╡ 6937c637-dd6f-4d89-aed7-2e1e4300b370
-using AlgebraOfGraphics
-
-# ╔═╡ bb271e73-275c-46f9-b19a-12a2eebd8e7d
-const sentiment_levels = [
-	"Strongly Disagree",
-	"Disagree",
-	"Neutral",
-	"Agree",
-	"Strongly Agree",
-]
 
 # ╔═╡ 32d109dd-0969-4959-8a69-9029fb7bbe9b
 df_all = let
@@ -64,25 +52,21 @@ md"""
 """
 
 # ╔═╡ 0da528e1-22fe-4d6b-849c-df0f10e98dce
-df_sentiment_student = @select df $(r"(The|this) student")
-
-# ╔═╡ 61e9517e-dd23-4d00-bde2-446ce985bace
-const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"]);
-
-# ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
-begin
-	set_theme!(theme_light())
-	update_theme!(
-		Text = (; word_wrap_width=150, justification=:right),
-		# Axis = (; xticksvisible=true, yticksvisible=true),
-		Heatmap = (; colormap=onaketa_cmap),
-	)
-end
+df_sentiment_student = @select df $(r"(The|this) student");
 
 # ╔═╡ 2f415676-cf34-4c4c-8464-6b84d4289b5a
 md"""
 ### Helper functions
 """
+
+# ╔═╡ bb271e73-275c-46f9-b19a-12a2eebd8e7d
+const sentiment_levels = [
+	"Strongly Disagree",
+	"Disagree",
+	"Neutral",
+	"Agree",
+	"Strongly Agree",
+]
 
 # ╔═╡ 334320f5-1684-4e03-a927-a4469a7ece1d
 sentiment_mat(df, sentiment_levels) = stack(
@@ -103,7 +87,7 @@ function sentiment_plot(df, sentiment_levels)
 	ax.yticks = (eachindex(prompts), prompts)
 	ax.yreversed = true
 	
-	Colorbar(fig[1, 2], hm; label=rich("Number of responses"))
+	# Colorbar(fig[1, 2], hm; label=rich("Number of responses"))
 	
 	N_responses = sum(@view(Z[:, 1]))
 	for (coord, val) in pairs(Z)
@@ -129,35 +113,26 @@ md"""
 ## Grade improvement
 """
 
-# ╔═╡ 83bd3258-f117-4e39-922b-43c6c4b32fed
-x1 = df.:"Starting grade in course"
+# ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
+md"""
+### Helper functions
+"""
 
-# ╔═╡ 3bc64f91-5317-42bb-84d3-dfbd6592172f
-x2 = df.:"Ending grade in course"
-
-# ╔═╡ 362309e2-87d2-44ed-8738-3461af26835d
-yee = @chain df begin
-	@select :"Starting grade in course" :"Ending grade in course"
-	stack(All())
+# ╔═╡ 54c3853c-1b09-4155-9c62-660f23363699
+grade_map = let
+	d = Dict(string(g) => i for (i, g) in enumerate('A':'F'))
+	d["N/A"] = 7
+	d
 end
-
-# ╔═╡ e4aa49ea-0e93-45d7-99d9-7bea726924de
-yuh = Dict(
-	string(g) => i
-	for (i, g) in enumerate('A':'F')
-)
 
 # ╔═╡ 61625f08-5745-46a1-96e4-d7e8b808f92e
 function grade2num(g)
-	if haskey(yuh, g)
-		return yuh[g]
+	if haskey(grade_map, g)
+		return grade_map[g]
 	else
 		return 7
 	end
 end
-
-# ╔═╡ dfd8692e-2812-4724-b368-0787aed3f5a2
-df.:"Starting grade in course" .|> grade2num
 
 # ╔═╡ f25405a1-e857-4f88-a904-34f684b7dc29
 let
@@ -169,14 +144,33 @@ let
 		histogram(; bins=6)
 
 	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
-	draw(plt, scales(Color = (; colormap = onaketa_cmap)); axis=(; xticks=xyaxis, yticks=xyaxis))
+	colormap = cgrad([colorant"white", colorant"#ec008c"], 5; categorical=true)
+	draw(plt, scales(Color = (; colormap, colorrange=(-0.5, 4.5))); axis=(; xticks=xyaxis, yticks=xyaxis))
 end
 
-# ╔═╡ ca92c378-202e-4d1f-9efb-66103427e6ef
-df.:"Starting grade in course" .|> grade2num
+# ╔═╡ 3ce94b2d-c777-410b-b6e2-e32159beb105
+md"""
+### Notebook setup
+"""
 
-# ╔═╡ aee68623-d385-4fe3-9e20-85805893920e
-df.:"Ending grade in course" .|> grade2num
+# ╔═╡ 7055c674-75c7-4409-9bc8-872b747c3ff6
+TableOfContents()
+
+# ╔═╡ 61e9517e-dd23-4d00-bde2-446ce985bace
+const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"]);
+
+# ╔═╡ 4cee869c-ec2d-45b8-a4b9-c4233bd60051
+# const onaketa_cmap = cgrad(:cividis, categorical=true)
+
+# ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
+begin
+	set_theme!(theme_light())
+	update_theme!(
+		Text = (; word_wrap_width=150, justification=:right),
+		# Axis = (; xticksvisible=true, yticksvisible=true),
+		Heatmap = (; colormap=onaketa_cmap),
+	)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1803,32 +1797,29 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═8b48c3dc-46d6-11ef-091b-4b11496a509e
-# ╠═a9bceafd-010a-4393-af7f-982008af28bc
-# ╠═bb271e73-275c-46f9-b19a-12a2eebd8e7d
-# ╠═32d109dd-0969-4959-8a69-9029fb7bbe9b
+# ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╟─95576397-04c6-4369-8886-1d89b3a4a6d8
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
 # ╟─20146b67-290e-4bcd-8a1e-8a1811312e7f
 # ╠═c0165c11-76c4-436d-bb30-ff2b76638a22
-# ╠═4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
+# ╟─4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
 # ╟─286bffce-f63a-4c40-b720-70376c086f73
 # ╠═0da528e1-22fe-4d6b-849c-df0f10e98dce
-# ╠═13e2d0f5-0a47-4468-8b04-d59bcba62183
-# ╠═61e9517e-dd23-4d00-bde2-446ce985bace
+# ╟─13e2d0f5-0a47-4468-8b04-d59bcba62183
 # ╟─2f415676-cf34-4c4c-8464-6b84d4289b5a
+# ╟─bb271e73-275c-46f9-b19a-12a2eebd8e7d
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
-# ╠═c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
+# ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─22781208-ab90-4008-81df-73f01b4aeaf3
-# ╠═83bd3258-f117-4e39-922b-43c6c4b32fed
-# ╠═3bc64f91-5317-42bb-84d3-dfbd6592172f
-# ╠═362309e2-87d2-44ed-8738-3461af26835d
-# ╠═e4aa49ea-0e93-45d7-99d9-7bea726924de
-# ╠═61625f08-5745-46a1-96e4-d7e8b808f92e
-# ╠═dfd8692e-2812-4724-b368-0787aed3f5a2
-# ╠═f25405a1-e857-4f88-a904-34f684b7dc29
-# ╠═ca92c378-202e-4d1f-9efb-66103427e6ef
-# ╠═aee68623-d385-4fe3-9e20-85805893920e
-# ╠═6937c637-dd6f-4d89-aed7-2e1e4300b370
+# ╟─f25405a1-e857-4f88-a904-34f684b7dc29
+# ╟─58db40e9-a478-4807-bb68-247c91b1a351
+# ╟─54c3853c-1b09-4155-9c62-660f23363699
+# ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
+# ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
+# ╠═7055c674-75c7-4409-9bc8-872b747c3ff6
+# ╠═61e9517e-dd23-4d00-bde2-446ce985bace
+# ╠═4cee869c-ec2d-45b8-a4b9-c4233bd60051
+# ╠═8b48c3dc-46d6-11ef-091b-4b11496a509e
+# ╠═a9bceafd-010a-4393-af7f-982008af28bc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
