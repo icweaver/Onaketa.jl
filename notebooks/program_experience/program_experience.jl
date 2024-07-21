@@ -66,7 +66,7 @@ Do you have any specific suggestions for improvement in the future?
 
 # ╔═╡ f7b469bf-fc0e-4c39-a9f8-22309b00b32d
 md"""
-## Additional feedback
+### Additional feedback
 Please share any other feedback/comments you have here.
 
 """
@@ -168,7 +168,7 @@ function sentiment_plot(df, sentiment_levels)
 		text!(ax, txt; color=txtcolor, position=Tuple(coord), align=(:center, :center), justification=:center)
 	end
 	
-	resize!(fig.scene, (800, 1200))
+	resize!(fig.scene, (800, 1100))
 
 	fig
 end
