@@ -21,14 +21,8 @@ begin
 	using PlutoUI
 end
 
-# ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
-begin
-	set_theme!(theme_light())
-	update_theme!(
-		Text = (; word_wrap_width=150, justification=:right),
-		Axis = (; xticksvisible=true, yticksvisible=true),
-	)
-end
+# ╔═╡ 6937c637-dd6f-4d89-aed7-2e1e4300b370
+using AlgebraOfGraphics
 
 # ╔═╡ bb271e73-275c-46f9-b19a-12a2eebd8e7d
 const sentiment_levels = [
@@ -72,6 +66,24 @@ md"""
 # ╔═╡ 0da528e1-22fe-4d6b-849c-df0f10e98dce
 df_sentiment_student = @select df $(r"(The|this) student")
 
+# ╔═╡ 61e9517e-dd23-4d00-bde2-446ce985bace
+const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"]);
+
+# ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
+begin
+	set_theme!(theme_light())
+	update_theme!(
+		Text = (; word_wrap_width=150, justification=:right),
+		# Axis = (; xticksvisible=true, yticksvisible=true),
+		Heatmap = (; colormap=onaketa_cmap),
+	)
+end
+
+# ╔═╡ 2f415676-cf34-4c4c-8464-6b84d4289b5a
+md"""
+### Helper functions
+"""
+
 # ╔═╡ 334320f5-1684-4e03-a927-a4469a7ece1d
 sentiment_mat(df, sentiment_levels) = stack(
 	[
@@ -84,10 +96,10 @@ sentiment_mat(df, sentiment_levels) = stack(
 function sentiment_plot(df, sentiment_levels)
 	Z = sentiment_mat(df, sentiment_levels)
 	
-	fig, ax, hm = heatmap(Z; colormap=:cividis)
+	fig, ax, hm = heatmap(Z)
 
 	ax.xticks = (eachindex(sentiment_levels), sentiment_levels)
-	prompts = names(df_sentiment_tutor)
+	prompts = names(df)
 	ax.yticks = (eachindex(prompts), prompts)
 	ax.yreversed = true
 	
@@ -97,7 +109,7 @@ function sentiment_plot(df, sentiment_levels)
 	for (coord, val) in pairs(Z)
 		sentiment_percent = round(Int, 100 * val / N_responses)
 		txt = "$(val) ($(sentiment_percent) %)"
-		txtcolor = sentiment_percent < 50 ? :white : :black
+		txtcolor = sentiment_percent < 50 ? :black : :white
 		text!(ax, txt; color=txtcolor, position=Tuple(coord), align=(:center, :center), justification=:center)
 	end
 	
@@ -112,19 +124,64 @@ sentiment_plot(df_sentiment_tutor, sentiment_levels)
 # ╔═╡ 13e2d0f5-0a47-4468-8b04-d59bcba62183
 sentiment_plot(df_sentiment_student, sentiment_levels)
 
-# ╔═╡ f47e395e-8699-4dfc-8224-310e09b9331e
-# begin
-# 	plt = data(df_sentiment_tutor) * mapping(:x) *
-# 		frequency()
-# 		# visual(; bar_labels=:y, direction=:y)
-	
-# 	# draw(plt, scales(x = (; categories=sentiment_levels)))
-# 	draw(plt)
-# end
+# ╔═╡ 22781208-ab90-4008-81df-73f01b4aeaf3
+md"""
+## Grade improvement
+"""
+
+# ╔═╡ 83bd3258-f117-4e39-922b-43c6c4b32fed
+x1 = df.:"Starting grade in course"
+
+# ╔═╡ 3bc64f91-5317-42bb-84d3-dfbd6592172f
+x2 = df.:"Ending grade in course"
+
+# ╔═╡ 362309e2-87d2-44ed-8738-3461af26835d
+yee = @chain df begin
+	@select :"Starting grade in course" :"Ending grade in course"
+	stack(All())
+end
+
+# ╔═╡ e4aa49ea-0e93-45d7-99d9-7bea726924de
+yuh = Dict(
+	string(g) => i
+	for (i, g) in enumerate('A':'F')
+)
+
+# ╔═╡ 61625f08-5745-46a1-96e4-d7e8b808f92e
+function grade2num(g)
+	if haskey(yuh, g)
+		return yuh[g]
+	else
+		return 7
+	end
+end
+
+# ╔═╡ dfd8692e-2812-4724-b368-0787aed3f5a2
+df.:"Starting grade in course" .|> grade2num
+
+# ╔═╡ f25405a1-e857-4f88-a904-34f684b7dc29
+let
+	plt = data(df) *
+		mapping(
+			:"Starting grade in course" => grade2num,
+			:"Ending grade in course" => grade2num,
+		) *
+		histogram(; bins=6)
+
+	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
+	draw(plt, scales(Color = (; colormap = onaketa_cmap)); axis=(; xticks=xyaxis, yticks=xyaxis))
+end
+
+# ╔═╡ ca92c378-202e-4d1f-9efb-66103427e6ef
+df.:"Starting grade in course" .|> grade2num
+
+# ╔═╡ aee68623-d385-4fe3-9e20-85805893920e
+df.:"Ending grade in course" .|> grade2num
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
@@ -133,6 +190,7 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
+AlgebraOfGraphics = "~0.7.1"
 CSV = "~0.10.14"
 CairoMakie = "~0.12.5"
 CategoricalArrays = "~0.10.8"
@@ -146,7 +204,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "82bcb72dc73c951ddf92c17c87bf7c0fdeced621"
+project_hash = "1fd4808bda8fe7e2e362bac3e99134e07f1cfa90"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -179,6 +237,12 @@ weakdeps = ["StaticArrays"]
 
     [deps.Adapt.extensions]
     AdaptStaticArraysExt = "StaticArrays"
+
+[[deps.AlgebraOfGraphics]]
+deps = ["Colors", "Dates", "Dictionaries", "FileIO", "GLM", "GeoInterface", "GeometryBasics", "GridLayoutBase", "Isoband", "KernelDensity", "Loess", "Makie", "PlotUtils", "PolygonOps", "PooledArrays", "PrecompileTools", "RelocatableFolders", "StatsBase", "StructArrays", "Tables"]
+git-tree-sha1 = "d7bf50b7e8bb71959c65e4f8cf05ba28f4977a76"
+uuid = "cbdf2221-f076-402e-a563-3d30da359d67"
+version = "0.7.1"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -417,6 +481,23 @@ git-tree-sha1 = "078c716cbb032242df18b960e8b1fec6b1b0b9f9"
 uuid = "927a84f5-c5f4-47a5-9785-b46e178433df"
 version = "1.0.5"
 
+[[deps.Dictionaries]]
+deps = ["Indexing", "Random", "Serialization"]
+git-tree-sha1 = "35b66b6744b2d92c778afd3a88d2571875664a2a"
+uuid = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
+version = "0.4.2"
+
+[[deps.Distances]]
+deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "66c4c81f259586e8f002eacebc177e1fb06363b0"
+uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+version = "0.10.11"
+weakdeps = ["ChainRulesCore", "SparseArrays"]
+
+    [deps.Distances.extensions]
+    DistancesChainRulesCoreExt = "ChainRulesCore"
+    DistancesSparseArraysExt = "SparseArrays"
+
 [[deps.Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
@@ -578,6 +659,12 @@ version = "1.0.14+0"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[deps.GLM]]
+deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
+git-tree-sha1 = "273bd1cd30768a2fddfa3fd63bbc746ed7249e5f"
+uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+version = "1.9.0"
+
 [[deps.GeoInterface]]
 deps = ["Extents"]
 git-tree-sha1 = "9fff8990361d5127b770e3454488360443019bb3"
@@ -690,6 +777,11 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "0936ba688c6d201805a83da835b55c61a180db52"
 uuid = "905a6f67-0a94-5f89-b386-d35d92009cd1"
 version = "3.1.11+0"
+
+[[deps.Indexing]]
+git-tree-sha1 = "ce1566720fd6b19ff3411404d4b977acd4814f9f"
+uuid = "313cdc1a-70c2-5d6a-ae34-0150d3930a38"
+version = "1.1.1"
 
 [[deps.IndirectArrays]]
 git-tree-sha1 = "012e604e1c7458645cb8b436f8fba789a51b257f"
@@ -919,6 +1011,12 @@ version = "2.40.1+0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[[deps.Loess]]
+deps = ["Distances", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "a113a8be4c6d0c64e217b472fb6e61c760eb4022"
+uuid = "4345ca2d-374a-55d4-8d30-97f9976e7612"
+version = "0.6.3"
 
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
@@ -1306,6 +1404,11 @@ version = "0.4.1"
 deps = ["Distributed", "Mmap", "Random", "Serialization"]
 uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
 
+[[deps.ShiftedArrays]]
+git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
+uuid = "1277b4bf-5013-50f5-be3d-901d8477a67a"
+version = "2.0.0"
+
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
 git-tree-sha1 = "91eddf657aca81df9ae6ceb20b959ae5653ad1de"
@@ -1406,6 +1509,12 @@ version = "1.3.1"
     [deps.StatsFuns.weakdeps]
     ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
     InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
+[[deps.StatsModels]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "ShiftedArrays", "SparseArrays", "StatsAPI", "StatsBase", "StatsFuns", "Tables"]
+git-tree-sha1 = "5cf6c4583533ee38639f73b880f35fc85f2941e0"
+uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
+version = "0.7.3"
 
 [[deps.StringManipulation]]
 deps = ["PrecompileTools"]
@@ -1705,9 +1814,21 @@ version = "3.5.0+0"
 # ╠═4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
 # ╟─286bffce-f63a-4c40-b720-70376c086f73
 # ╠═0da528e1-22fe-4d6b-849c-df0f10e98dce
-# ╟─13e2d0f5-0a47-4468-8b04-d59bcba62183
+# ╠═13e2d0f5-0a47-4468-8b04-d59bcba62183
+# ╠═61e9517e-dd23-4d00-bde2-446ce985bace
+# ╟─2f415676-cf34-4c4c-8464-6b84d4289b5a
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
-# ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
-# ╠═f47e395e-8699-4dfc-8224-310e09b9331e
+# ╠═c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
+# ╟─22781208-ab90-4008-81df-73f01b4aeaf3
+# ╠═83bd3258-f117-4e39-922b-43c6c4b32fed
+# ╠═3bc64f91-5317-42bb-84d3-dfbd6592172f
+# ╠═362309e2-87d2-44ed-8738-3461af26835d
+# ╠═e4aa49ea-0e93-45d7-99d9-7bea726924de
+# ╠═61625f08-5745-46a1-96e4-d7e8b808f92e
+# ╠═dfd8692e-2812-4724-b368-0787aed3f5a2
+# ╠═f25405a1-e857-4f88-a904-34f684b7dc29
+# ╠═ca92c378-202e-4d1f-9efb-66103427e6ef
+# ╠═aee68623-d385-4fe3-9e20-85805893920e
+# ╠═6937c637-dd6f-4d89-aed7-2e1e4300b370
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
