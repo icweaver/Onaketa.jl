@@ -89,8 +89,27 @@ df_sentiment_student = @select df $(r"(The|this) student");
 # ╔═╡ c0165c11-76c4-436d-bb30-ff2b76638a22
 df_sentiment_tutor = @select df $(r"(The|this) tutor");
 
-# ╔═╡ 5ff2517b-5edb-4851-9e19-41b44503cdaf
-df.:"Do you have any specific suggestions for improvement in the future?"
+# ╔═╡ 393addd2-5e4f-46bb-9bc7-3edbbcde9dd3
+let
+	# df = (
+	# 	x = ["Would use again", "Would use again", "Would use again"],
+	# 	y = ["Yes", "No", "Yes"],
+	# )
+	df = stack(df, [:"I would use Onaketa tutoring services again.", :"I would recommend Onaketa to other families.",])
+
+	order = sorter(["Yes", "Maybe", "No"])
+	
+	plt = data(df) *
+		mapping(:variable; color=:value => order, dodge=:value => order) *
+		frequency() *
+		visual(BarPlot; bar_labels=:y, label_size=12, label_formatter=Int)
+
+	palette = [colorant"#ec008c", colorant"#00aeef", :black]
+	draw(plt, scales(Color = (; palette)))
+	# draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
+	# 	axis = (; xticks=xyaxis, yticks=xyaxis),
+	# )
+end
 
 # ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
 md"""
@@ -1858,9 +1877,9 @@ version = "3.5.0+0"
 # ╟─20876724-4ad4-436f-a040-354ccc9363c0
 # ╟─5f488375-8136-4dc2-8bae-475df4b39579
 # ╟─74537f50-ff1f-4ee3-ba88-52ad5664ad42
+# ╟─393addd2-5e4f-46bb-9bc7-3edbbcde9dd3
 # ╟─c27ef82e-8c49-47d6-9330-06def33b641d
 # ╟─b5650c21-24a1-4fc6-9dc3-422d4e5bcff4
-# ╠═5ff2517b-5edb-4851-9e19-41b44503cdaf
 # ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 # ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
@@ -1870,7 +1889,7 @@ version = "3.5.0+0"
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
 # ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
-# ╠═97c216ef-9e5f-4117-b9b2-d066dbb67430
+# ╟─97c216ef-9e5f-4117-b9b2-d066dbb67430
 # ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
 # ╠═3f27256a-ffd8-42bf-81b8-0e00ef38d736
 # ╠═a9bceafd-010a-4393-af7f-982008af28bc
