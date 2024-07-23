@@ -32,11 +32,15 @@ Year: $(@bind program_year Select([2023, 2024]; default=2024))
 # ╔═╡ 286bffce-f63a-4c40-b720-70376c086f73
 md"""
 ## Student
+
+Rate how much you agree with the following statements since participating in the Onaketa tutoring program.
 """
 
 # ╔═╡ 20146b67-290e-4bcd-8a1e-8a1811312e7f
 md"""
 ## Tutor
+
+Rate how much you agree with following statements about your assigned tutor.
 """
 
 # ╔═╡ 22781208-ab90-4008-81df-73f01b4aeaf3
@@ -80,12 +84,33 @@ md"""
 ## Generate PDF
 """
 
+# ╔═╡ 2316717b-56e9-4a36-bccf-95dd854b94c3
+preamble = """
+#set page(numbering: "1 / 1", number-align: right)
+#set text(font: "TeX Gyre Schola")
+
+#let indent = pad.with(left: 1em)
+
+#show link: set text(blue, font: "New Computer Modern Mono")
+
+#show heading.where(level: 2): set text(rgb("#ec008c"))
+
+#show heading.where(level: 3): set text(blue)
+
+#grid(
+  columns: (2fr, 1fr),
+  [#text(17pt)[*Program Experience Survey Summary*]],
+  [#image("fig/logo.png")],
+)
+""";
+
 # ╔═╡ 409be906-38ac-494d-b4bf-4297e91b3ffe
 function response_text2(responses, df, response_field)
-	write(responses, "== $(response_field)\n")
+	write(responses, "$(response_field)\n")
 	gdf = groupby(df, :"Tutor's name"; sort=true)
 	for (nt, df) in pairs(gdf)
 		write(responses, "=== $(nt."Tutor's name")\n")
+		write(responses, "#indent[")
 		for row in eachrow(df)
 			# @debug(comment.:"Student's name",
 			# 	tutor = comment.:"Tutor's name",
@@ -101,6 +126,7 @@ function response_text2(responses, df, response_field)
 			"""
 			write(responses, response)
 		end
+		write(responses, "]\n")
 	end
 end
 
@@ -145,19 +171,37 @@ let
 		visual(BarPlot; bar_labels=:y, label_size=12, label_formatter=Int)
 
 	palette = [colorant"#ec008c", colorant"#00aeef", :black]
-	draw(plt, scales(Color = (; palette)))
+	
+	fig = draw(plt, scales(Color = (; palette)))
 	# draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
 	# 	axis = (; xticks=xyaxis, yticks=xyaxis),
 	# )
+
+	save("report/fig/program.svg", fig, px_per_unit=3)
+	fig
 end
 
 # ╔═╡ 50ef22c4-9319-4634-9e60-c034bde436c8
 let
 	open("report/program_experience.typ", "w") do report
+		write(report, preamble)
+
+		write(report, "== Student\nRate how much you agree with the following statements since participating in the Onaketa tutoring program.")
+		write(report, """#image("fig/student.svg", height:80%)\n""")
+
+		write(report, "== Tutor\nRate how much you agree with following statements about your assigned tutor.")
+		write(report, """#image("fig/tutor.svg", height:80%)\n""")
+
+		write(report, "#pagebreak()\n == Grade improvement")
+		write(report, """ #image("fig/grade.svg")\n""")
+		
+		write(report, "== Student growth\n")
 		response_text2(report, df, :"Please comment on the student's growth while participating in the Onaketa tutoring program.")
 
+		write(report, "== Suggested improvements\n")
 		response_text2(report, df, :"Do you have any specific suggestions for improvement in the future?")
 
+		write(report, "== Additional feedback\n")
 		response_text2(report, df, :"Please share any other feedback/comments you have here.")
 	end
 	run(typst`compile report/program_experience.typ`)
@@ -222,10 +266,18 @@ function sentiment_plot(df, sentiment_levels)
 end
 
 # ╔═╡ 13e2d0f5-0a47-4468-8b04-d59bcba62183
-sentiment_plot(df_sentiment_student, sentiment_levels)
+let
+	fig = sentiment_plot(df_sentiment_student, sentiment_levels)
+	save("report/fig/student.svg", fig, px_per_unit=3)
+	fig
+end
 
 # ╔═╡ 4715fb8c-7a1f-4826-b3e0-7f2ac8513cd6
-sentiment_plot(df_sentiment_tutor, sentiment_levels)
+let
+	fig = sentiment_plot(df_sentiment_tutor, sentiment_levels)
+	save("report/fig/tutor.svg", fig, px_per_unit=3)
+	fig
+end
 
 # ╔═╡ 61625f08-5745-46a1-96e4-d7e8b808f92e
 function grade2num(g)
@@ -247,9 +299,13 @@ let
 
 	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
 	colormap = cgrad(onaketa_cmap, 5; categorical=true)
-	draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
+	
+	fig = draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
 		axis = (; xticks=xyaxis, yticks=xyaxis),
 	)
+
+	save("report/fig/grade.svg", fig, px_per_unit=3)
+	fig
 end
 
 # ╔═╡ 97c216ef-9e5f-4117-b9b2-d066dbb67430
@@ -1973,6 +2029,7 @@ version = "3.5.0+0"
 # ╟─f7b469bf-fc0e-4c39-a9f8-22309b00b32d
 # ╟─82df7bcb-2bef-49f4-8205-92913751cefd
 # ╟─3027f51d-84a9-4d24-8470-8d9bb316ccb8
+# ╠═2316717b-56e9-4a36-bccf-95dd854b94c3
 # ╠═50ef22c4-9319-4634-9e60-c034bde436c8
 # ╠═409be906-38ac-494d-b4bf-4297e91b3ffe
 # ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
