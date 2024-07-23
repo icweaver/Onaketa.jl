@@ -19,7 +19,7 @@ begin
 	using CSV, DataFramesMeta, CategoricalArrays, Dates
 	using CairoMakie, AlgebraOfGraphics
 	using AlgebraOfGraphics: opensans, firasans
-	using PlutoUI, CommonMark
+	using PlutoUI, CommonMark, Typstry
 end
 
 # ╔═╡ 974dbb8b-3198-48f3-84f8-dfb78efcb2ce
@@ -74,6 +74,19 @@ Please share any other feedback/comments you have here.
 
 """
 
+# ╔═╡ 3027f51d-84a9-4d24-8470-8d9bb316ccb8
+md"""
+## Generate PDF
+"""
+
+# ╔═╡ 50ef22c4-9319-4634-9e60-c034bde436c8
+let
+	open("report/program_experience.typ", "w") do report
+		write(report, "Yo")
+	end
+	run(typst`compile report/program_experience.typ`)
+end
+
 # ╔═╡ 6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 md"""
 # Data handling
@@ -125,6 +138,9 @@ end
 md"""
 ### Helper functions
 """
+
+# ╔═╡ 3f27256a-ffd8-42bf-81b8-0e00ef38d736
+const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"])
 
 # ╔═╡ bb271e73-275c-46f9-b19a-12a2eebd8e7d
 const sentiment_levels = [
@@ -191,6 +207,22 @@ function grade2num(g)
 	end
 end
 
+# ╔═╡ f25405a1-e857-4f88-a904-34f684b7dc29
+let
+	plt = data(df) *
+		mapping(
+			:"Starting grade in course" => grade2num,
+			:"Ending grade in course" => grade2num,
+		) *
+		histogram(; bins=6)
+
+	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
+	colormap = cgrad(onaketa_cmap, 5; categorical=true)
+	draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
+		axis = (; xticks=xyaxis, yticks=xyaxis),
+	)
+end
+
 # ╔═╡ 97c216ef-9e5f-4117-b9b2-d066dbb67430
 function response_text(df, response_field)
 	responses = []
@@ -231,24 +263,8 @@ md"""
 ### Notebook setup 🔧
 """
 
-# ╔═╡ 3f27256a-ffd8-42bf-81b8-0e00ef38d736
-const onaketa_cmap = cgrad([colorant"white", colorant"#ec008c"])
-
-# ╔═╡ f25405a1-e857-4f88-a904-34f684b7dc29
-let
-	plt = data(df) *
-		mapping(
-			:"Starting grade in course" => grade2num,
-			:"Ending grade in course" => grade2num,
-		) *
-		histogram(; bins=6)
-
-	xyaxis = (1.5:7.5, vcat(string.('A':'F'), "N/A"))
-	colormap = cgrad(onaketa_cmap, 5; categorical=true)
-	draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
-		axis = (; xticks=xyaxis, yticks=xyaxis),
-	)
-end
+# ╔═╡ 7055c674-75c7-4409-9bc8-872b747c3ff6
+TableOfContents()
 
 # ╔═╡ a9bceafd-010a-4393-af7f-982008af28bc
 begin
@@ -262,9 +278,6 @@ begin
 	)
 end
 
-# ╔═╡ 7055c674-75c7-4409-9bc8-872b747c3ff6
-TableOfContents()
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -276,6 +289,7 @@ CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Typstry = "f0ed7684-a786-439e-b1e3-3b82803b501e"
 
 [compat]
 AlgebraOfGraphics = "~0.7.1"
@@ -285,6 +299,7 @@ CategoricalArrays = "~0.10.8"
 CommonMark = "~0.8.12"
 DataFramesMeta = "~0.15.3"
 PlutoUI = "~0.7.59"
+Typstry = "~0.2.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -293,7 +308,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "bebd8d4c061e79e05928b9dbad7e9f74e59ff957"
+project_hash = "e8e101fac5f03a0b272f27a3cceae74b02a92468"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -470,9 +485,9 @@ version = "0.4.0"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
-git-tree-sha1 = "4b270d6465eb21ae89b732182c20dc165f8bf9f2"
+git-tree-sha1 = "b5278586822443594ff615963b0c09755771b3e0"
 uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
-version = "3.25.0"
+version = "3.26.0"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -1707,6 +1722,18 @@ git-tree-sha1 = "4d4ed7f294cda19382ff7de4c137d24d16adc89b"
 uuid = "981d1d27-644d-49a2-9326-4793e63143c3"
 version = "0.1.0"
 
+[[deps.Typst_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "OpenSSL_jll"]
+git-tree-sha1 = "16173839e2c02d2e83994298431bf5921af4dcfb"
+uuid = "eb4b1da6-20f6-5c66-9826-fdb8ad410d0e"
+version = "0.11.0+0"
+
+[[deps.Typstry]]
+deps = ["Artifacts", "PrecompileTools", "Typst_jll"]
+git-tree-sha1 = "0752c3317207035b01c05b3963986375c321b54f"
+uuid = "f0ed7684-a786-439e-b1e3-3b82803b501e"
+version = "0.2.0"
+
 [[deps.URIs]]
 git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
@@ -1915,6 +1942,8 @@ version = "3.5.0+0"
 # ╟─b5650c21-24a1-4fc6-9dc3-422d4e5bcff4
 # ╟─f7b469bf-fc0e-4c39-a9f8-22309b00b32d
 # ╟─82df7bcb-2bef-49f4-8205-92913751cefd
+# ╟─3027f51d-84a9-4d24-8470-8d9bb316ccb8
+# ╠═50ef22c4-9319-4634-9e60-c034bde436c8
 # ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 # ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
