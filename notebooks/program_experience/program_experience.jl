@@ -193,7 +193,10 @@ let
 		write(report, """#image("fig/tutor.svg", height:80%)\n""")
 
 		write(report, "#pagebreak()\n == Grade improvement")
-		write(report, """ #image("fig/grade.svg")\n""")
+		write(report, """#image("fig/grade.svg", height:45%)\n""")
+		
+		write(report, "== Program overall")
+		write(report, """#image("fig/program.svg", height:45%)\n""")
 		
 		write(report, "== Student growth\n")
 		response_text2(report, df, :"Please comment on the student's growth while participating in the Onaketa tutoring program.")
@@ -205,7 +208,7 @@ let
 		response_text2(report, df, :"Please share any other feedback/comments you have here.")
 	end
 	run(typst`compile report/program_experience.typ`)
-end
+end;
 
 # ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
 md"""
@@ -2031,7 +2034,7 @@ version = "3.5.0+0"
 # ╟─3027f51d-84a9-4d24-8470-8d9bb316ccb8
 # ╠═2316717b-56e9-4a36-bccf-95dd854b94c3
 # ╠═50ef22c4-9319-4634-9e60-c034bde436c8
-# ╠═409be906-38ac-494d-b4bf-4297e91b3ffe
+# ╟─409be906-38ac-494d-b4bf-4297e91b3ffe
 # ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 # ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
