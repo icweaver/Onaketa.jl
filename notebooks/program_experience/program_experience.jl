@@ -214,7 +214,7 @@ function response_text(df, response_field)
 		end
 	end
 
-	return cm"$(Markdown.parse.(responses))"
+	return details("Expand", cm"$(Markdown.parse.(responses))")
 end
 
 # ╔═╡ 5f488375-8136-4dc2-8bae-475df4b39579
@@ -1924,7 +1924,7 @@ version = "3.5.0+0"
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
 # ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
-# ╠═97c216ef-9e5f-4117-b9b2-d066dbb67430
+# ╟─97c216ef-9e5f-4117-b9b2-d066dbb67430
 # ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
 # ╠═3f27256a-ffd8-42bf-81b8-0e00ef38d736
 # ╠═a9bceafd-010a-4393-af7f-982008af28bc
