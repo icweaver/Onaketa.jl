@@ -21,6 +21,7 @@ Color key:
 $(color("green", "Two letters")),
 $(color("goldenrod", "One letter")),
 $(color("red", "Zero letters"))
+---
 """
 
 # ╔═╡ 26fba730-d8f8-4ddf-af10-073cb6efb84f
@@ -583,7 +584,7 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
-# ╟─1b3d1813-af8f-42ee-926a-d91565100331
+# ╠═1b3d1813-af8f-42ee-926a-d91565100331
 # ╟─54453326-0746-4546-8526-2971956b9991
 # ╟─26fba730-d8f8-4ddf-af10-073cb6efb84f
 # ╟─109bbdad-5af1-4bab-aacb-058667137f4c

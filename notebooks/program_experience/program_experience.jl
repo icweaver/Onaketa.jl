@@ -42,6 +42,14 @@ md"""
 # ╔═╡ 22781208-ab90-4008-81df-73f01b4aeaf3
 md"""
 ## Grade improvement
+
+!!! todo
+	Add a midterm check-in for this information / start this process earlier in the year
+"""
+
+# ╔═╡ 74537f50-ff1f-4ee3-ba88-52ad5664ad42
+md"""
+## Program overall
 """
 
 # ╔═╡ 20876724-4ad4-436f-a040-354ccc9363c0
@@ -52,28 +60,23 @@ Please comment on the student's growth while participating in the Onaketa tutori
 
 """
 
-# ╔═╡ 74537f50-ff1f-4ee3-ba88-52ad5664ad42
-md"""
-## Program overall
-"""
-
 # ╔═╡ c27ef82e-8c49-47d6-9330-06def33b641d
 md"""
-### Improvements
+## Improvements
 
 Do you have any specific suggestions for improvement in the future?
 """
 
 # ╔═╡ f7b469bf-fc0e-4c39-a9f8-22309b00b32d
 md"""
-### Additional feedback
+## Additional feedback
 Please share any other feedback/comments you have here.
 
 """
 
 # ╔═╡ 6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 md"""
-## Data handling
+# Data handling
 """
 
 # ╔═╡ 32d109dd-0969-4959-8a69-9029fb7bbe9b
@@ -107,7 +110,7 @@ let
 	order = sorter(["Yes", "Maybe", "No"])
 	
 	plt = data(df) *
-		mapping(:variable; color=:value => order, dodge=:value => order) *
+		mapping(:variable => ""; color=:value => order => "", dodge=:value => order) *
 		frequency() *
 		visual(BarPlot; bar_labels=:y, label_size=12, label_formatter=Int)
 
@@ -213,7 +216,7 @@ response_text(df, :"Please share any other feedback/comments you have here.")
 
 # ╔═╡ 3ce94b2d-c777-410b-b6e2-e32159beb105
 md"""
-## Notebook setup 🔧
+### Notebook setup 🔧
 """
 
 # ╔═╡ 3f27256a-ffd8-42bf-81b8-0e00ef38d736
@@ -1884,10 +1887,10 @@ version = "3.5.0+0"
 # ╟─c0165c11-76c4-436d-bb30-ff2b76638a22
 # ╟─22781208-ab90-4008-81df-73f01b4aeaf3
 # ╟─f25405a1-e857-4f88-a904-34f684b7dc29
-# ╟─20876724-4ad4-436f-a040-354ccc9363c0
-# ╟─5f488375-8136-4dc2-8bae-475df4b39579
 # ╟─74537f50-ff1f-4ee3-ba88-52ad5664ad42
 # ╟─393addd2-5e4f-46bb-9bc7-3edbbcde9dd3
+# ╟─20876724-4ad4-436f-a040-354ccc9363c0
+# ╟─5f488375-8136-4dc2-8bae-475df4b39579
 # ╟─c27ef82e-8c49-47d6-9330-06def33b641d
 # ╟─b5650c21-24a1-4fc6-9dc3-422d4e5bcff4
 # ╟─f7b469bf-fc0e-4c39-a9f8-22309b00b32d
