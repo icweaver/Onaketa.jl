@@ -10,9 +10,6 @@ using DataFramesMeta, CSV, PlutoUI, Dates, CommonMark
 using MarkdownLiteral: @mdx
 end;
 
-# ╔═╡ 1b3d1813-af8f-42ee-926a-d91565100331
-color(c, text) = """<span style="color:$(c)">$(text)</span>""";
-
 # ╔═╡ 51a8d7aa-e9b2-4e1e-9223-934b5fd826f3
 cm"""
 # Rising stars applications 2024 🌠
@@ -23,6 +20,9 @@ $(color("goldenrod", "One letter")),
 $(color("red", "Zero letters"))
 ---
 """
+
+# ╔═╡ 1b3d1813-af8f-42ee-926a-d91565100331
+color(c, text) = """<span style="color:$(c)">$(text)</span>""";
 
 # ╔═╡ 26fba730-d8f8-4ddf-af10-073cb6efb84f
 function write_response!(report, row::DataFrameRow)

@@ -19,7 +19,7 @@ begin
 	using CSV, DataFramesMeta, CategoricalArrays, Dates
 	using CairoMakie, AlgebraOfGraphics
 	using AlgebraOfGraphics: opensans, firasans
-	using PlutoUI
+	using PlutoUI, CommonMark
 end
 
 # ╔═╡ 974dbb8b-3198-48f3-84f8-dfb78efcb2ce
@@ -193,16 +193,28 @@ end
 
 # ╔═╡ 97c216ef-9e5f-4117-b9b2-d066dbb67430
 function response_text(df, response_field)
+	responses = []
 	gdf = groupby(df, :"Tutor's name"; sort=true)
-	for df in gdf
-		for comment in eachrow(df)
-			@debug(comment.:"Student's name",
-				tutor = comment.:"Tutor's name",
-				guardian = comment.:"Guardian name",
-				response = comment[response_field],
-			)
+	for (nt, df) in pairs(gdf)
+		push!(responses, "### $(nt."Tutor's name")")
+		for row in eachrow(df)
+			# @debug(comment.:"Student's name",
+			# 	tutor = comment.:"Tutor's name",
+			# 	guardian = comment.:"Guardian name",
+			# 	response = comment[response_field],
+			# )
+			r = row[response_field]
+			guardian = row."Guardian name"
+			student = row."Student's name"
+			response = """
+			!!! note "$(student), $(guardian)"	
+				$(r)
+			"""
+			push!(responses, response)
 		end
 	end
+
+	return cm"$(Markdown.parse.(responses))"
 end
 
 # ╔═╡ 5f488375-8136-4dc2-8bae-475df4b39579
@@ -260,6 +272,7 @@ AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
+CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -269,6 +282,7 @@ AlgebraOfGraphics = "~0.7.1"
 CSV = "~0.10.14"
 CairoMakie = "~0.12.5"
 CategoricalArrays = "~0.10.8"
+CommonMark = "~0.8.12"
 DataFramesMeta = "~0.15.3"
 PlutoUI = "~0.7.59"
 """
@@ -279,7 +293,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "1fd4808bda8fe7e2e362bac3e99134e07f1cfa90"
+project_hash = "bebd8d4c061e79e05928b9dbad7e9f74e59ff957"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -481,6 +495,12 @@ deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "362a287c3aa50601b0bc359053d5c2468f0e7ce0"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.11"
+
+[[deps.CommonMark]]
+deps = ["Crayons", "JSON", "PrecompileTools", "URIs"]
+git-tree-sha1 = "532c4185d3c9037c0237546d817858b23cf9e071"
+uuid = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
+version = "0.8.12"
 
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
@@ -1904,7 +1924,7 @@ version = "3.5.0+0"
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
 # ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
-# ╟─97c216ef-9e5f-4117-b9b2-d066dbb67430
+# ╠═97c216ef-9e5f-4117-b9b2-d066dbb67430
 # ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
 # ╠═3f27256a-ffd8-42bf-81b8-0e00ef38d736
 # ╠═a9bceafd-010a-4393-af7f-982008af28bc
