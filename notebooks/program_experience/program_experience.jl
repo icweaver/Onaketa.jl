@@ -54,24 +54,25 @@ md"""
 
 # ╔═╡ 20876724-4ad4-436f-a040-354ccc9363c0
 md"""
-## Student growth
+## Written responses
+"""
 
+# ╔═╡ 281b5555-8cda-4625-b76b-14a1f4e5ef08
+md"""
+### Student growth
 Please comment on the student's growth while participating in the Onaketa tutoring program.
-
 """
 
 # ╔═╡ c27ef82e-8c49-47d6-9330-06def33b641d
 md"""
-## Improvements
-
+### Suggested improvements
 Do you have any specific suggestions for improvement in the future?
 """
 
 # ╔═╡ f7b469bf-fc0e-4c39-a9f8-22309b00b32d
 md"""
-## Additional feedback
+### Additional feedback
 Please share any other feedback/comments you have here.
-
 """
 
 # ╔═╡ 3027f51d-84a9-4d24-8470-8d9bb316ccb8
@@ -79,12 +80,28 @@ md"""
 ## Generate PDF
 """
 
-# ╔═╡ 50ef22c4-9319-4634-9e60-c034bde436c8
-let
-	open("report/program_experience.typ", "w") do report
-		write(report, "Yo")
+# ╔═╡ 409be906-38ac-494d-b4bf-4297e91b3ffe
+function response_text2(responses, df, response_field)
+	write(responses, "== $(response_field)\n")
+	gdf = groupby(df, :"Tutor's name"; sort=true)
+	for (nt, df) in pairs(gdf)
+		write(responses, "=== $(nt."Tutor's name")\n")
+		for row in eachrow(df)
+			# @debug(comment.:"Student's name",
+			# 	tutor = comment.:"Tutor's name",
+			# 	guardian = comment.:"Guardian name",
+			# 	response = comment[response_field],
+			# )
+			r = row[response_field]
+			guardian = row."Guardian name"
+			student = row."Student's name"
+			response = """
+			==== $(student), $(guardian)	
+			$(r)
+			"""
+			write(responses, response)
+		end
 	end
-	run(typst`compile report/program_experience.typ`)
 end
 
 # ╔═╡ 6a904735-680b-40f6-b4dc-e1b0e7f41d4d
@@ -132,6 +149,18 @@ let
 	# draw(plt, scales(Color=(; colormap, colorrange=(-0.5, 4.5)));
 	# 	axis = (; xticks=xyaxis, yticks=xyaxis),
 	# )
+end
+
+# ╔═╡ 50ef22c4-9319-4634-9e60-c034bde436c8
+let
+	open("report/program_experience.typ", "w") do report
+		response_text2(report, df, :"Please comment on the student's growth while participating in the Onaketa tutoring program.")
+
+		response_text2(report, df, :"Do you have any specific suggestions for improvement in the future?")
+
+		response_text2(report, df, :"Please share any other feedback/comments you have here.")
+	end
+	run(typst`compile report/program_experience.typ`)
 end
 
 # ╔═╡ 58db40e9-a478-4807-bb68-247c91b1a351
@@ -228,7 +257,7 @@ function response_text(df, response_field)
 	responses = []
 	gdf = groupby(df, :"Tutor's name"; sort=true)
 	for (nt, df) in pairs(gdf)
-		push!(responses, "### $(nt."Tutor's name")")
+		push!(responses, "#### $(nt."Tutor's name")")
 		for row in eachrow(df)
 			# @debug(comment.:"Student's name",
 			# 	tutor = comment.:"Tutor's name",
@@ -1937,6 +1966,7 @@ version = "3.5.0+0"
 # ╟─74537f50-ff1f-4ee3-ba88-52ad5664ad42
 # ╟─393addd2-5e4f-46bb-9bc7-3edbbcde9dd3
 # ╟─20876724-4ad4-436f-a040-354ccc9363c0
+# ╟─281b5555-8cda-4625-b76b-14a1f4e5ef08
 # ╟─5f488375-8136-4dc2-8bae-475df4b39579
 # ╟─c27ef82e-8c49-47d6-9330-06def33b641d
 # ╟─b5650c21-24a1-4fc6-9dc3-422d4e5bcff4
@@ -1944,6 +1974,7 @@ version = "3.5.0+0"
 # ╟─82df7bcb-2bef-49f4-8205-92913751cefd
 # ╟─3027f51d-84a9-4d24-8470-8d9bb316ccb8
 # ╠═50ef22c4-9319-4634-9e60-c034bde436c8
+# ╠═409be906-38ac-494d-b4bf-4297e91b3ffe
 # ╟─6a904735-680b-40f6-b4dc-e1b0e7f41d4d
 # ╟─32d109dd-0969-4959-8a69-9029fb7bbe9b
 # ╠═a33073ea-6919-4a11-aaa4-e229534d259f
@@ -1954,7 +1985,7 @@ version = "3.5.0+0"
 # ╟─334320f5-1684-4e03-a927-a4469a7ece1d
 # ╟─c5a8cc4d-a1a1-4c78-a888-4b7f83e9ff14
 # ╟─61625f08-5745-46a1-96e4-d7e8b808f92e
-# ╟─97c216ef-9e5f-4117-b9b2-d066dbb67430
+# ╠═97c216ef-9e5f-4117-b9b2-d066dbb67430
 # ╟─3ce94b2d-c777-410b-b6e2-e32159beb105
 # ╠═7055c674-75c7-4409-9bc8-872b747c3ff6
 # ╠═a9bceafd-010a-4393-af7f-982008af28bc
