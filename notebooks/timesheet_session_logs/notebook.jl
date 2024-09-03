@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.42
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -18,17 +18,15 @@ md"""
 # ╔═╡ 6745f346-e48e-4f0a-a735-414e37901def
 members = [
 	"Adia Imara",
-	"Chima McGruder",
-	"Filipe Cerqueira",
-	"Gianni Sims",
-	"Greg Cunningham",
-	"Haley Carrasco",
+	# "Chima McGruder",
+	# "Gianni Sims",
+	# "Haley Carrasco",
 	"Ian Weaver",
-	"LaNell Williams",
+	# "LaNell Williams",
 ];
 
 # ╔═╡ e66318e3-626a-442a-b659-719e0c46ccdd
-pay_date = (year=2024, month=5)
+pay_date = (year=2024, month=8)
 
 # ╔═╡ db3d661f-1623-4c9a-9d52-70f37f9c528d
 md"""
@@ -206,7 +204,7 @@ Typstry = "~0.2.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.3"
+julia_version = "1.10.5"
 manifest_format = "2.0"
 project_hash = "23a3b2986b2233dba7e0360de8bf4cf2a74beac6"
 
@@ -860,7 +858,7 @@ version = "1.5.5+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+1"
+version = "5.11.0+0"
 
 [[deps.libpng_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
