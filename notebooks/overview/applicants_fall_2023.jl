@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 630de28e-64d6-411c-a4b6-53fcb9c0b7f9
+using CommonMark
+
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	using DataFramesMeta, CSV, Dates, NaturalSort, Statistics
@@ -46,7 +49,7 @@ md"""
 
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(num, row)
-	@mdx """<h3>$(num)) $(row.student_name)</h3>
+	cm"""### $(num)) $(row.student_name)
 
 	!!! note
 		**Submission date:** $(row.Submitted_at)
@@ -206,6 +209,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
+CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 MarkdownLiteral = "736d6165-7244-6769-4267-6b50796e6954"
@@ -217,6 +221,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [compat]
 CSV = "~0.10.9"
 CategoricalArrays = "~0.10.8"
+CommonMark = "~0.8.12"
 DataFramesMeta = "~0.13.0"
 MarkdownLiteral = "~0.1.1"
 NaturalSort = "~1.0.0"
@@ -230,7 +235,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "0064231482f6b3689f1ae23d306687c5547bc5f6"
+project_hash = "b7f67826eb55522d556208e3b9f10c41e272dfb3"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -722,6 +727,7 @@ version = "17.4.0+2"
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
 # ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
+# ╠═630de28e-64d6-411c-a4b6-53fcb9c0b7f9
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─ae1d2655-4c60-4d65-b359-9d90a0d356a7
 # ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
