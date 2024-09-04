@@ -23,31 +23,40 @@ end
 
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
 md"""
-# 🍎 Onaketa applicants
+# Onaketa applicants 🍎
 
 Showing overview of all applications submitted after: $(@bind date_cut DatePicker(default=Date(2024, 08, 01)))
 """
 
 # ╔═╡ e3bf8c55-d2e9-4bdc-96de-88a4217dcbb9
 md"""
-## Summary
+## 🥧 Summary
 """
 
-# ╔═╡ 1da6586a-4fe7-407c-9c1e-d69e6b80072c
-breakdown(df, labels) = pie(df; labels) |> plot
+# ╔═╡ 22ca8626-21db-4430-9648-2c2fb9117b7d
+md"""
+### Race/ethnicity
+"""
+
+# ╔═╡ 80e33990-cc32-4063-905d-884d1a102425
+md"""
+### Course name
+"""
+
+# ╔═╡ 116c6034-62dd-4d4c-aef7-8a4444d64f32
+md"""
+### Age
+"""
+
+# ╔═╡ de21ae47-5fff-4ea3-9987-7929132d6fb4
+md"""
+### State
+"""
 
 # ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
 md"""
-## Responses (sorted by name)
+## ✏️ Responses (sorted by name)
 """
-
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-# cm"""
-# $([
-# 	cm"$(generate_report(i, row))"
-# 	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
-# ])
-# """
 
 # ╔═╡ 2fbfc13b-6f4e-4741-a0de-e03701e00bf6
 md"""
@@ -56,6 +65,12 @@ md"""
 
 # ╔═╡ 3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
 df_all = CSV.read("data/students.csv", DataFrame; normalizenames=true);
+
+# ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
+df = @rsubset df_all :Submitted_at > date_cut
+
+# ╔═╡ c8f1e7dd-e185-447f-9afb-de6939ca84c3
+names(df)
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
@@ -70,38 +85,8 @@ md"""
 ### Convenience functions
 """
 
-# ╔═╡ 0265500d-d6f0-4cdb-af4f-257bee7a917f
-to_cat(field, levels) = categorical(field;
-	levels,
-	ordered = true,
-	compress = true,
-)
-
-# ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df = @chain df_all begin
-	# @rsubset !(:drop_status)
-	@rsubset :Submitted_at > date_cut
-	
-	@transform begin
-		:question_performance = to_cat(:question_performance,
-			["Poor", "Fair", "Good", "Excellent (e.g., mostly As and Bs)"],
-		)
-		:house_income = to_cat(:house_income,
-			[
-				"Below \$10,000",
-				"Between \$10,000 - \$25,000",
-				"Between \$25,000 - \$50,000",
-				"Between \$50,000 - \$100,000",
-				"Between \$100,000 - \$150,000",
-				"Above \$150,000",
-				"Would prefer not to provide",
-			],
-		)
-		:house_size = to_cat(:house_size,
-			["1", "2", "3", "4", "5", "6+"]
-		)
-	end
-end
+# ╔═╡ 1da6586a-4fe7-407c-9c1e-d69e6b80072c
+breakdown(df, labels) = pie(df; labels) |> plot
 
 # ╔═╡ f3da9eb5-885d-4e78-94e9-5350d4596fc1
 breakdown(df, :student_race_ethnicity)
@@ -109,9 +94,21 @@ breakdown(df, :student_race_ethnicity)
 # ╔═╡ 5251b9fd-4f72-4b7b-b24a-16d5bd97758d
 breakdown(df, :course_name)
 
+# ╔═╡ a310abb9-b763-4107-91f7-a4cf98218656
+breakdown(df, :student_age)
+
+# ╔═╡ e824fba7-3d46-4a20-a3ec-8de8758b4ed8
+breakdown(df, :student_state)
+
+# ╔═╡ aa424d4e-65b1-42e1-96cf-71487f9082e4
+breakdown(df, :question_hear_about)
+
+# ╔═╡ ca50e0ed-8239-4277-916b-90b2039252f7
+breakdown(df, :question_performance)
+
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(num, row)
-	cm"""### $(num)) $(row.student_name)
+	cm"""$(md"### $(num)) $(row.student_name)")
 
 	!!! note
 		**Submission date:** $(row.Submitted_at)
@@ -143,6 +140,14 @@ function generate_report(num, row)
 		**Other questions:** $(row.question_other)
 	"""
 end
+
+# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+cm"""
+$([
+	cm"$(generate_report(i, row))"
+	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
+])
+"""
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
@@ -731,19 +736,27 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─956ed197-498b-44b8-921a-868504a71924
+# ╠═956ed197-498b-44b8-921a-868504a71924
 # ╟─e3bf8c55-d2e9-4bdc-96de-88a4217dcbb9
-# ╠═f3da9eb5-885d-4e78-94e9-5350d4596fc1
-# ╠═5251b9fd-4f72-4b7b-b24a-16d5bd97758d
+# ╟─22ca8626-21db-4430-9648-2c2fb9117b7d
+# ╟─f3da9eb5-885d-4e78-94e9-5350d4596fc1
+# ╟─80e33990-cc32-4063-905d-884d1a102425
+# ╟─5251b9fd-4f72-4b7b-b24a-16d5bd97758d
+# ╟─116c6034-62dd-4d4c-aef7-8a4444d64f32
+# ╟─a310abb9-b763-4107-91f7-a4cf98218656
+# ╟─de21ae47-5fff-4ea3-9987-7929132d6fb4
+# ╠═e824fba7-3d46-4a20-a3ec-8de8758b4ed8
+# ╠═aa424d4e-65b1-42e1-96cf-71487f9082e4
+# ╠═ca50e0ed-8239-4277-916b-90b2039252f7
+# ╠═c8f1e7dd-e185-447f-9afb-de6939ca84c3
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
 # ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
 # ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╟─3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
+# ╠═3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═01693840-4d38-4c5b-b653-5a378f021fc1
 # ╟─191267fa-3782-4594-8d50-59460a4fd939
-# ╟─0265500d-d6f0-4cdb-af4f-257bee7a917f
 # ╟─1da6586a-4fe7-407c-9c1e-d69e6b80072c
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
 # ╟─a1e0708f-e795-41d1-a75a-3ac6cb392fc7
