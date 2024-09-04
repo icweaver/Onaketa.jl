@@ -16,14 +16,16 @@ end
 
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
-	using DataFramesMeta, CSV, Dates, NaturalSort
-	using CategoricalArrays, CommonMark
-	using PlutoUI, PlutoPlotly
+	# Data processing
+	using DataFramesMeta, CSV, Dates
+
+	# Web
+	using PlutoUI, PlutoPlotly, CommonMark
 end
 
 # ╔═╡ 956ed197-498b-44b8-921a-868504a71924
 md"""
-# Onaketa applicants 🍎
+# Onaketa applicants 🌱
 
 Showing overview of all applications submitted after: $(@bind date_cut DatePicker(default=Date(2024, 08, 01)))
 """
@@ -38,19 +40,24 @@ md"""
 ### Race/ethnicity
 """
 
-# ╔═╡ 80e33990-cc32-4063-905d-884d1a102425
-md"""
-### Course name
-"""
-
 # ╔═╡ 116c6034-62dd-4d4c-aef7-8a4444d64f32
 md"""
 ### Age
 """
 
-# ╔═╡ de21ae47-5fff-4ea3-9987-7929132d6fb4
+# ╔═╡ 4a24e2f9-2892-41a5-ba3c-85ff89f16616
 md"""
-### State
+### Performance
+"""
+
+# ╔═╡ 80e33990-cc32-4063-905d-884d1a102425
+md"""
+### Course name
+"""
+
+# ╔═╡ 2c1d05d5-8f80-444f-b73e-ddd93a3e9d67
+md"""
+### Hear about program
 """
 
 # ╔═╡ fc75e60c-8dd2-4bba-a3da-652719abac96
@@ -68,9 +75,6 @@ df_all = CSV.read("data/students.csv", DataFrame; normalizenames=true);
 
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
 df = @rsubset df_all :Submitted_at > date_cut
-
-# ╔═╡ c8f1e7dd-e185-447f-9afb-de6939ca84c3
-names(df)
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
@@ -91,20 +95,17 @@ breakdown(df, labels) = pie(df; labels) |> plot
 # ╔═╡ f3da9eb5-885d-4e78-94e9-5350d4596fc1
 breakdown(df, :student_race_ethnicity)
 
-# ╔═╡ 5251b9fd-4f72-4b7b-b24a-16d5bd97758d
-breakdown(df, :course_name)
-
 # ╔═╡ a310abb9-b763-4107-91f7-a4cf98218656
 breakdown(df, :student_age)
 
-# ╔═╡ e824fba7-3d46-4a20-a3ec-8de8758b4ed8
-breakdown(df, :student_state)
+# ╔═╡ ca50e0ed-8239-4277-916b-90b2039252f7
+breakdown(df, :question_performance)
+
+# ╔═╡ 5251b9fd-4f72-4b7b-b24a-16d5bd97758d
+breakdown(df, :course_name)
 
 # ╔═╡ aa424d4e-65b1-42e1-96cf-71487f9082e4
 breakdown(df, :question_hear_about)
-
-# ╔═╡ ca50e0ed-8239-4277-916b-90b2039252f7
-breakdown(df, :question_performance)
 
 # ╔═╡ 720e6d9b-ce67-457c-9a79-b18754b56516
 function generate_report(num, row)
@@ -158,20 +159,16 @@ md"""
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 CSV = "~0.10.9"
-CategoricalArrays = "~0.10.8"
 CommonMark = "~0.8.12"
 DataFramesMeta = "~0.13.0"
-NaturalSort = "~1.0.0"
 PlutoPlotly = "~0.4.6"
 PlutoUI = "~0.7.50"
 """
@@ -182,7 +179,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "29187b7ed2a857d0c454933f7324290aa9018ad9"
+project_hash = "d284066b71709b89464dd81e9bad5436e8f24a99"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -210,24 +207,6 @@ deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers
 git-tree-sha1 = "6c834533dc1fabd820c1db03c839bf97e45a3fab"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.14"
-
-[[deps.CategoricalArrays]]
-deps = ["DataAPI", "Future", "Missings", "Printf", "Requires", "Statistics", "Unicode"]
-git-tree-sha1 = "1568b28f91293458345dabba6a5ea3f183250a61"
-uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-version = "0.10.8"
-
-    [deps.CategoricalArrays.extensions]
-    CategoricalArraysJSONExt = "JSON"
-    CategoricalArraysRecipesBaseExt = "RecipesBase"
-    CategoricalArraysSentinelArraysExt = "SentinelArrays"
-    CategoricalArraysStructTypesExt = "StructTypes"
-
-    [deps.CategoricalArrays.weakdeps]
-    JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-    SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-    StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 
 [[deps.Chain]]
 git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
@@ -492,11 +471,6 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.1.10"
 
-[[deps.NaturalSort]]
-git-tree-sha1 = "eda490d06b9f7c00752ee81cfa451efe55521e21"
-uuid = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
-version = "1.0.0"
-
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
@@ -736,21 +710,20 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═956ed197-498b-44b8-921a-868504a71924
+# ╟─956ed197-498b-44b8-921a-868504a71924
 # ╟─e3bf8c55-d2e9-4bdc-96de-88a4217dcbb9
 # ╟─22ca8626-21db-4430-9648-2c2fb9117b7d
 # ╟─f3da9eb5-885d-4e78-94e9-5350d4596fc1
-# ╟─80e33990-cc32-4063-905d-884d1a102425
-# ╟─5251b9fd-4f72-4b7b-b24a-16d5bd97758d
 # ╟─116c6034-62dd-4d4c-aef7-8a4444d64f32
 # ╟─a310abb9-b763-4107-91f7-a4cf98218656
-# ╟─de21ae47-5fff-4ea3-9987-7929132d6fb4
-# ╠═e824fba7-3d46-4a20-a3ec-8de8758b4ed8
-# ╠═aa424d4e-65b1-42e1-96cf-71487f9082e4
-# ╠═ca50e0ed-8239-4277-916b-90b2039252f7
-# ╠═c8f1e7dd-e185-447f-9afb-de6939ca84c3
+# ╟─80e33990-cc32-4063-905d-884d1a102425
+# ╠═5251b9fd-4f72-4b7b-b24a-16d5bd97758d
+# ╟─4a24e2f9-2892-41a5-ba3c-85ff89f16616
+# ╟─ca50e0ed-8239-4277-916b-90b2039252f7
+# ╟─2c1d05d5-8f80-444f-b73e-ddd93a3e9d67
+# ╟─aa424d4e-65b1-42e1-96cf-71487f9082e4
 # ╟─fc75e60c-8dd2-4bba-a3da-652719abac96
-# ╠═8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+# ╟─8b8dae06-0e42-4f6a-bdca-367f2b2161ab
 # ╟─2fbfc13b-6f4e-4741-a0de-e03701e00bf6
 # ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
