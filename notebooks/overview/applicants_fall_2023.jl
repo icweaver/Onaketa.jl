@@ -45,14 +45,14 @@ md"""
 ### Age
 """
 
-# ╔═╡ 4a24e2f9-2892-41a5-ba3c-85ff89f16616
-md"""
-### Performance
-"""
-
 # ╔═╡ 80e33990-cc32-4063-905d-884d1a102425
 md"""
 ### Course name
+"""
+
+# ╔═╡ 4a24e2f9-2892-41a5-ba3c-85ff89f16616
+md"""
+### Performance
 """
 
 # ╔═╡ 2c1d05d5-8f80-444f-b73e-ddd93a3e9d67
@@ -76,6 +76,11 @@ df_all = CSV.read("data/students.csv", DataFrame; normalizenames=true);
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
 df = @rsubset df_all :Submitted_at > date_cut
 
+# ╔═╡ 9f66b69e-73b2-4f3c-a4f5-f85a3a5910f0
+md"""
+Number of applicants: $(nrow(df))
+"""
+
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
 # Notebook setup 🔧
@@ -98,11 +103,11 @@ breakdown(df, :student_race_ethnicity)
 # ╔═╡ a310abb9-b763-4107-91f7-a4cf98218656
 breakdown(df, :student_age)
 
-# ╔═╡ ca50e0ed-8239-4277-916b-90b2039252f7
-breakdown(df, :question_performance)
-
 # ╔═╡ 5251b9fd-4f72-4b7b-b24a-16d5bd97758d
 breakdown(df, :course_name)
+
+# ╔═╡ ca50e0ed-8239-4277-916b-90b2039252f7
+breakdown(df, :question_performance)
 
 # ╔═╡ aa424d4e-65b1-42e1-96cf-71487f9082e4
 breakdown(df, :question_hear_about)
@@ -139,6 +144,8 @@ function generate_report(num, row)
 		**Goals:** $(row.question_goals)
 
 		**Other questions:** $(row.question_other)
+
+		**Schedule:** $(Markdown.parse("<$(row.schedule)>"))
 	"""
 end
 
@@ -711,13 +718,14 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─956ed197-498b-44b8-921a-868504a71924
+# ╟─9f66b69e-73b2-4f3c-a4f5-f85a3a5910f0
 # ╟─e3bf8c55-d2e9-4bdc-96de-88a4217dcbb9
 # ╟─22ca8626-21db-4430-9648-2c2fb9117b7d
 # ╟─f3da9eb5-885d-4e78-94e9-5350d4596fc1
 # ╟─116c6034-62dd-4d4c-aef7-8a4444d64f32
 # ╟─a310abb9-b763-4107-91f7-a4cf98218656
 # ╟─80e33990-cc32-4063-905d-884d1a102425
-# ╠═5251b9fd-4f72-4b7b-b24a-16d5bd97758d
+# ╟─5251b9fd-4f72-4b7b-b24a-16d5bd97758d
 # ╟─4a24e2f9-2892-41a5-ba3c-85ff89f16616
 # ╟─ca50e0ed-8239-4277-916b-90b2039252f7
 # ╟─2c1d05d5-8f80-444f-b73e-ddd93a3e9d67
