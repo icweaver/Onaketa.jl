@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.45
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -16,6 +16,7 @@ end
 
 # ╔═╡ a1ca2645-efe9-4472-a70b-c5a4989c9400
 begin
+	using Typstry
 	using PlutoUI
 	using Dates, Printf
 	using CommonMark
@@ -36,6 +37,9 @@ const TDY = today()
 	**Address:** $(Child(:address, TextField()))
 	"""
 end |> confirm
+
+# ╔═╡ 5666c710-3e6b-48e4-a02e-ca2d8768cbe8
+render(Any[true 1; 1.2 1 // 2])
 
 # ╔═╡ 274360dc-6081-4c14-8da4-f91b84106c4a
 r2(x) = @sprintf("%.2f", x)
@@ -101,7 +105,7 @@ function tpl_pdf(p)
 	#set text(font: "TeX Gyre Schola")
 	
 	#align(center)[
-	  #image("/logo.png", width: 50%)
+	  #image("./figures/logo.png", width: 50%)
 	  #link("https://www.onaketa.org")[onaketa.org] |
 	  #link("mailto:info@onaketa.org")
 	]
@@ -159,7 +163,7 @@ if !any(isempty, (person.name, person.email))
 
 	mkpath("./pdfs")
 	ppath = "pdfs/$(fname).pdf"
-	cmd = `typst compile --root . $(spath) $(ppath)`
+	cmd = TypstCommand(["compile", "$(spath)", "$(ppath)"])
 	run(cmd)
 
 	@debug "Report generated for $(ppath)"
@@ -173,19 +177,21 @@ CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Typstry = "f0ed7684-a786-439e-b1e3-3b82803b501e"
 
 [compat]
 CommonMark = "~0.8.12"
 PlutoUI = "~0.7.55"
+Typstry = "~0.2.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.4"
+julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "7e31b6f660afa539f3410b83ce4c70875c88e898"
+project_hash = "111e11794f79289e822b388c3ebf7a074b9683a1"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -265,6 +271,12 @@ version = "0.2.4"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "f389674c99bfcde17dc57454011aa44d5a260a40"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.6.0"
+
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -334,6 +346,12 @@ version = "1.2.0"
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.23+4"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1b35263570443fdd9e76c76b7062116e2f374ab8"
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.0.15+0"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -425,6 +443,18 @@ git-tree-sha1 = "eae1bb484cd63b36999ee58be2de6c178105112f"
 uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.8"
 
+[[deps.Typst_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "OpenSSL_jll"]
+git-tree-sha1 = "16173839e2c02d2e83994298431bf5921af4dcfb"
+uuid = "eb4b1da6-20f6-5c66-9826-fdb8ad410d0e"
+version = "0.11.0+0"
+
+[[deps.Typstry]]
+deps = ["Artifacts", "PrecompileTools", "Typst_jll"]
+git-tree-sha1 = "0752c3317207035b01c05b3963986375c321b54f"
+uuid = "f0ed7684-a786-439e-b1e3-3b82803b501e"
+version = "0.2.0"
+
 [[deps.URIs]]
 git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
@@ -445,7 +475,7 @@ version = "1.2.13+1"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+1"
+version = "5.11.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -462,7 +492,8 @@ version = "17.4.0+2"
 # ╟─3c7b337a-66bd-468f-b7ca-a8874106ea0e
 # ╟─716e3c69-46a5-4a33-ac9e-8b9e8bfcde04
 # ╟─bfb61bd6-bbeb-4286-a732-fad9229b31f8
-# ╟─8ddc461d-410e-435b-a05b-a268da330aec
+# ╠═5666c710-3e6b-48e4-a02e-ca2d8768cbe8
+# ╠═8ddc461d-410e-435b-a05b-a268da330aec
 # ╟─dcaf492c-c476-11ee-2997-8d295a2527a5
 # ╟─cf7723b9-00ce-4d66-b743-d8bfcbcc23f7
 # ╟─274360dc-6081-4c14-8da4-f91b84106c4a

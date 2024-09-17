@@ -118,6 +118,9 @@ df_clean = @transform df_raw begin
 	:student_race_ethnicity = clean_re.(:student_race_ethnicity)
 end
 
+# ╔═╡ 7275e8c4-c6e5-4b45-880a-c8ba7e24d1e8
+names(df_raw)
+
 # ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
 CSV.write("data/data_cleaned.csv", df_clean)
 
@@ -168,15 +171,6 @@ students_2023 = @chain df begin
 	sort(:student_name)
 end
 
-# ╔═╡ 1255f0de-776f-4dc4-af61-bcb9ce26c56f
-df.tutor_name |> unique |> length
-
-# ╔═╡ 904baa61-019e-46cb-98fe-32f128f18eb7
-describe(students_2023; cols=:student_grade)
-
-# ╔═╡ 16fd25e9-b7d1-404f-996d-d82b23d59a00
-students_2023.student_grade
-
 # ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
 growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
 
@@ -201,9 +195,6 @@ md"""
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
-# ╔═╡ a84a88eb-5cf6-492b-a710-d11b8ced8bfd
-5 / 54
-
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
 ## Summary
@@ -213,15 +204,6 @@ Total number of students supported: $(nrow(df))
 
 We combine all of the figures above into a single graphic for quick comparison.
 """
-
-# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
-df_county_zip = @chain df begin
-	group_counts(_, :student_zip)
-	dropmissing
-	@rtransform :county_name = to_county[:variable]
-	@by :county_name :n_students = sum(:nrow)
-	sort(:county_name)
-end
 
 # ╔═╡ 4fb57d7f-bfb2-410f-86b0-696e962af401
 to_county = let
@@ -360,9 +342,6 @@ md"""
 Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
 """
 
-# ╔═╡ b3ddf365-e1ff-470e-9431-e08ebed80913
-df_served[end, :nrow]
-
 # ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
 avg_percent_growth = let
 	df_terms = df_served
@@ -372,9 +351,6 @@ avg_percent_growth = let
 
 	mean(percent_diffs) * 100
 end
-
-# ╔═╡ 3762a2f0-9f5c-4662-bac4-e98727cf62d5
-df_served
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
 function group_counts(df, cat)
@@ -440,9 +416,6 @@ begin
 	fg_re |> as_svg
 end
 
-# ╔═╡ bfbe9f1a-051e-4f5d-be2f-2782a09ef587
-df_re
-
 # ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 let
 	fig = Figure(resolution=(1400, 1200))
@@ -461,6 +434,15 @@ let
 	save_fig(fig, "Summary")
 	
 	fig
+end
+
+# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
+df_county_zip = @chain df begin
+	group_counts(_, :student_zip)
+	dropmissing
+	@rtransform :county_name = to_county[:variable]
+	@by :county_name :n_students = sum(:nrow)
+	sort(:county_name)
 end
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
@@ -497,7 +479,7 @@ PlutoUI = "~0.7.50"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.3"
+julia_version = "1.10.5"
 manifest_format = "2.0"
 project_hash = "b1a1d6da9b07384299834ee11d6ce566db991012"
 
@@ -2250,7 +2232,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+1"
+version = "5.11.0+0"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2311,34 +2293,28 @@ version = "3.5.0+0"
 # ╟─52b9162e-7631-4a26-811a-cf2c72575f20
 # ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
 # ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
+# ╠═7275e8c4-c6e5-4b45-880a-c8ba7e24d1e8
 # ╠═a513c01e-355c-42fd-b016-30fab7880a9f
 # ╠═063ee6bb-d862-4555-84c3-44b00dcb0e14
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╠═fe4b329b-f8dd-49e8-bf54-b5940eab4305
-# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═b3ddf365-e1ff-470e-9431-e08ebed80913
+# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
-# ╠═1255f0de-776f-4dc4-af61-bcb9ce26c56f
-# ╠═904baa61-019e-46cb-98fe-32f128f18eb7
-# ╠═16fd25e9-b7d1-404f-996d-d82b23d59a00
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
-# ╠═3762a2f0-9f5c-4662-bac4-e98727cf62d5
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╟─28a62b38-7b91-4dc7-8480-de491470128e
-# ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
-# ╠═cc169622-035d-4d00-aff9-394ad531f597
+# ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╠═d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-# ╠═bfbe9f1a-051e-4f5d-be2f-2782a09ef587
-# ╠═a84a88eb-5cf6-492b-a710-d11b8ced8bfd
+# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╟─ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╠═a90e2300-3e2e-48b9-9544-11178c925983
