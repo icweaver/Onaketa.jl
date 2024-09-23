@@ -288,7 +288,11 @@ begin
 end
 
 # ╔═╡ fa5f1811-40a4-4572-bc7a-fbbf2f9a3c24
-html(p) |> print
+open("./matching.html", "w") do io
+	PlutoPlotly.PlotlyBase.to_html(io, p.Plot;
+		full_html = false,
+	)
+end
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
