@@ -67,13 +67,6 @@ md"""
 ## ✏️ Responses (sorted by name)
 """
 
-# ╔═╡ 2abf83ab-9238-4823-8c95-f62d6cabafc0
-md"""
-## 🤝 Student matching
-
-> Showing: selected students from `matching.jl` notebook
-"""
-
 # ╔═╡ ff1c932a-c6fc-4bf1-a723-34a700784013
 html"""
 <div>
@@ -129,6 +122,15 @@ df_selected = let
 	)
 	@rsubset df :status == "accept"
 end;
+
+# ╔═╡ 2abf83ab-9238-4823-8c95-f62d6cabafc0
+md"""
+## 🤝 Student matching
+
+> Showing: selected students from `matching.jl` notebook
+
+**Selected students: $(nrow(df_selected))**
+"""
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
