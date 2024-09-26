@@ -90,7 +90,7 @@ let
 		tutor_block = []
 		for (i, row) ∈ enumerate(eachrow(sdf))
 			push!(tutor_block, md"### $(i)) $(row.student_name)")
-			push!(tutor_block, details("details", generate_report(i, row); open=true))
+			push!(tutor_block, details("details", generate_report(i, row)))
 		end
 		
 		# Update list
