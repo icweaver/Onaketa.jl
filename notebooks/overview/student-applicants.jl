@@ -67,6 +67,14 @@ md"""
 ## ✏️ Responses (sorted by name)
 """
 
+# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
+cm"""
+$([
+	cm"$(generate_report(i, row))"
+	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
+])
+"""
+
 # ╔═╡ ff1c932a-c6fc-4bf1-a723-34a700784013
 html"""
 <div>
@@ -104,9 +112,6 @@ md"""
 ## Data
 """
 
-# ╔═╡ 3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
-df_all = CSV.read("data/student_applications.csv", DataFrame; normalizenames=true);
-
 # ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
 df = @rsubset df_all :Submitted_at > date_cut;
 
@@ -114,6 +119,9 @@ df = @rsubset df_all :Submitted_at > date_cut;
 md"""
 Number of applicants: $(nrow(df))
 """
+
+# ╔═╡ 3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
+df_all = CSV.read("data/student_applications.csv", DataFrame; normalizenames=true);
 
 # ╔═╡ 8ba7384d-76bb-4d24-9e79-c0e6e73ff0ff
 df_selected = let
@@ -131,6 +139,29 @@ md"""
 
 **Selected students: $(nrow(df_selected))**
 """
+
+# ╔═╡ 3d9491e2-a0fa-467d-864e-1e17c1d7ad3b
+for row in eachrow(sort(df_selected, :student_name))
+	println("""
+	$(row.student_name)
+	$(row.student_state)
+	$(row.student_grade)
+	$(row.student_race_ethnicity)
+	$(row.gender_guess)
+	$(row.course_name)
+	"""
+	)
+end
+
+# ╔═╡ 3e92408d-0420-48f4-8f0a-332f18af0468
+# :student_grade
+# 	:student_race_ethnicity
+# 	:gender_guess
+# 	:course_name
+# 	"""
+
+# ╔═╡ 14505c37-f64a-42ec-849b-7755ad9a1a15
+names(df_selected)
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
@@ -199,14 +230,6 @@ function generate_report(num, row)
 		**Schedule:** $(Markdown.parse("<$(row.schedule)>"))
 	""")
 end
-
-# ╔═╡ 8b8dae06-0e42-4f6a-bdca-367f2b2161ab
-cm"""
-$([
-	cm"$(generate_report(i, row))"
-	for (i, row) in enumerate(eachrow(sort(df, :student_name)))
-])
-"""
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
@@ -789,6 +812,9 @@ version = "17.4.0+2"
 # ╠═38da5817-5db1-4f2c-a9dc-752457ad98ef
 # ╠═3dc2ec1b-a031-4fcd-8b57-ff14852a1f7c
 # ╠═8ba7384d-76bb-4d24-9e79-c0e6e73ff0ff
+# ╠═3d9491e2-a0fa-467d-864e-1e17c1d7ad3b
+# ╠═3e92408d-0420-48f4-8f0a-332f18af0468
+# ╠═14505c37-f64a-42ec-849b-7755ad9a1a15
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╠═01693840-4d38-4c5b-b653-5a378f021fc1
 # ╟─191267fa-3782-4594-8d50-59460a4fd939
