@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ fe44f5bc-b1af-11ed-16ce-d3cc5b3b856b
 begin
 	# Data handling
@@ -13,6 +23,9 @@ begin
 	# Markup parsing (HTML, Markdown, etc.)
 	using CommonMark
 end
+
+# ╔═╡ d59dc1ce-68f6-4a0c-b978-e987f403d095
+@bindname term Select(["Spring 2023", "Fall 2023", "Spring 2024", "Fall 2024"]; default="Fall 2024")
 
 # ╔═╡ 69a91b6b-b238-42dd-bdf3-eff01816d244
 cm"""
@@ -59,7 +72,7 @@ gdf = let
 	
 	@chain df begin
 		dropmissing!(:term_active)
-		@rsubset! occursin("Spring 2024", :term_active)
+		@rsubset! occursin(term, :term_active)
 		sort!(:student_name)
 		groupby(:tutor_name; sort=true)
 	end
@@ -590,6 +603,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
+# ╟─d59dc1ce-68f6-4a0c-b978-e987f403d095
 # ╟─219b18a1-0f2b-4b0f-8ec8-746dff5ed485
 # ╟─69a91b6b-b238-42dd-bdf3-eff01816d244
 # ╟─720e6d9b-ce67-457c-9a79-b18754b56516
