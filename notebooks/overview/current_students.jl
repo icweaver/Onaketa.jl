@@ -28,7 +28,7 @@ end
 @bindname term Select(["Spring 2023", "Fall 2023", "Spring 2024", "Fall 2024"]; default="Fall 2024")
 
 # ╔═╡ 69a91b6b-b238-42dd-bdf3-eff01816d244
-cm"""
+md"""
 # Data handling 🌳
 """
 
@@ -36,7 +36,7 @@ cm"""
 function generate_report(num, row)
 	cm"""
 	!!! note " "
-		[**Schedule**]($(row.schedule))
+		$(Markdown.parse("[**Schedule**]($(row.schedule))"))
 
 		**State:** $(row.student_state)
 		
@@ -90,7 +90,7 @@ let
 		tutor_block = []
 		for (i, row) ∈ enumerate(eachrow(sdf))
 			push!(tutor_block, md"### $(i)) $(row.student_name)")
-			push!(tutor_block, details("details", generate_report(i, row)))
+			push!(tutor_block, details("details", generate_report(i, row); open=true))
 		end
 		
 		# Update list
