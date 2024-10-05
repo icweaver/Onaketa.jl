@@ -72,7 +72,7 @@ gdf = let
 	
 	@chain df begin
 		dropmissing!(:term_active)
-		@rsubset! occursin(term, :term_active)
+		@rsubset! occursin(term, :term_active) && !:drop_status
 		sort!(:student_name)
 		groupby(:tutor_name; sort=true)
 	end
