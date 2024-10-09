@@ -157,18 +157,11 @@ mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
 # ╔═╡ 46db0011-8992-4e95-8fda-b965e05ea916
 x = @view df_dates_people.:"Date / Time"[mask]
 
-# ╔═╡ 7530411d-a5ec-4b21-b19f-2dec85c88210
-dt = x[100]
+# ╔═╡ cd4f9e05-5029-4a2a-858f-dc782a645913
+DAY_TIME_FMT2 = dateformat"e II:MM p PT"
 
-# ╔═╡ 4b2cbe51-86b7-46fe-b91a-2a57727b475c
-let
-	d = dayabbr(dt)
-	t = Time(dt)
-	"$(d) $(t)"
-end
-
-# ╔═╡ 2266f6e1-a7bf-4bf1-a757-dad843d071d4
-Time(dt)
+# ╔═╡ 300e79dc-ce4a-4b51-ac83-edeb0979e61d
+Dates.format.(x, DAY_TIME_FMT2)
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -1105,20 +1098,19 @@ version = "17.4.0+2"
 # ╟─682d139a-9a6e-4973-b55a-aeebe465ad1d
 # ╟─c0179c4b-4e8b-41f2-9ecb-666d4aedcef3
 # ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
-# ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
+# ╠═6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
 # ╠═aafaba81-aaa4-4c84-83ed-031935cf5e1e
 # ╠═67abbb7d-f243-49e3-9c8d-91e0b6a4aafe
 # ╠═46db0011-8992-4e95-8fda-b965e05ea916
-# ╠═7530411d-a5ec-4b21-b19f-2dec85c88210
-# ╠═4b2cbe51-86b7-46fe-b91a-2a57727b475c
-# ╠═2266f6e1-a7bf-4bf1-a757-dad843d071d4
+# ╠═300e79dc-ce4a-4b51-ac83-edeb0979e61d
+# ╠═cd4f9e05-5029-4a2a-858f-dc782a645913
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
 # ╠═a65071a1-be75-406f-b8bc-05268ea55f1e
 # ╠═cc75ac1c-6cef-4b9d-9d9e-638d7b359f7b
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
-# ╟─fa087248-6914-4ebd-81f4-3d580e4f403d
+# ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
 # ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
