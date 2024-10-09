@@ -23,32 +23,19 @@ Below is a top-level overview of all of the common times between tutors and stud
 The tutor and student availability is all shared in the same calendar, so we just split these up and set the order for each here:
 """
 
-# ╔═╡ 39d5e160-bc94-4f6b-801d-069154faffb4
-
-
-# ╔═╡ 52594152-18e4-42c3-9d43-73f7a8aea460
-
-
-# ╔═╡ 0921981f-c20e-4757-b34a-da199561fb86
-
-
-# ╔═╡ bd78fd6a-d1af-4061-a353-ec98512ffdef
-
-
-# ╔═╡ 10bfb620-3445-40de-bb86-9d49ef98e963
-
-
-# ╔═╡ 17cfe423-1122-4d20-aa2b-43bc7a0d721c
-
-
 # ╔═╡ 550c8eb1-6b8c-4241-a9ee-6c40a2fed74b
-
-
-# ╔═╡ ba31cf6a-c02b-4bfd-8696-15cb6c0ec12e
-
+tutor_names = [
+	"Chima McGruder",
+	"Gianni Sims",
+	"Haley Carrasco",
+	"Ian Weaver",
+	"Justin Myles",
+	"Karla Villalta",
+]
 
 # ╔═╡ 857495a9-5d3c-4512-920e-3f0f210bf43f
-
+# Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
+js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 md"""
@@ -73,42 +60,179 @@ DATES = df_dates_people.:"Date / Time";
 # ╔═╡ 7c85ecfd-82c1-4eae-8541-c2861ea26bba
 x = @view DATES[mask]
 
-# ╔═╡ 20b4d06b-34e1-49d0-aff9-46b25d0fa68e
-Dates.format.(x, DAY_TIME_FMT)
-
-# ╔═╡ bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
-for (user_name, user_responses) in pairs(eachcol(df_dates_people[:, begin+1:end]))
-	@info user_name
-	# mask = (!ismissing).(user_responses)
-	# available_times = @view DATES[mask]
+# ╔═╡ 60a35565-5f35-437c-a45c-5c66de049d57
+function avail_times(arr, times)
+	mask = (!ismissing).(arr)
+	available_times = @view times[mask]
 end
 
-# ╔═╡ 9140b1d2-c3a9-4d1c-bd4e-cb0cdb85b5a5
-Dict(
-	key => val
-	for (key, val) in zip(["a", "b", "c"], [4, 5, 6])
+# ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
+fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
+
+# ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
+string_strip = strip ∘ string
+
+# ╔═╡ bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
+user_info = Dict(string_strip(user_name) => avail_times(user_responses, DATES) |> fmt_date
+	for (user_name, user_responses) in pairs(
+		eachcol(df_dates_people[:, begin+1:end])
+	)
 )
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
-
-
-# ╔═╡ a4c9ad63-ff84-4057-8370-5f6e9469ea2e
-
+md"""
+## Find matches
+"""
 
 # ╔═╡ 6b8b11b7-c194-43d9-a1b7-75745698e8f7
-
+# df_student_applicants = let
+# 	df = CSV.read("./data/student_applications.csv", DataFrame;
+# 		# header = 2,	
+# 	)
+# 	@rsubset df :"Submitted at" ≥ Date(2024, 07, 01) 
+# end;
 
 # ╔═╡ 8856ef9c-46fa-4890-9195-e8da65259cf9
-
+# student_names = (@rsubset df_student_applicants :internal_status == "accept"
+# ).student_name |> sort;
 
 # ╔═╡ de7d132c-9060-4019-b4d8-bd2da866adf3
-
+function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
+	dt_common = dt_tutor ∩ dt_student
+	N = length(dt_common)
+	# iszero(N) && @warn "No matches found for $(tutor_name) and $(student_name) =("
+	return dt_common, N
+end
 
 # ╔═╡ 4bf75e8c-7831-4b1a-9d6d-8cbbc92388e8
-
+function group_by_day(dt)
+	if isempty(dt)
+		gdf = DataFrame(day="", time="", period="")
+		return ""
+	else
+		gdf = @chain DataFrame([dt], [:daytime]) begin
+			# Pluto ExpressionExplorer workaround
+			select!(:daytime => ByRow(x -> split(x)) => [:day, :time, :period, :tz])
+			# @rselect $[:day, :time, :period] = split(:daytime)
+			groupby(:day)
+		end
+	
+		return join(
+			[
+				join(
+					["$(r.day) $(r.time) $(r.period) $(r.tz)" for r ∈ eachrow(df)], "<br>"
+				)
+				for df ∈ gdf
+			], "<br>-----------<br>"
+		)
+	end
+end
 
 # ╔═╡ 5c66cc1f-a062-4c75-860a-e27a979c2127
+function store_matches(user_info, tutors, students)
+	N_common_matrix = Matrix{Int16}(undef, length.((students, tutors)))
+	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
+	
+	for (j, (tutor_name, dt_tutor)) ∈ enumerate(tutors)
+		for (i, (student_name, dt_student)) ∈ enumerate(students)
+			
+			# Find overlap
+			dt_common, N_common = match_tutor(
+				dt_tutor, dt_student, tutor_name, student_name
+			)
 
+			# Store matches for plotting
+			N_common_matrix[i, j] = N_common
+			dt_common_matrix[i, j] = group_by_day(dt_common)
+			
+			# Show link to schedule
+			# @debug Markdown.parse("""
+			# **Found $(N_common) matches** \\
+			# $(tutor_name) and $(student_name)
+			# """)
+
+			# Save to file for debugging
+			# save_df(df_common, tutor_name, student_name)
+		end
+	end
+
+	return N_common_matrix, dt_common_matrix
+end
+
+# ╔═╡ a4c9ad63-ff84-4057-8370-5f6e9469ea2e
+begin
+	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
+	student_names = setdiff(keys(user_info), tutor_names) |> collect |> sort
+	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
+	N_common_matrix, dt_common_matrix = store_matches(user_info, tutor_info, student_info)
+end;
+
+# ╔═╡ 39d5e160-bc94-4f6b-801d-069154faffb4
+begin
+	N_all = NamedArray(N_common_matrix, (student_names, tutor_names))
+	N_selected = @view(N_all[student_names, tutor_names]).array
+	
+	dt_all = NamedArray(dt_common_matrix, (student_names, tutor_names))
+	dt_selected = @view(
+		dt_all[student_names, tutor_names]
+	).array
+	customdata = dt_selected
+	
+	fig = Plot(Layout(
+		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
+		# yaxis = attr(scaleanchor="x"), # Square cells
+		# plot_bgcolor = "rgba(0,0,0,0)",
+		title = "Tutor-student matching matrix", 
+		xaxis = attr(fixedrange=true, title="Tutors"),
+		yaxis = attr(
+			fixedrange = true,
+			# showticklabels = false,
+			autorange = "reversed",
+			title = "Students",
+		),
+		height = 800,
+	))
+	
+	add_trace!(fig,
+		heatmap(;
+			x = tutor_names,
+			y = student_names,
+			z = N_selected,
+			colorbar_title = "Matches",
+			customdata,
+			hovertemplate = """
+			<b>%{x} and %{y}: %{z} matches</b>
+			<br><br>%{customdata}<extra></extra>
+			""",
+			zmin = minimum(N_all),
+			zmax = maximum(N_all),
+		)
+	)
+	
+	p = plot(fig)
+
+	# Copy tooltip data to clipboard on click
+	add_plotly_listener!(p, "plotly_click", "
+	(e) => {
+		console.log(e)
+		let dt = e.points[0].customdata
+		navigator.clipboard.writeText(dt.replaceAll('<br>', '\\n'))
+	}
+	")
+end
+
+# ╔═╡ 52594152-18e4-42c3-9d43-73f7a8aea460
+open("./matching.html", "w") do io
+	PlutoPlotly.PlotlyBase.to_html(io, p.Plot;
+		full_html = false,
+	)
+end
+
+# ╔═╡ dc943151-f1e6-45f1-9661-a67818672e57
+dt_selected
+
+# ╔═╡ e69698c2-546c-4052-85fe-c9a701324c00
+js_transform(dt_selected)
 
 # ╔═╡ d15e16d4-f31d-4d24-9252-c2a78f917892
 md"""
@@ -751,22 +875,20 @@ version = "17.4.0+2"
 # ╠═0dffb591-2cca-438d-97cb-1fc6653e5785
 # ╠═39d5e160-bc94-4f6b-801d-069154faffb4
 # ╠═52594152-18e4-42c3-9d43-73f7a8aea460
-# ╠═0921981f-c20e-4757-b34a-da199561fb86
-# ╠═bd78fd6a-d1af-4061-a353-ec98512ffdef
-# ╠═10bfb620-3445-40de-bb86-9d49ef98e963
-# ╠═17cfe423-1122-4d20-aa2b-43bc7a0d721c
 # ╠═550c8eb1-6b8c-4241-a9ee-6c40a2fed74b
-# ╠═ba31cf6a-c02b-4bfd-8696-15cb6c0ec12e
 # ╠═857495a9-5d3c-4512-920e-3f0f210bf43f
+# ╠═dc943151-f1e6-45f1-9661-a67818672e57
+# ╠═e69698c2-546c-4052-85fe-c9a701324c00
 # ╠═bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 # ╠═6d389a47-e5a3-4e39-9d53-3a9a19c233d5
 # ╠═3ac3a940-399b-49c2-aafb-1943be4ec06e
 # ╠═8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 # ╠═7c85ecfd-82c1-4eae-8541-c2861ea26bba
-# ╠═20b4d06b-34e1-49d0-aff9-46b25d0fa68e
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
-# ╠═9140b1d2-c3a9-4d1c-bd4e-cb0cdb85b5a5
+# ╠═60a35565-5f35-437c-a45c-5c66de049d57
+# ╠═5ee4c1c0-70fc-4117-9564-cc6a554a7694
+# ╠═c2426065-8ff6-49d5-853f-cbc80f4d23ba
 # ╠═d5e98d73-ff3c-4798-b8ca-65905011e830
 # ╠═a4c9ad63-ff84-4057-8370-5f6e9469ea2e
 # ╠═6b8b11b7-c194-43d9-a1b7-75745698e8f7

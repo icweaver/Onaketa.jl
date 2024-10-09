@@ -168,9 +168,6 @@ md"""
 ## Find matches
 """
 
-# ╔═╡ 488579dd-dc42-4411-a446-00f81090c789
-user_info["Abe Narvaez-Olvera"]
-
 # ╔═╡ a65071a1-be75-406f-b8bc-05268ea55f1e
 df_student_applicants = let
 	df = CSV.read("./data/student_applications.csv", DataFrame;
@@ -217,6 +214,7 @@ end
 
 # ╔═╡ fb2acc7f-7aea-4377-a37f-be5832d4edd3
 function store_matches(user_info, tutors, students)
+	@info user_info, tutors, students
 	N_common_matrix = Matrix{Int8}(undef, length.((students, tutors)))
 	dt_common_matrix =  Matrix{String}(undef, length.((students, tutors))...)
 	
@@ -1107,7 +1105,6 @@ version = "17.4.0+2"
 # ╠═67abbb7d-f243-49e3-9c8d-91e0b6a4aafe
 # ╠═46db0011-8992-4e95-8fda-b965e05ea916
 # ╠═300e79dc-ce4a-4b51-ac83-edeb0979e61d
-# ╠═488579dd-dc42-4411-a446-00f81090c789
 # ╠═cd4f9e05-5029-4a2a-858f-dc782a645913
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
@@ -1115,7 +1112,7 @@ version = "17.4.0+2"
 # ╠═cc75ac1c-6cef-4b9d-9d9e-638d7b359f7b
 # ╟─5ba6bed0-ae7a-48e2-a373-f4386332df71
 # ╠═fa087248-6914-4ebd-81f4-3d580e4f403d
-# ╟─fb2acc7f-7aea-4377-a37f-be5832d4edd3
+# ╠═fb2acc7f-7aea-4377-a37f-be5832d4edd3
 # ╟─0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 # ╠═b653343f-97ad-4367-b604-c734c957a2a7
 # ╠═168567e7-5c80-4ff3-b094-8e58f6b3ce58
