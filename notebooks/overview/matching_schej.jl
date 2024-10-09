@@ -35,7 +35,7 @@ tutor_names = [
 
 # ╔═╡ 857495a9-5d3c-4512-920e-3f0f210bf43f
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
-# js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
+js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 md"""
@@ -186,7 +186,7 @@ begin
 	dt_selected = @view(
 		dt_all[student_names, tutor_names]
 	).array
-	# customdata = js_transform(dt_selected)
+	customdata = js_transform(dt_selected)
 	
 	fig = Plot(Layout(
 		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
@@ -209,11 +209,11 @@ begin
 			y = student_names,
 			z = N_selected,
 			colorbar_title = "Matches",
-			# customdata,
-			# hovertemplate = """
-			# <b>%{x} and %{y}: %{z} matches</b>
-			# <br><br>%{customdata}<extra></extra>
-			# """,
+			customdata,
+			hovertemplate = """
+			<b>%{x} and %{y}: %{z} matches</b>
+			<br><br>%{customdata}<extra></extra>
+			""",
 			zmin = minimum(N_all),
 			zmax = maximum(N_all),
 		)

@@ -55,7 +55,7 @@ tutor_names = [
 	"Chima McGruder",
 	"Gianni Sims",
 	"Haley Carrasco",
-	# "Ian Weaver",
+	"Ian Weaver",
 	"Justin Myles",
 	"Karla Villalta",
 ]
