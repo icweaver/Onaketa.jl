@@ -35,7 +35,7 @@ tutor_names = [
 
 # ╔═╡ 857495a9-5d3c-4512-920e-3f0f210bf43f
 # Apparently javascript doesn't like matrices of strings, but list-of-lists are cool
-js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
+# js_transform(M) = [M[i, :] for i ∈ 1:size(M, 1)]
 
 # ╔═╡ bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 md"""
@@ -46,19 +46,28 @@ md"""
 const DAY_TIME_FMT = dateformat"e II:MM p PT"
 
 # ╔═╡ 3ac3a940-399b-49c2-aafb-1943be4ec06e
-df_dates_people = CSV.read("data/onaketa_sessions_dates_people.csv", DataFrame;
-	# normalizenames = true,
-	dateformat = dateformat"mm/dd/yyyy, HH:MM:SS p",
-)
+df_dates_people = let
+	df = CSV.read("data/onaketa_sessions_dates_people.csv", DataFrame;
+		# normalizenames = true,
+		dateformat = dateformat"mm/dd/yyyy, HH:MM:SS p",
+	)
+
+	@rename df begin
+		:"Aaron Sandiford" = :"RICARDO A SANDIFORD "
+		:"Guy Nesbitt" = :"Krishna Nesbitt "
+		:"Nailah Gabrielle Cannon" = :"Nailah Cannon "
+		:"Sarai King" = :"Desiree King "
+	end
+end
+
+# ╔═╡ b3323b11-d536-40a7-b7d4-1d206842690a
+print(names(df_dates_people))
 
 # ╔═╡ 8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
 mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
 
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
-DATES = df_dates_people.:"Date / Time";
-
-# ╔═╡ 7c85ecfd-82c1-4eae-8541-c2861ea26bba
-x = @view DATES[mask]
+const DATES = df_dates_people.:"Date / Time";
 
 # ╔═╡ 60a35565-5f35-437c-a45c-5c66de049d57
 function avail_times(arr, times)
@@ -85,16 +94,17 @@ md"""
 """
 
 # ╔═╡ 6b8b11b7-c194-43d9-a1b7-75745698e8f7
-# df_student_applicants = let
-# 	df = CSV.read("./data/student_applications.csv", DataFrame;
-# 		# header = 2,	
-# 	)
-# 	@rsubset df :"Submitted at" ≥ Date(2024, 07, 01) 
-# end;
+df_student_applicants = let
+	df = CSV.read("./data/student_applications.csv", DataFrame;
+		# header = 2,
+		normalizenames = true,
+	)
+	@rsubset df :Submitted_at ≥ Date(2024, 07, 01) 
+end;
 
 # ╔═╡ 8856ef9c-46fa-4890-9195-e8da65259cf9
-# student_names = (@rsubset df_student_applicants :internal_status == "accept"
-# ).student_name |> sort;
+student_names = (@rsubset df_student_applicants :internal_status == "accept"
+).student_name |> sort;
 
 # ╔═╡ de7d132c-9060-4019-b4d8-bd2da866adf3
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -162,7 +172,7 @@ end
 # ╔═╡ a4c9ad63-ff84-4057-8370-5f6e9469ea2e
 begin
 	tutor_info = OrderedDict(name => user_info[name] for name ∈ tutor_names)
-	student_names = setdiff(keys(user_info), tutor_names) |> collect |> sort
+	# student_names = setdiff(keys(user_info), tutor_names) |> collect |> sort
 	student_info = OrderedDict(name => user_info[name] for name ∈ student_names)
 	N_common_matrix, dt_common_matrix = store_matches(user_info, tutor_info, student_info)
 end;
@@ -176,7 +186,7 @@ begin
 	dt_selected = @view(
 		dt_all[student_names, tutor_names]
 	).array
-	customdata = dt_selected
+	# customdata = js_transform(dt_selected)
 	
 	fig = Plot(Layout(
 		# xaxis = attr(fixedrange=true, constrain="domain"), # Don't zoom
@@ -199,11 +209,11 @@ begin
 			y = student_names,
 			z = N_selected,
 			colorbar_title = "Matches",
-			customdata,
-			hovertemplate = """
-			<b>%{x} and %{y}: %{z} matches</b>
-			<br><br>%{customdata}<extra></extra>
-			""",
+			# customdata,
+			# hovertemplate = """
+			# <b>%{x} and %{y}: %{z} matches</b>
+			# <br><br>%{customdata}<extra></extra>
+			# """,
 			zmin = minimum(N_all),
 			zmax = maximum(N_all),
 		)
@@ -227,12 +237,6 @@ open("./matching.html", "w") do io
 		full_html = false,
 	)
 end
-
-# ╔═╡ dc943151-f1e6-45f1-9661-a67818672e57
-dt_selected
-
-# ╔═╡ e69698c2-546c-4052-85fe-c9a701324c00
-js_transform(dt_selected)
 
 # ╔═╡ d15e16d4-f31d-4d24-9252-c2a78f917892
 md"""
@@ -877,26 +881,24 @@ version = "17.4.0+2"
 # ╠═52594152-18e4-42c3-9d43-73f7a8aea460
 # ╠═550c8eb1-6b8c-4241-a9ee-6c40a2fed74b
 # ╠═857495a9-5d3c-4512-920e-3f0f210bf43f
-# ╠═dc943151-f1e6-45f1-9661-a67818672e57
-# ╠═e69698c2-546c-4052-85fe-c9a701324c00
-# ╠═bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
+# ╟─bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 # ╠═6d389a47-e5a3-4e39-9d53-3a9a19c233d5
 # ╠═3ac3a940-399b-49c2-aafb-1943be4ec06e
+# ╠═b3323b11-d536-40a7-b7d4-1d206842690a
 # ╠═8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
-# ╠═7c85ecfd-82c1-4eae-8541-c2861ea26bba
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═60a35565-5f35-437c-a45c-5c66de049d57
 # ╠═5ee4c1c0-70fc-4117-9564-cc6a554a7694
 # ╠═c2426065-8ff6-49d5-853f-cbc80f4d23ba
-# ╠═d5e98d73-ff3c-4798-b8ca-65905011e830
+# ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
 # ╠═a4c9ad63-ff84-4057-8370-5f6e9469ea2e
 # ╠═6b8b11b7-c194-43d9-a1b7-75745698e8f7
 # ╠═8856ef9c-46fa-4890-9195-e8da65259cf9
-# ╠═de7d132c-9060-4019-b4d8-bd2da866adf3
-# ╠═4bf75e8c-7831-4b1a-9d6d-8cbbc92388e8
-# ╠═5c66cc1f-a062-4c75-860a-e27a979c2127
-# ╠═d15e16d4-f31d-4d24-9252-c2a78f917892
+# ╟─de7d132c-9060-4019-b4d8-bd2da866adf3
+# ╟─4bf75e8c-7831-4b1a-9d6d-8cbbc92388e8
+# ╟─5c66cc1f-a062-4c75-860a-e27a979c2127
+# ╟─d15e16d4-f31d-4d24-9252-c2a78f917892
 # ╠═b57ac7d2-ca1c-4ac2-8a18-2199ca154627
 # ╠═0bc4f77c-a208-4f0e-accb-07d4f5f18115
 # ╟─00000000-0000-0000-0000-000000000001
