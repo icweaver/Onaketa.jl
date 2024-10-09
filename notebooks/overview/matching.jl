@@ -168,6 +168,9 @@ md"""
 ## Find matches
 """
 
+# ╔═╡ 488579dd-dc42-4411-a446-00f81090c789
+user_info["Abe Narvaez-Olvera"]
+
 # ╔═╡ a65071a1-be75-406f-b8bc-05268ea55f1e
 df_student_applicants = let
 	df = CSV.read("./data/student_applications.csv", DataFrame;
@@ -1104,6 +1107,7 @@ version = "17.4.0+2"
 # ╠═67abbb7d-f243-49e3-9c8d-91e0b6a4aafe
 # ╠═46db0011-8992-4e95-8fda-b965e05ea916
 # ╠═300e79dc-ce4a-4b51-ac83-edeb0979e61d
+# ╠═488579dd-dc42-4411-a446-00f81090c789
 # ╠═cd4f9e05-5029-4a2a-858f-dc782a645913
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
