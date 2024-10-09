@@ -145,9 +145,6 @@ names_unknown = sort(filter(x -> occursin("Unknown", x), collect(keys(user_info)
 # ╔═╡ 14d2be49-4770-4fb2-af9c-33d7a4288981
 names_noapp = sort(filter(x -> occursin("NoApp", x), collect(keys(user_info))); lt=natural)
 
-# ╔═╡ a358e558-0283-4d59-b597-0d74029e3544
-df_names_dates = CSV.read("data/onaketa_sessions_names_dates.csv", DataFrame)
-
 # ╔═╡ aafaba81-aaa4-4c84-83ed-031935cf5e1e
 df_dates_people = CSV.read("data/onaketa_sessions_dates_people.csv", DataFrame;
 	# normalizenames = true,
@@ -158,7 +155,20 @@ df_dates_people = CSV.read("data/onaketa_sessions_dates_people.csv", DataFrame;
 mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
 
 # ╔═╡ 46db0011-8992-4e95-8fda-b965e05ea916
-x = df_dates_people.:"Date / Time"[mask]
+x = @view df_dates_people.:"Date / Time"[mask]
+
+# ╔═╡ 7530411d-a5ec-4b21-b19f-2dec85c88210
+dt = x[100]
+
+# ╔═╡ 4b2cbe51-86b7-46fe-b91a-2a57727b475c
+let
+	d = dayabbr(dt)
+	t = Time(dt)
+	"$(d) $(t)"
+end
+
+# ╔═╡ 2266f6e1-a7bf-4bf1-a757-dad843d071d4
+Time(dt)
 
 # ╔═╡ 43232ad3-a833-4e02-8c54-026d77011434
 md"""
@@ -308,9 +318,6 @@ open("./matching.html", "w") do io
 		full_html = false,
 	)
 end
-
-# ╔═╡ 719907f8-3f47-41b3-8a70-e8aee7be4f54
-student_info
 
 # ╔═╡ 0ebce986-c7c6-4619-8779-c5e7d6f2e8ac
 md"""
@@ -1082,7 +1089,7 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╟─5992a43e-3a89-4300-94d7-13f47dd06261
 # ╟─30c2e53f-984f-4902-9fb9-fea2f75e9ab3
-# ╟─e077cacc-e638-49bc-9e50-62a43a7af574
+# ╠═e077cacc-e638-49bc-9e50-62a43a7af574
 # ╠═fa5f1811-40a4-4572-bc7a-fbbf2f9a3c24
 # ╠═13788e0e-10b8-44d1-8db3-625dd6e47240
 # ╟─6132e561-e9e9-423a-90f1-fa7b7e4f6882
@@ -1100,11 +1107,12 @@ version = "17.4.0+2"
 # ╠═99cf24cb-9e0e-496c-aa8a-5bb0c2cc02a1
 # ╟─6f4e5641-ac06-4d89-beaf-7eb4b6c4848c
 # ╟─97e212ea-9425-481a-add6-8fd09f00e4a2
-# ╠═a358e558-0283-4d59-b597-0d74029e3544
 # ╠═aafaba81-aaa4-4c84-83ed-031935cf5e1e
 # ╠═67abbb7d-f243-49e3-9c8d-91e0b6a4aafe
 # ╠═46db0011-8992-4e95-8fda-b965e05ea916
-# ╠═719907f8-3f47-41b3-8a70-e8aee7be4f54
+# ╠═7530411d-a5ec-4b21-b19f-2dec85c88210
+# ╠═4b2cbe51-86b7-46fe-b91a-2a57727b475c
+# ╠═2266f6e1-a7bf-4bf1-a757-dad843d071d4
 # ╟─43232ad3-a833-4e02-8c54-026d77011434
 # ╠═24b79620-2d48-4946-862e-a7d17cbfd482
 # ╠═a65071a1-be75-406f-b8bc-05268ea55f1e
