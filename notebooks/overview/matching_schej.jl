@@ -46,7 +46,10 @@ md"""
 """
 
 # ╔═╡ 6d389a47-e5a3-4e39-9d53-3a9a19c233d5
-const DAY_TIME_FMT = dateformat"e II:MM p PT"
+# const DAY_TIME_FMT = dateformat"e II:MM p PT"
+
+# ╔═╡ ad043ea3-47e8-4d6a-a541-a43cfe3bb958
+const DAY_TIME_FMT = dateformat"II:MM p PT"
 
 # ╔═╡ 3ac3a940-399b-49c2-aafb-1943be4ec06e
 df_dates_people = let
@@ -144,10 +147,14 @@ student_schedule = Dict(
 	]
 )
 
-# ╔═╡ 624cdf57-c8a1-457f-b4a6-530f046c5154
-for (a, b) ∈ student_schedule["Abigail Wilson"]
-	println(a)
-	println(availability_summary(b))
+# ╔═╡ c91add5d-f8e4-4ece-9836-93aaa5768e35
+for d in ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+	println(d)
+	if haskey(student_schedule["Abigail Wilson"], d)
+		println(availability_summary(student_schedule["Abigail Wilson"][d]))
+	else
+		println()
+	end
 end
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
@@ -952,6 +959,7 @@ version = "17.4.0+2"
 # ╠═857495a9-5d3c-4512-920e-3f0f210bf43f
 # ╟─bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 # ╠═6d389a47-e5a3-4e39-9d53-3a9a19c233d5
+# ╠═ad043ea3-47e8-4d6a-a541-a43cfe3bb958
 # ╠═3ac3a940-399b-49c2-aafb-1943be4ec06e
 # ╠═b3323b11-d536-40a7-b7d4-1d206842690a
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
@@ -960,11 +968,11 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═4235863c-2339-4672-9a90-4adff5839cba
 # ╠═412c3249-296f-490f-bc68-021b4e401a4c
-# ╠═624cdf57-c8a1-457f-b4a6-530f046c5154
+# ╠═c91add5d-f8e4-4ece-9836-93aaa5768e35
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 # ╠═f8e49be8-942c-40f2-96db-cea26b289060
 # ╠═60a35565-5f35-437c-a45c-5c66de049d57
-# ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
+# ╠═5ee4c1c0-70fc-4117-9564-cc6a554a7694
 # ╟─c2426065-8ff6-49d5-853f-cbc80f4d23ba
 # ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 # ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
