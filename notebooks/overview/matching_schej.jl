@@ -5,7 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
-using IterTools: groupby as igroupby
+using IterTools: groupby as igroupby, partition as ipartition
 
 # ╔═╡ b57ac7d2-ca1c-4ac2-8a18-2199ca154627
 begin
@@ -79,8 +79,18 @@ yee = df_dates_people.:"Test Student"
 # ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
 z = findall(!ismissing, yee)
 
-# ╔═╡ 65297108-cd0f-490f-b8f7-1e5fc476dc8b
-z[[1:7; 8:12; 13:20]] == [3:9; 11:15; 21:28] == z
+# ╔═╡ d6f780f6-bdd6-4f2e-b385-1c9454387c85
+# https://discourse.julialang.org/t/how-would-i-separate-a-vector-into-groups-where-the-values-are-close/86988/5?u=icweaver
+function splitgroups(v)
+	start = firstindex(v)
+	groups = []
+	for stop in [findall(>(1), diff(v)); lastindex(v)]
+		push!(groups, v[start])
+		push!(groups, v[stop]+1)
+		start = stop + 1
+	end
+	groups
+end
 
 # ╔═╡ dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
 idx_gaps = findall(>(1), diff(z))
@@ -106,8 +116,13 @@ end
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 
-# ╔═╡ 0044015e-d224-4ed4-a15c-8bf761c06887
-DATES[[3, 10, 11, 16, 21, 29]] |> fmt_date
+# ╔═╡ 9a2bd77f-a4a4-4690-b955-0db9cf5332fa
+w = DATES[splitgroups(z)] |> fmt_date
+
+# ╔═╡ d54f2435-1d4a-443a-9f2a-caee46cc0a4a
+for yee ∈ ipartition(w, 2)
+	@debug "$(first(yee)) - $(last(yee))"
+end
 
 # ╔═╡ 3434b95a-6b15-49b2-acf4-f7fe26e0045e
 let
@@ -956,8 +971,9 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
 # ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
-# ╠═65297108-cd0f-490f-b8f7-1e5fc476dc8b
-# ╠═0044015e-d224-4ed4-a15c-8bf761c06887
+# ╠═9a2bd77f-a4a4-4690-b955-0db9cf5332fa
+# ╠═d54f2435-1d4a-443a-9f2a-caee46cc0a4a
+# ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # ╠═dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
 # ╠═48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
 # ╠═3434b95a-6b15-49b2-acf4-f7fe26e0045e
