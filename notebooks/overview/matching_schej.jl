@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ ebc14cf8-5d04-4dce-9ea3-8cf4f79639fc
+using PrettyTables
+
 # ╔═╡ 0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 using IterTools: groupby as igroupby, partition as ipartition
 
@@ -49,7 +52,7 @@ md"""
 const DAY_TIME_FMT = dateformat"e II:MM p PT"
 
 # ╔═╡ ad043ea3-47e8-4d6a-a541-a43cfe3bb958
-# const DAY_TIME_FMT = dateformat"II:MM p PT"
+const DAY_TIME_FMT2 = dateformat"II:MM p PT"
 
 # ╔═╡ 3ac3a940-399b-49c2-aafb-1943be4ec06e
 df_dates_people = let
@@ -84,6 +87,9 @@ function splitgroups(v)
 	return groups
 end
 
+# ╔═╡ 08f21ea4-b785-499f-9af3-1ee4b1ed4e40
+students_p = ["Test Student", "Abigail Wilson", "Amirah Jabbie"]
+
 # ╔═╡ 7e9a41b5-51b4-4b15-ac65-18a080999bcb
 dotw = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -108,13 +114,16 @@ end
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 
+# ╔═╡ 02b18c21-a006-436d-a6b4-2b0a231334bf
+fmt_date2(t) = Dates.format.(t, DAY_TIME_FMT2)
+
 # ╔═╡ 412c3249-296f-490f-bc68-021b4e401a4c
 function availability_summary(response)
-	availability_times_ranges = splitgroups(response) |> fmt_date
+	availability_times_ranges = splitgroups(response) |> fmt_date2
 	
 	io = IOBuffer()
 	for yee ∈ ipartition(availability_times_ranges, 2)
-		write(io, "$(first(yee)) - $(last(yee))\n")
+		write(io, "$(first(yee)) - $(last(yee))\n\n")
 	end
 	return stake!(io)
 end
@@ -159,18 +168,22 @@ student_schedule = Dict(
 	]
 )
 
-# ╔═╡ 34af1262-13ae-4a96-a631-2b055394cdb1
-yee = student_schedule["Max Burgos"]
-
 # ╔═╡ 1bc8fc77-ef0c-46b2-92b1-916260fce824
 okk = [
-	pschej(student_schedule[name], d)
-	for name in ["Test Student", "Abigail Wilson", "Amirah Jabbie"],
+	Markdown.parse(pschej(student_schedule[name], d))
+	for name in students_p,
 		d in dotw
 ]
 
-# ╔═╡ df8d1e11-e0d0-4519-b327-d0a7acde0ad7
-DataFrame(okk, dotw)
+# ╔═╡ a2200b6a-288d-4585-bf8f-cc1dee3daa5c
+df_p = DataFrame(okk, dotw);
+
+# ╔═╡ 967a339a-b978-4c2b-94ab-de6cf6f62ffe
+pretty_table(HTML, df_p;
+	row_labels = students_p,
+	maximum_columns_width = "max-width",
+	show_subheader = false,
+)
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
 md"""
@@ -343,6 +356,7 @@ NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PlutoPlotly = "8e989ff0-3d88-8e9f-f020-2b208a939ff0"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 
 [compat]
 CSV = "~0.10.14"
@@ -354,6 +368,7 @@ NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.3"
 PlutoPlotly = "~0.5.0"
 PlutoUI = "~0.7.60"
+PrettyTables = "~2.4.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -362,7 +377,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0"
 manifest_format = "2.0"
-project_hash = "cc54d86d48237a05dc4dfbdfb65dfb074615ac8c"
+project_hash = "5a298db159b80b86986ac1a8480396824e757ef6"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -967,7 +982,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═0dffb591-2cca-438d-97cb-1fc6653e5785
+# ╟─0dffb591-2cca-438d-97cb-1fc6653e5785
 # ╠═39d5e160-bc94-4f6b-801d-069154faffb4
 # ╠═52594152-18e4-42c3-9d43-73f7a8aea460
 # ╠═550c8eb1-6b8c-4241-a9ee-6c40a2fed74b
@@ -981,17 +996,20 @@ version = "17.4.0+2"
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
-# ╠═4235863c-2339-4672-9a90-4adff5839cba
+# ╟─4235863c-2339-4672-9a90-4adff5839cba
 # ╠═412c3249-296f-490f-bc68-021b4e401a4c
-# ╠═34af1262-13ae-4a96-a631-2b055394cdb1
 # ╠═1bc8fc77-ef0c-46b2-92b1-916260fce824
+# ╠═08f21ea4-b785-499f-9af3-1ee4b1ed4e40
 # ╠═7e9a41b5-51b4-4b15-ac65-18a080999bcb
-# ╠═df8d1e11-e0d0-4519-b327-d0a7acde0ad7
+# ╠═a2200b6a-288d-4585-bf8f-cc1dee3daa5c
+# ╠═967a339a-b978-4c2b-94ab-de6cf6f62ffe
+# ╠═ebc14cf8-5d04-4dce-9ea3-8cf4f79639fc
 # ╠═c91add5d-f8e4-4ece-9836-93aaa5768e35
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 # ╠═f8e49be8-942c-40f2-96db-cea26b289060
-# ╠═60a35565-5f35-437c-a45c-5c66de049d57
+# ╟─60a35565-5f35-437c-a45c-5c66de049d57
 # ╠═5ee4c1c0-70fc-4117-9564-cc6a554a7694
+# ╠═02b18c21-a006-436d-a6b4-2b0a231334bf
 # ╟─c2426065-8ff6-49d5-853f-cbc80f4d23ba
 # ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 # ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
