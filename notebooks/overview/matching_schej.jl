@@ -69,12 +69,6 @@ print(names(df_dates_people))
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 const DATES = df_dates_people.:"Date / Time";
 
-# ╔═╡ a8d53157-ae12-4924-b127-1ce9db0b83eb
-yee = df_dates_people.:"Test Student "
-
-# ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
-z = findall(!ismissing, yee)
-
 # ╔═╡ d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # https://discourse.julialang.org/t/how-would-i-separate-a-vector-into-groups-where-the-values-are-close/86988/5?u=icweaver
 function splitgroups(v)
@@ -124,7 +118,7 @@ function availability_summary(response)
 end
 
 # ╔═╡ a32025bd-52ca-4172-98a9-816ff9c9a5b7
-s = availability_summary(df_dates_people.:"Test Student ")
+s = availability_summary(df_dates_people.:"Karla Villalta ")
 
 # ╔═╡ 6838e416-534b-456c-87fa-6ad38ab93a6d
 print(s)
@@ -967,8 +961,6 @@ version = "17.4.0+2"
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
-# ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
-# ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
 # ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # ╠═d7d0d271-9b6e-4e70-82ec-147e49d3ff52
 # ╠═a32025bd-52ca-4172-98a9-816ff9c9a5b7
