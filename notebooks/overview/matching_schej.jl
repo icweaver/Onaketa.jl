@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.19.47
 
 using Markdown
 using InteractiveUtils
@@ -52,7 +52,7 @@ md"""
 const DAY_TIME_FMT = dateformat"e II:MM p PT"
 
 # ╔═╡ ad043ea3-47e8-4d6a-a541-a43cfe3bb958
-const DAY_TIME_FMT2 = dateformat"II:MM p PT"
+const DAY_TIME_FMT2 = dateformat"HH:MM"
 
 # ╔═╡ 3ac3a940-399b-49c2-aafb-1943be4ec06e
 df_dates_people = let
@@ -88,10 +88,13 @@ function splitgroups(v)
 end
 
 # ╔═╡ 08f21ea4-b785-499f-9af3-1ee4b1ed4e40
-students_p = ["Test Student", "Abigail Wilson", "Amirah Jabbie"]
+students_p = ["Aaron Sandiford", "Abigail Wilson", "Miles Banks", "Nailah Gabrielle Cannon"]
 
 # ╔═╡ 7e9a41b5-51b4-4b15-ac65-18a080999bcb
 dotw = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+# ╔═╡ 55590163-2d58-4209-afcf-2d5d24224bdf
+hl_cell
 
 # ╔═╡ 07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 stake!(iob) = (String ∘ take!)(iob)
@@ -159,30 +162,26 @@ user_availabilities = Dict(
 # ╔═╡ f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 student_schedule = Dict(
 	student_name => store_avail_by_day(user_availabilities[student_name])
-	for student_name ∈ [
-		"Test Student",
-		"Abigail Wilson",
-		"Amirah Jabbie",
-		"Ava Victoriano",
-		"Max Burgos",
-	]
+	for student_name ∈ students_p
 )
 
 # ╔═╡ 1bc8fc77-ef0c-46b2-92b1-916260fce824
 okk = [
 	Markdown.parse(pschej(student_schedule[name], d))
-	for name in students_p,
-		d in dotw
+	for d in dotw,
+		name in students_p
+		
 ]
 
 # ╔═╡ a2200b6a-288d-4585-bf8f-cc1dee3daa5c
-df_p = DataFrame(okk, dotw);
+df_p = DataFrame(okk, students_p);
 
 # ╔═╡ 967a339a-b978-4c2b-94ab-de6cf6f62ffe
 pretty_table(HTML, df_p;
-	row_labels = students_p,
+	row_labels = dotw,
 	maximum_columns_width = "max-width",
 	show_subheader = false,
+	alignment = :c,
 )
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
@@ -202,6 +201,9 @@ end;
 # ╔═╡ 8856ef9c-46fa-4890-9195-e8da65259cf9
 student_names = (@rsubset df_student_applicants :internal_status == "accept"
 ).student_name |> sort;
+
+# ╔═╡ b0328c90-0f9b-49c0-904b-729f13d92cf7
+student_names
 
 # ╔═╡ de7d132c-9060-4019-b4d8-bd2da866adf3
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -1003,6 +1005,8 @@ version = "17.4.0+2"
 # ╠═7e9a41b5-51b4-4b15-ac65-18a080999bcb
 # ╠═a2200b6a-288d-4585-bf8f-cc1dee3daa5c
 # ╠═967a339a-b978-4c2b-94ab-de6cf6f62ffe
+# ╠═55590163-2d58-4209-afcf-2d5d24224bdf
+# ╠═b0328c90-0f9b-49c0-904b-729f13d92cf7
 # ╠═ebc14cf8-5d04-4dce-9ea3-8cf4f79639fc
 # ╠═c91add5d-f8e4-4ece-9836-93aaa5768e35
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
