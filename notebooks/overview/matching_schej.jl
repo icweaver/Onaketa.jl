@@ -67,9 +67,6 @@ end
 # ╔═╡ b3323b11-d536-40a7-b7d4-1d206842690a
 print(names(df_dates_people))
 
-# ╔═╡ 8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
-mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
-
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 const DATES = df_dates_people.:"Date / Time";
 
@@ -91,12 +88,6 @@ function splitgroups(v)
 	end
 	groups
 end
-
-# ╔═╡ dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
-idx_gaps = findall(>(1), diff(z))
-
-# ╔═╡ 48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
-# DATES[z[[begin; idx_gaps; end]]] |> fmt_date
 
 # ╔═╡ f8e49be8-942c-40f2-96db-cea26b289060
 function store_avail_by_day(user_availability)
@@ -122,12 +113,6 @@ w = DATES[splitgroups(z)] |> fmt_date
 # ╔═╡ d54f2435-1d4a-443a-9f2a-caee46cc0a4a
 for yee ∈ ipartition(w, 2)
 	@debug "$(first(yee)) - $(last(yee))"
-end
-
-# ╔═╡ 3434b95a-6b15-49b2-acf4-f7fe26e0045e
-let
-	ts = DATES[3:9]
-	(first(ts), last(ts) + Minute(15)) |> fmt_date
 end
 
 # ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
@@ -309,6 +294,9 @@ open("./matching.html", "w") do io
 		full_html = false,
 	)
 end
+
+# ╔═╡ 0c2853ea-9a0f-4b14-987b-7e849d353dbb
+student_info
 
 # ╔═╡ d15e16d4-f31d-4d24-9252-c2a78f917892
 md"""
@@ -964,7 +952,6 @@ version = "17.4.0+2"
 # ╠═6d389a47-e5a3-4e39-9d53-3a9a19c233d5
 # ╠═3ac3a940-399b-49c2-aafb-1943be4ec06e
 # ╠═b3323b11-d536-40a7-b7d4-1d206842690a
-# ╠═8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
@@ -974,9 +961,6 @@ version = "17.4.0+2"
 # ╠═9a2bd77f-a4a4-4690-b955-0db9cf5332fa
 # ╠═d54f2435-1d4a-443a-9f2a-caee46cc0a4a
 # ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
-# ╠═dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
-# ╠═48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
-# ╠═3434b95a-6b15-49b2-acf4-f7fe26e0045e
 # ╟─f8e49be8-942c-40f2-96db-cea26b289060
 # ╟─60a35565-5f35-437c-a45c-5c66de049d57
 # ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
@@ -984,6 +968,7 @@ version = "17.4.0+2"
 # ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 # ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
 # ╠═a4c9ad63-ff84-4057-8370-5f6e9469ea2e
+# ╠═0c2853ea-9a0f-4b14-987b-7e849d353dbb
 # ╠═6b8b11b7-c194-43d9-a1b7-75745698e8f7
 # ╠═8856ef9c-46fa-4890-9195-e8da65259cf9
 # ╟─de7d132c-9060-4019-b4d8-bd2da866adf3
