@@ -60,7 +60,6 @@ df_dates_people = let
 		:"Guy Nesbitt" = :"Krishna Nesbitt "
 		:"Nailah Gabrielle Cannon" = :"Nailah Cannon "
 		:"Sarai King" = :"Desiree King "
-		:"Test Student" = :"Test Student "
 	end
 end
 
@@ -71,10 +70,17 @@ print(names(df_dates_people))
 const DATES = df_dates_people.:"Date / Time";
 
 # ╔═╡ a8d53157-ae12-4924-b127-1ce9db0b83eb
-yee = df_dates_people.:"Test Student"
+yee = df_dates_people.:"Test Student "
 
 # ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
 z = findall(!ismissing, yee)
+
+# ╔═╡ c73981c2-be2f-4f80-8dd6-d8cee6e05ce7
+let
+	x = [1, 3, 7, 10]
+	x[2:4] .+= 10
+	x
+end
 
 # ╔═╡ d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # https://discourse.julialang.org/t/how-would-i-separate-a-vector-into-groups-where-the-values-are-close/86988/5?u=icweaver
@@ -83,11 +89,17 @@ function splitgroups(v)
 	groups = []
 	for stop in [findall(>(1), diff(v)); lastindex(v)]
 		push!(groups, v[start])
-		push!(groups, v[stop]+1)
+		push!(groups, v[stop])
 		start = stop + 1
 	end
-	groups
+	return groups
 end
+
+# ╔═╡ d6556c64-8908-466d-ac3b-a41f312b3f67
+yuh = splitgroups(z)
+
+# ╔═╡ 07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
+stake!(iob) = (String ∘ take!)(iob)
 
 # ╔═╡ f8e49be8-942c-40f2-96db-cea26b289060
 function store_avail_by_day(user_availability)
@@ -114,6 +126,25 @@ w = DATES[splitgroups(z)] |> fmt_date
 for yee ∈ ipartition(w, 2)
 	@debug "$(first(yee)) - $(last(yee))"
 end
+
+# ╔═╡ d7d0d271-9b6e-4e70-82ec-147e49d3ff52
+function availability_summary(response)
+	availability_idxs = findall(!ismissing, response)
+	availability_idxs_ranges = splitgroups(availability_idxs)
+	availability_times_ranges = DATES[availability_idxs_ranges] |> fmt_date
+	
+	io = IOBuffer()
+	for yee ∈ ipartition(availability_times_ranges, 2)
+		write(io, "$(first(yee)) - $(last(yee))\n")
+	end
+	return stake!(io)
+end
+
+# ╔═╡ a32025bd-52ca-4172-98a9-816ff9c9a5b7
+s = availability_summary(df_dates_people.:"Test Student ")
+
+# ╔═╡ 6838e416-534b-456c-87fa-6ad38ab93a6d
+print(s)
 
 # ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
 string_strip = strip ∘ string
@@ -294,9 +325,6 @@ open("./matching.html", "w") do io
 		full_html = false,
 	)
 end
-
-# ╔═╡ 0c2853ea-9a0f-4b14-987b-7e849d353dbb
-student_info
 
 # ╔═╡ d15e16d4-f31d-4d24-9252-c2a78f917892
 md"""
@@ -958,9 +986,15 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
 # ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
+# ╠═d6556c64-8908-466d-ac3b-a41f312b3f67
+# ╠═c73981c2-be2f-4f80-8dd6-d8cee6e05ce7
+# ╠═d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # ╠═9a2bd77f-a4a4-4690-b955-0db9cf5332fa
 # ╠═d54f2435-1d4a-443a-9f2a-caee46cc0a4a
-# ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
+# ╠═d7d0d271-9b6e-4e70-82ec-147e49d3ff52
+# ╠═a32025bd-52ca-4172-98a9-816ff9c9a5b7
+# ╠═6838e416-534b-456c-87fa-6ad38ab93a6d
+# ╠═07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 # ╟─f8e49be8-942c-40f2-96db-cea26b289060
 # ╟─60a35565-5f35-437c-a45c-5c66de049d57
 # ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
@@ -968,10 +1002,9 @@ version = "17.4.0+2"
 # ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 # ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
 # ╠═a4c9ad63-ff84-4057-8370-5f6e9469ea2e
-# ╠═0c2853ea-9a0f-4b14-987b-7e849d353dbb
 # ╠═6b8b11b7-c194-43d9-a1b7-75745698e8f7
 # ╠═8856ef9c-46fa-4890-9195-e8da65259cf9
-# ╟─de7d132c-9060-4019-b4d8-bd2da866adf3
+# ╠═de7d132c-9060-4019-b4d8-bd2da866adf3
 # ╟─4bf75e8c-7831-4b1a-9d6d-8cbbc92388e8
 # ╟─5c66cc1f-a062-4c75-860a-e27a979c2127
 # ╟─d15e16d4-f31d-4d24-9252-c2a78f917892
