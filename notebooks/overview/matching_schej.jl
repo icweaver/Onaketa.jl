@@ -75,13 +75,6 @@ yee = df_dates_people.:"Test Student "
 # ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
 z = findall(!ismissing, yee)
 
-# ╔═╡ c73981c2-be2f-4f80-8dd6-d8cee6e05ce7
-let
-	x = [1, 3, 7, 10]
-	x[2:4] .+= 10
-	x
-end
-
 # ╔═╡ d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # https://discourse.julialang.org/t/how-would-i-separate-a-vector-into-groups-where-the-values-are-close/86988/5?u=icweaver
 function splitgroups(v)
@@ -94,9 +87,6 @@ function splitgroups(v)
 	end
 	return groups
 end
-
-# ╔═╡ d6556c64-8908-466d-ac3b-a41f312b3f67
-yuh = splitgroups(z)
 
 # ╔═╡ 07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 stake!(iob) = (String ∘ take!)(iob)
@@ -119,22 +109,15 @@ end
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 
-# ╔═╡ 9a2bd77f-a4a4-4690-b955-0db9cf5332fa
-w = DATES[splitgroups(z)] |> fmt_date
-
-# ╔═╡ d54f2435-1d4a-443a-9f2a-caee46cc0a4a
-for yee ∈ ipartition(w, 2)
-	@debug "$(first(yee)) - $(last(yee))"
-end
-
 # ╔═╡ d7d0d271-9b6e-4e70-82ec-147e49d3ff52
 function availability_summary(response)
 	availability_idxs = findall(!ismissing, response)
 	availability_idxs_ranges = splitgroups(availability_idxs)
-	availability_times_ranges = DATES[availability_idxs_ranges] |> fmt_date
+	availability_times_ranges = DATES[availability_idxs_ranges]
+	availability_times_ranges[begin+1:2:end] .+= Minute(15)
 	
 	io = IOBuffer()
-	for yee ∈ ipartition(availability_times_ranges, 2)
+	for yee ∈ ipartition(fmt_date(availability_times_ranges), 2)
 		write(io, "$(first(yee)) - $(last(yee))\n")
 	end
 	return stake!(io)
@@ -986,15 +969,11 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
 # ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
-# ╠═d6556c64-8908-466d-ac3b-a41f312b3f67
-# ╠═c73981c2-be2f-4f80-8dd6-d8cee6e05ce7
-# ╠═d6f780f6-bdd6-4f2e-b385-1c9454387c85
-# ╠═9a2bd77f-a4a4-4690-b955-0db9cf5332fa
-# ╠═d54f2435-1d4a-443a-9f2a-caee46cc0a4a
+# ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
 # ╠═d7d0d271-9b6e-4e70-82ec-147e49d3ff52
 # ╠═a32025bd-52ca-4172-98a9-816ff9c9a5b7
 # ╠═6838e416-534b-456c-87fa-6ad38ab93a6d
-# ╠═07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
+# ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 # ╟─f8e49be8-942c-40f2-96db-cea26b289060
 # ╟─60a35565-5f35-437c-a45c-5c66de049d57
 # ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
