@@ -69,14 +69,13 @@ print(names(df_dates_people))
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 const DATES = df_dates_people.:"Date / Time";
 
-# ╔═╡ d6f780f6-bdd6-4f2e-b385-1c9454387c85
-# https://discourse.julialang.org/t/how-would-i-separate-a-vector-into-groups-where-the-values-are-close/86988/5?u=icweaver
+# ╔═╡ 4235863c-2339-4672-9a90-4adff5839cba
 function splitgroups(v)
 	start = firstindex(v)
 	groups = []
-	for stop in [findall(>(1), diff(v)); lastindex(v)]
+	for stop in [findall(>(Minute(15)), diff(v)); lastindex(v)]
 		push!(groups, v[start])
-		push!(groups, v[stop])
+		push!(groups, v[stop] + Minute(15))
 		start = stop + 1
 	end
 	return groups
@@ -97,31 +96,22 @@ end
 # ╔═╡ 60a35565-5f35-437c-a45c-5c66de049d57
 function avail_times(arr, times)
 	mask = (!ismissing).(arr)
-	available_times = @view times[mask]
+	available_times = times[mask]
 end
 
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 
-# ╔═╡ d7d0d271-9b6e-4e70-82ec-147e49d3ff52
+# ╔═╡ 412c3249-296f-490f-bc68-021b4e401a4c
 function availability_summary(response)
-	availability_idxs = findall(!ismissing, response)
-	availability_idxs_ranges = splitgroups(availability_idxs)
-	availability_times_ranges = DATES[availability_idxs_ranges]
-	availability_times_ranges[begin+1:2:end] .+= Minute(15)
+	availability_times_ranges = splitgroups(response) |> fmt_date
 	
 	io = IOBuffer()
-	for yee ∈ ipartition(fmt_date(availability_times_ranges), 2)
+	for yee ∈ ipartition(availability_times_ranges, 2)
 		write(io, "$(first(yee)) - $(last(yee))\n")
 	end
 	return stake!(io)
 end
-
-# ╔═╡ a32025bd-52ca-4172-98a9-816ff9c9a5b7
-s = availability_summary(df_dates_people.:"Karla Villalta ")
-
-# ╔═╡ 6838e416-534b-456c-87fa-6ad38ab93a6d
-print(s)
 
 # ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
 string_strip = strip ∘ string
@@ -150,8 +140,15 @@ student_schedule = Dict(
 		"Abigail Wilson",
 		"Amirah Jabbie",
 		"Ava Victoriano",
+		"Karla Villalta",
 	]
 )
+
+# ╔═╡ 624cdf57-c8a1-457f-b4a6-530f046c5154
+for (a, b) ∈ student_schedule["Abigail Wilson"]
+	println(a)
+	println(availability_summary(b))
+end
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
 md"""
@@ -961,13 +958,12 @@ version = "17.4.0+2"
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
-# ╟─d6f780f6-bdd6-4f2e-b385-1c9454387c85
-# ╠═d7d0d271-9b6e-4e70-82ec-147e49d3ff52
-# ╠═a32025bd-52ca-4172-98a9-816ff9c9a5b7
-# ╠═6838e416-534b-456c-87fa-6ad38ab93a6d
+# ╠═4235863c-2339-4672-9a90-4adff5839cba
+# ╠═412c3249-296f-490f-bc68-021b4e401a4c
+# ╠═624cdf57-c8a1-457f-b4a6-530f046c5154
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
-# ╟─f8e49be8-942c-40f2-96db-cea26b289060
-# ╟─60a35565-5f35-437c-a45c-5c66de049d57
+# ╠═f8e49be8-942c-40f2-96db-cea26b289060
+# ╠═60a35565-5f35-437c-a45c-5c66de049d57
 # ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
 # ╟─c2426065-8ff6-49d5-853f-cbc80f4d23ba
 # ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
