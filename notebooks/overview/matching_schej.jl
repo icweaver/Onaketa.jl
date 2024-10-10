@@ -4,9 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 3cbb952a-1de4-4ac5-9eb9-759a29331d4c
-using IntervalArithmetic
-
 # ╔═╡ 0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 using IterTools: groupby as igroupby
 
@@ -82,11 +79,14 @@ yee = df_dates_people.:"Test Student"
 # ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
 z = findall(!ismissing, yee)
 
-# ╔═╡ dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
-idx_gaps = findall(>(1), diff(z)) .+ 1
+# ╔═╡ 65297108-cd0f-490f-b8f7-1e5fc476dc8b
+z[[1:7; 8:12; 13:20]] == [3:9; 11:15; 21:28] == z
 
-# ╔═╡ 875e313d-22fa-4f4f-8773-d15e970dcd55
-Interval.(z)
+# ╔═╡ dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
+idx_gaps = findall(>(1), diff(z))
+
+# ╔═╡ 48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
+# DATES[z[[begin; idx_gaps; end]]] |> fmt_date
 
 # ╔═╡ f8e49be8-942c-40f2-96db-cea26b289060
 function store_avail_by_day(user_availability)
@@ -106,8 +106,8 @@ end
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 
-# ╔═╡ 48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
-DATES[z[[begin; idx_gaps; end]]] |> fmt_date
+# ╔═╡ 0044015e-d224-4ed4-a15c-8bf761c06887
+DATES[[3, 10, 11, 16, 21, 29]] |> fmt_date
 
 # ╔═╡ 3434b95a-6b15-49b2-acf4-f7fe26e0045e
 let
@@ -310,7 +310,6 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-IntervalArithmetic = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
@@ -322,7 +321,6 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 CSV = "~0.10.14"
 CommonMark = "~0.8.15"
 DataFramesMeta = "~0.15.3"
-IntervalArithmetic = "~0.22.12"
 IterTools = "~1.10.0"
 NamedArrays = "~0.10.3"
 NaturalSort = "~1.0.0"
@@ -337,7 +335,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0"
 manifest_format = "2.0"
-project_hash = "98454b5cd3904fc45610cb2feb0233fffbce00f9"
+project_hash = "cc54d86d48237a05dc4dfbdfb65dfb074615ac8c"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -361,12 +359,6 @@ version = "1.11.0"
 git-tree-sha1 = "cb25e4b105cc927052c2314f8291854ea59bf70a"
 uuid = "18cc8868-cbac-4acf-b575-c8ff214dc66f"
 version = "1.2.4"
-
-[[deps.CRlibm_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "e329286945d0cfc04456972ea732551869af1cfc"
-uuid = "4e9b3aee-d8a1-5a3d-ad8b-7d824db253f0"
-version = "1.0.1+0"
 
 [[deps.CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
@@ -558,22 +550,6 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
-[[deps.IntervalArithmetic]]
-deps = ["CRlibm_jll", "MacroTools", "RoundingEmulator"]
-git-tree-sha1 = "e75c4e33afbc631aa62671ebba12863321c1d46e"
-uuid = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
-version = "0.22.12"
-
-    [deps.IntervalArithmetic.extensions]
-    IntervalArithmeticDiffRulesExt = "DiffRules"
-    IntervalArithmeticForwardDiffExt = "ForwardDiff"
-    IntervalArithmeticRecipesBaseExt = "RecipesBase"
-
-    [deps.IntervalArithmetic.weakdeps]
-    DiffRules = "b552c78f-8df3-52c6-915a-8e097449b14b"
-    ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
-    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-
 [[deps.InvertedIndices]]
 git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
@@ -588,12 +564,6 @@ version = "1.10.0"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
-
-[[deps.JLLWrappers]]
-deps = ["Artifacts", "Preferences"]
-git-tree-sha1 = "f389674c99bfcde17dc57454011aa44d5a260a40"
-uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
-version = "1.6.0"
 
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
@@ -801,11 +771,6 @@ git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
 
-[[deps.RoundingEmulator]]
-git-tree-sha1 = "40b9edad2e5287e05bd413a38f61a8ff55b9557b"
-uuid = "5eaf0fd0-dfba-4ccb-bf02-d820a40db705"
-version = "0.2.1"
-
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
@@ -991,10 +956,10 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
 # ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
+# ╠═65297108-cd0f-490f-b8f7-1e5fc476dc8b
+# ╠═0044015e-d224-4ed4-a15c-8bf761c06887
 # ╠═dd66a3f4-ef5e-4396-b8a6-5d856d2f1894
 # ╠═48e8bf2c-87a5-4b36-b635-4c42c8b47a1a
-# ╠═875e313d-22fa-4f4f-8773-d15e970dcd55
-# ╠═3cbb952a-1de4-4ac5-9eb9-759a29331d4c
 # ╠═3434b95a-6b15-49b2-acf4-f7fe26e0045e
 # ╟─f8e49be8-942c-40f2-96db-cea26b289060
 # ╟─60a35565-5f35-437c-a45c-5c66de049d57
