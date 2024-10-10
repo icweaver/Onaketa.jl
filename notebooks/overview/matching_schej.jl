@@ -4,6 +4,9 @@
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
+using IterTools: groupby as igroupby
+
 # ╔═╡ b57ac7d2-ca1c-4ac2-8a18-2199ca154627
 begin
 	using DataFramesMeta, CSV, Dates, OrderedCollections, NamedArrays
@@ -69,6 +72,15 @@ mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 const DATES = df_dates_people.:"Date / Time";
 
+# ╔═╡ f8e49be8-942c-40f2-96db-cea26b289060
+function store_avail_by_day(user_availability)
+	grp = igroupby(dayofweek, user_availability)
+	
+	return Dict(dayabbr(first(ts)) => ts
+		for ts in grp
+	)
+end
+
 # ╔═╡ 60a35565-5f35-437c-a45c-5c66de049d57
 function avail_times(arr, times)
 	mask = (!ismissing).(arr)
@@ -82,10 +94,30 @@ fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
 string_strip = strip ∘ string
 
 # ╔═╡ bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
-user_info = Dict(string_strip(user_name) => avail_times(user_responses, DATES) |> fmt_date
+user_info = Dict(
+	string_strip(user_name) => avail_times(user_responses, DATES) |> fmt_date
 	for (user_name, user_responses) in pairs(
 		eachcol(df_dates_people[:, begin+1:end])
 	)
+)
+
+# ╔═╡ 75752a76-a28f-43c1-a289-c769153aad62
+user_availabilities = Dict(
+	string_strip(user_name) => avail_times(user_responses, DATES)
+	for (user_name, user_responses) in pairs(
+		eachcol(df_dates_people[:, begin+1:end])
+	)
+)
+
+# ╔═╡ f8363ecf-2ab9-4f7b-81f7-3848016df7c1
+student_schedule = Dict(
+	student_name => store_avail_by_day(user_availabilities[student_name])
+	for student_name ∈ [
+		"Aaron Sandiford",
+		"Abigail Wilson",
+		"Amirah Jabbie",
+		"Ava Victoriano",
+	]
 )
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
@@ -253,6 +285,7 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 NaturalSort = "c020b1a1-e9b0-503a-9c33-f039bfc54a85"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
@@ -263,6 +296,7 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 CSV = "~0.10.14"
 CommonMark = "~0.8.15"
 DataFramesMeta = "~0.15.3"
+IterTools = "~1.10.0"
 NamedArrays = "~0.10.3"
 NaturalSort = "~1.0.0"
 OrderedCollections = "~1.6.3"
@@ -276,7 +310,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0"
 manifest_format = "2.0"
-project_hash = "9bb79bfeaf7d865294437ec7be6cf0ce05217ddb"
+project_hash = "cc54d86d48237a05dc4dfbdfb65dfb074615ac8c"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -495,6 +529,11 @@ version = "1.11.0"
 git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 version = "1.3.0"
+
+[[deps.IterTools]]
+git-tree-sha1 = "42d5f897009e7ff2cf88db414a389e5ed1bdd023"
+uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+version = "1.10.0"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -888,9 +927,13 @@ version = "17.4.0+2"
 # ╠═8ea379ba-c0aa-4fb7-9391-f7ad7a9ca20c
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
-# ╠═60a35565-5f35-437c-a45c-5c66de049d57
-# ╠═5ee4c1c0-70fc-4117-9564-cc6a554a7694
-# ╠═c2426065-8ff6-49d5-853f-cbc80f4d23ba
+# ╠═75752a76-a28f-43c1-a289-c769153aad62
+# ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
+# ╟─f8e49be8-942c-40f2-96db-cea26b289060
+# ╟─60a35565-5f35-437c-a45c-5c66de049d57
+# ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
+# ╟─c2426065-8ff6-49d5-853f-cbc80f4d23ba
+# ╠═0c3b4634-c3ef-49d5-9a1e-7a3cffa4daea
 # ╟─d5e98d73-ff3c-4798-b8ca-65905011e830
 # ╠═a4c9ad63-ff84-4057-8370-5f6e9469ea2e
 # ╠═6b8b11b7-c194-43d9-a1b7-75745698e8f7
