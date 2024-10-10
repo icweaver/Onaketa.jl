@@ -60,6 +60,7 @@ df_dates_people = let
 		:"Guy Nesbitt" = :"Krishna Nesbitt "
 		:"Nailah Gabrielle Cannon" = :"Nailah Cannon "
 		:"Sarai King" = :"Desiree King "
+		:"Test Student" = :"Test Student "
 	end
 end
 
@@ -71,6 +72,12 @@ mask = (!ismissing).(df_dates_people.:"Abe Narvaez-Olvera ")
 
 # ╔═╡ e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 const DATES = df_dates_people.:"Date / Time";
+
+# ╔═╡ a8d53157-ae12-4924-b127-1ce9db0b83eb
+yee = df_dates_people.:"Test Student"
+
+# ╔═╡ 432d7977-bcf3-4d86-b4d0-f4db00e8a59d
+findall(!ismissing, yee)
 
 # ╔═╡ f8e49be8-942c-40f2-96db-cea26b289060
 function store_avail_by_day(user_availability)
@@ -89,6 +96,12 @@ end
 
 # ╔═╡ 5ee4c1c0-70fc-4117-9564-cc6a554a7694
 fmt_date(t) = Dates.format.(t, DAY_TIME_FMT)
+
+# ╔═╡ 3434b95a-6b15-49b2-acf4-f7fe26e0045e
+let
+	ts = DATES[3:9]
+	(first(ts), last(ts) + Minute(15)) |> fmt_date
+end
 
 # ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
 string_strip = strip ∘ string
@@ -113,7 +126,7 @@ user_availabilities = Dict(
 student_schedule = Dict(
 	student_name => store_avail_by_day(user_availabilities[student_name])
 	for student_name ∈ [
-		"Aaron Sandiford",
+		"Test Student",
 		"Abigail Wilson",
 		"Amirah Jabbie",
 		"Ava Victoriano",
@@ -929,6 +942,9 @@ version = "17.4.0+2"
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
+# ╠═a8d53157-ae12-4924-b127-1ce9db0b83eb
+# ╠═432d7977-bcf3-4d86-b4d0-f4db00e8a59d
+# ╠═3434b95a-6b15-49b2-acf4-f7fe26e0045e
 # ╟─f8e49be8-942c-40f2-96db-cea26b289060
 # ╟─60a35565-5f35-437c-a45c-5c66de049d57
 # ╟─5ee4c1c0-70fc-4117-9564-cc6a554a7694
