@@ -46,10 +46,10 @@ md"""
 """
 
 # ╔═╡ 6d389a47-e5a3-4e39-9d53-3a9a19c233d5
-# const DAY_TIME_FMT = dateformat"e II:MM p PT"
+const DAY_TIME_FMT = dateformat"e II:MM p PT"
 
 # ╔═╡ ad043ea3-47e8-4d6a-a541-a43cfe3bb958
-const DAY_TIME_FMT = dateformat"II:MM p PT"
+# const DAY_TIME_FMT = dateformat"II:MM p PT"
 
 # ╔═╡ 3ac3a940-399b-49c2-aafb-1943be4ec06e
 df_dates_people = let
@@ -84,6 +84,9 @@ function splitgroups(v)
 	return groups
 end
 
+# ╔═╡ 7e9a41b5-51b4-4b15-ac65-18a080999bcb
+dotw = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
 # ╔═╡ 07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 stake!(iob) = (String ∘ take!)(iob)
 
@@ -116,6 +119,15 @@ function availability_summary(response)
 	return stake!(io)
 end
 
+# ╔═╡ c91add5d-f8e4-4ece-9836-93aaa5768e35
+function pschej(schej, d)
+	if haskey(schej, d)
+		availability_summary(schej[d])
+	else
+		""
+	end
+end
+
 # ╔═╡ c2426065-8ff6-49d5-853f-cbc80f4d23ba
 string_strip = strip ∘ string
 
@@ -143,19 +155,22 @@ student_schedule = Dict(
 		"Abigail Wilson",
 		"Amirah Jabbie",
 		"Ava Victoriano",
-		"Karla Villalta",
+		"Max Burgos",
 	]
 )
 
-# ╔═╡ c91add5d-f8e4-4ece-9836-93aaa5768e35
-for d in ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-	println(d)
-	if haskey(student_schedule["Abigail Wilson"], d)
-		println(availability_summary(student_schedule["Abigail Wilson"][d]))
-	else
-		println()
-	end
-end
+# ╔═╡ 34af1262-13ae-4a96-a631-2b055394cdb1
+yee = student_schedule["Max Burgos"]
+
+# ╔═╡ 1bc8fc77-ef0c-46b2-92b1-916260fce824
+okk = [
+	pschej(student_schedule[name], d)
+	for name in ["Test Student", "Abigail Wilson", "Amirah Jabbie"],
+		d in dotw
+]
+
+# ╔═╡ df8d1e11-e0d0-4519-b327-d0a7acde0ad7
+DataFrame(okk, dotw)
 
 # ╔═╡ d5e98d73-ff3c-4798-b8ca-65905011e830
 md"""
@@ -968,6 +983,10 @@ version = "17.4.0+2"
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
 # ╠═4235863c-2339-4672-9a90-4adff5839cba
 # ╠═412c3249-296f-490f-bc68-021b4e401a4c
+# ╠═34af1262-13ae-4a96-a631-2b055394cdb1
+# ╠═1bc8fc77-ef0c-46b2-92b1-916260fce824
+# ╠═7e9a41b5-51b4-4b15-ac65-18a080999bcb
+# ╠═df8d1e11-e0d0-4519-b327-d0a7acde0ad7
 # ╠═c91add5d-f8e4-4ece-9836-93aaa5768e35
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 # ╠═f8e49be8-942c-40f2-96db-cea26b289060
