@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.20.0
 
 using Markdown
 using InteractiveUtils
@@ -17,7 +17,7 @@ Below are some boards from our sessions. Click and drag to move around, and hold
 
 # ╔═╡ cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 iframe(url) = @htl """
-<iframe src="$(url)?darkMode=true" width="100%" height=400 style="border: none;"></iframe>
+<iframe src="$(url)" width="100%" height=400 style="border: none;"></iframe>
 """;
 
 # ╔═╡ 45d0f413-6543-48b6-a269-3292c27261a6
@@ -35,9 +35,20 @@ board(
 	md"""### Graphing linear equations
 	!!! note "Topics"
 		* Identifying x and y intercepts
-		* Applying slope-intercept (``y = mx+ b``) form
+		* Applying slope-intercept form: ``y = mx+ b``
 	""",
-	"https://link.excalidraw.com/readonly/7vxnmW7Th7BTkVIf4tOY",
+	"https://link.excalidraw.com/readonly/7vxnmW7Th7BTkVIf4tOY?darkMode=true",
+)
+
+# ╔═╡ 2943fbc4-ff83-42b0-9dc5-fe2704353b71
+board(
+	"2024-10-16",
+	md"""### Graphing linear equations
+	!!! note "Topics"
+		* Applying point-slope form: ``(y-y_1) = m(x-x_1)``
+		* Applying slope-intercept form: ``y = mx+ b``
+	""",
+	"https://link.excalidraw.com/readonly/c38e0q868BqFr6PRCy0B?darkMode=true",
 )
 
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
@@ -338,6 +349,7 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╟─d0bd18f5-f50f-47cf-b39c-ec3ee9183304
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
+# ╟─2943fbc4-ff83-42b0-9dc5-fe2704353b71
 # ╟─45d0f413-6543-48b6-a269-3292c27261a6
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.47
+# v0.20.0
 
 using Markdown
 using InteractiveUtils
@@ -69,6 +69,9 @@ df_dates_people = let
 	end
 end
 
+# ╔═╡ 438d2e84-b1f7-41b7-ad1d-7145bf024480
+z = rand([false, true], 5, 3)
+
 # ╔═╡ b3323b11-d536-40a7-b7d4-1d206842690a
 print(names(df_dates_people))
 
@@ -92,9 +95,6 @@ students_p = ["Aaron Sandiford", "Abigail Wilson", "Miles Banks", "Nailah Gabrie
 
 # ╔═╡ 7e9a41b5-51b4-4b15-ac65-18a080999bcb
 dotw = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-
-# ╔═╡ 55590163-2d58-4209-afcf-2d5d24224bdf
-hl_cell
 
 # ╔═╡ 07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
 stake!(iob) = (String ∘ take!)(iob)
@@ -201,9 +201,6 @@ end;
 # ╔═╡ 8856ef9c-46fa-4890-9195-e8da65259cf9
 student_names = (@rsubset df_student_applicants :internal_status == "accept"
 ).student_name |> sort;
-
-# ╔═╡ b0328c90-0f9b-49c0-904b-729f13d92cf7
-student_names
 
 # ╔═╡ de7d132c-9060-4019-b4d8-bd2da866adf3
 function match_tutor(dt_tutor, dt_student, tutor_name, student_name)
@@ -992,21 +989,20 @@ version = "17.4.0+2"
 # ╟─bd1ea7b7-42b2-47d8-9eb7-48f8c20a4fff
 # ╠═6d389a47-e5a3-4e39-9d53-3a9a19c233d5
 # ╠═ad043ea3-47e8-4d6a-a541-a43cfe3bb958
-# ╠═3ac3a940-399b-49c2-aafb-1943be4ec06e
+# ╟─3ac3a940-399b-49c2-aafb-1943be4ec06e
+# ╠═438d2e84-b1f7-41b7-ad1d-7145bf024480
 # ╠═b3323b11-d536-40a7-b7d4-1d206842690a
 # ╠═e79d1a97-6f1e-4681-8ab1-02e1e0842d49
 # ╠═bbb5c24a-09ce-4ddf-a75c-1ff7fccf09c2
 # ╠═75752a76-a28f-43c1-a289-c769153aad62
 # ╠═f8363ecf-2ab9-4f7b-81f7-3848016df7c1
-# ╟─4235863c-2339-4672-9a90-4adff5839cba
+# ╠═4235863c-2339-4672-9a90-4adff5839cba
 # ╠═412c3249-296f-490f-bc68-021b4e401a4c
 # ╠═1bc8fc77-ef0c-46b2-92b1-916260fce824
 # ╠═08f21ea4-b785-499f-9af3-1ee4b1ed4e40
 # ╠═7e9a41b5-51b4-4b15-ac65-18a080999bcb
 # ╠═a2200b6a-288d-4585-bf8f-cc1dee3daa5c
 # ╠═967a339a-b978-4c2b-94ab-de6cf6f62ffe
-# ╠═55590163-2d58-4209-afcf-2d5d24224bdf
-# ╠═b0328c90-0f9b-49c0-904b-729f13d92cf7
 # ╠═ebc14cf8-5d04-4dce-9ea3-8cf4f79639fc
 # ╠═c91add5d-f8e4-4ece-9836-93aaa5768e35
 # ╟─07a600a3-0ab1-424a-95b4-5d7a2dc2b53f
