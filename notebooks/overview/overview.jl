@@ -98,22 +98,19 @@ let
 	draw(p; axis)
 end
 
-# ╔═╡ 5c12fe7c-8aa2-4a45-834c-22d30c724d37
-sort(["2021-S2", "2021-S1"])
-
-# ╔═╡ afd42b03-061a-4763-a057-632f67e3b0a2
-yq(dt) = "$(year(dt))Q$(quarterofyear(dt))"
-
 # ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 function yearsemester(dt)
 	yr = year(dt)
-	semester = 6 ≤ month(dt) ≤ 11 ? "S2" : "S1"
+	semester = 6 ≤ month(dt) ≤ 11 ? "Fall" : "Spring"
+	# if yr == 2024 && semester == "Spring"
+	# 	@info dt
+	# end
 	"$(yr)-$(semester)"
 end
 
 # ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
 with_theme() do
-	p = data(df_clean) * mapping(:"Submitted at" => yearsemester;
+	p = data(df) * mapping(:"Submitted at" => yearsemester;
 		group = :"Submitted at" => yearsemester,
 		color = :internal_status,
 		stack = :internal_status,
@@ -2143,8 +2140,6 @@ version = "3.6.0+0"
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
-# ╠═5c12fe7c-8aa2-4a45-834c-22d30c724d37
-# ╠═afd42b03-061a-4763-a057-632f67e3b0a2
 # ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 # ╠═df08d4a9-cee8-43a3-817b-75f4cdb8f35d
 # ╠═e6081f9e-489b-4dee-94ba-43f36d8a6177
