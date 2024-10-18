@@ -134,6 +134,23 @@ md"""
 Total number of students supported in each academic subject. We categorize these by "basic math" (e.g., multiplication, fractions), "mid-level math" (e.g., Geometry, Algebra I/II, Trigonometry), "advanced math" (e.g., Precalculus, Calculus), and "science" (e.g., Biology, Chemistry, Physics). The subject that we have received the most requests for support in was for mid-level math, followed by an even split in science and advanced math.
 """
 
+# ╔═╡ 7b42b588-5b30-453b-ac54-62b6d5ca456b
+scale_subject = scales(
+	X = (;
+		categories = [
+			"Basic math (e.g., multiplication, fractions)" =>
+			"Basic math",
+			"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)" =>
+			"Mid-level math",
+			"Advanced math (e.g., Precalculus, Calculus)" =>
+			"Advanced math",
+			"Science (e.g., Biology, Chemistry, Physics)" =>
+			"Science",
+			"Other",
+		]
+	)
+);
+
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
 	# labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
@@ -143,21 +160,7 @@ let
 		stack = :internal_status,
 	) * frequency()
 
-	draw(p, scales(
-			X = (;
-				categories = [
-					"Basic math (e.g., multiplication, fractions)" =>
-					"Basic math",
-					"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)" =>
-					"Mid-level math",
-					"Advanced math (e.g., Precalculus, Calculus)" =>
-					"Advanced math",
-					"Science (e.g., Biology, Chemistry, Physics)" =>
-					"Science",
-					"Other",
-				]
-			)
-		);
+	draw(p, scale_subject;
 		axis = (;
 			title = rich(" Course subject"),
 			subtitle = rich(" Total by category"),
@@ -168,18 +171,12 @@ let
 	)
 end
 
-# ╔═╡ 0e5f3bf8-14b9-49bb-a5f1-0432614adb90
-,
-"Other",
-"Science (e.g., Biology, Chemistry, Physics)"
-
 # ╔═╡ a1006f60-435c-4265-be5f-2cc5c06ab3a6
 let
-	labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
-	p = data(df_accepted) * mapping(:course_subject => sorter(labels) => "";
+	p = data(df_accepted) * mapping(:course_subject;
 	) * frequency()
 
-	draw(p;
+	draw(p, scale_subject;
 		axis = (;
 			title = rich(" Course subject"),
 			subtitle = rich(" Total enrolled by category"),
@@ -2090,8 +2087,8 @@ version = "3.6.0+0"
 # ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-# ╠═0e5f3bf8-14b9-49bb-a5f1-0432614adb90
-# ╠═a1006f60-435c-4265-be5f-2cc5c06ab3a6
+# ╟─a1006f60-435c-4265-be5f-2cc5c06ab3a6
+# ╠═7b42b588-5b30-453b-ac54-62b6d5ca456b
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╠═6d0f1c39-b741-429d-b56f-15ee42c46d34
