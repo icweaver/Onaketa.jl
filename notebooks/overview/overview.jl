@@ -60,21 +60,6 @@ With these definitions made, we go on to visualize different aspects of the data
 	Do we want to include dropped student data in some way? For now, just omitting this by default.
 """
 
-# ╔═╡ 9d8a71a0-510d-4789-8822-d6757d73fb86
-df_accepted
-
-# ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-let
-	p = data(df) * mapping(:course_subject => "Subject";
-		group = :course_subject,
-		color = :internal_status,
-		# dodge = :internal_status,
-	) *
-	frequency()
-
-	draw(p)
-end
-
 # ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 function yearhalf(dt)
 	yr = year(dt)
@@ -95,6 +80,12 @@ function yearhalf(dt)
 	"$(yr)-$(semester)"
 end
 
+# ╔═╡ 9d8a71a0-510d-4789-8822-d6757d73fb86
+gdf = @chain df_accepted begin
+	@rtransform :yh = yearhalf(:"Submitted at")
+	@groupby :yh
+end;
+
 # ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
 begin
 	p = data(df) * mapping(:"Submitted at" => yearhalf;
@@ -108,9 +99,6 @@ begin
 
 	draw(p; axis)
 end
-
-# ╔═╡ 3dfb671b-a31c-46ba-8bc4-a7bf1677356b
-f = p.transformation
 
 # ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
 # students_2023 = @chain df begin
@@ -126,18 +114,18 @@ growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
 md"""
 ### Semester
 
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_accepted[begin, :nrow], df_accepted[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(nrow(first(gdf)), nrow(last(gdf)))))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
 """
 
 # ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
-avg_percent_growth = let
-	df_terms = df_served
+# avg_percent_growth = let
+# 	df_terms = df_served
 
-	n_terms = nrow(df_terms)
-	percent_diffs = diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
+# 	n_terms = nrow(df_terms)
+# 	percent_diffs = diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
 
-	mean(percent_diffs) * 100
-end
+# 	mean(percent_diffs) * 100
+# end
 
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
@@ -146,21 +134,24 @@ md"""
 Total number of students supported in each academic subject. We categorize these by "basic math" (e.g., multiplication, fractions), "mid-level math" (e.g., Geometry, Algebra I/II, Trigonometry), "advanced math" (e.g., Precalculus, Calculus), and "science" (e.g., Biology, Chemistry, Physics). The subject that we have received the most requests for support in was for mid-level math, followed by an even split in science and advanced math.
 """
 
-# ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
-begin
-	df_subject = group_counts(df, :course_subject)
-	
-	# labels_subject = [
-	# 	"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
-	# ]
+# ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
+let
+	p = data(df) * mapping(:course_subject => "Subject";
+		group = :course_subject,
+		color = :internal_status,
+		# dodge = :internal_status,
+	) *
+	frequency()
 
-	# fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
-	# 	# labels = labels_subject,
-	# 	title = "Course subject",
-	# 	subtitle = "Cumulative total by category",
-	# )
-
-	# fg_subject
+	draw(p;
+		axis = (;
+			title = rich(" Course subject"),
+			subtitle = rich(" Total by category"),
+			titlealign = :left,
+			xticklabelrotation = π/8,
+			# xticklabelalign = (:right, :top),
+		)
+	)
 end
 
 # ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
@@ -342,6 +333,9 @@ update_theme!(
 		# 	label_formatter = Int,
 		# 	label_font = firasans("Light"),
 		# ),
+		Text = (;
+			word_wrap_width = 100,
+		)
 	)
 )
 end
@@ -2097,17 +2091,15 @@ version = "3.6.0+0"
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
-# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═9d8a71a0-510d-4789-8822-d6757d73fb86
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
-# ╠═3dfb671b-a31c-46ba-8bc4-a7bf1677356b
-# ╟─2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-# ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
+# ╟─81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╠═28a62b38-7b91-4dc7-8480-de491470128e
+# ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
 # ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
 # ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
