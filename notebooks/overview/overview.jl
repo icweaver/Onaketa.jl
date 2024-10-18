@@ -251,21 +251,6 @@ Total number of students supported: $(nrow(df_accepted))
 # 	fig
 # end
 
-# ╔═╡ 4fb57d7f-bfb2-410f-86b0-696e962af401
-to_county = let
-	df = CSV.read("data/uszips.csv", DataFrame; select=[:zip, :county_name])
-	Dict(zip(df.zip, df.county_name))
-end
-
-# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
-df_county_zip = @chain df_accepted begin
-	group_counts(_, :student_zip)
-	dropmissing
-	@rtransform :county_name = to_county[:variable]
-	@by :county_name :n_students = sum(:nrow)
-	sort(:county_name)
-end
-
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
 md"""
 ## Notebook setup 🔧
@@ -295,9 +280,9 @@ update_theme!(
 		),
 		BarPlot = (;
 			bar_labels = :y,
-			# label_size = 12,
-			label_offset = -20,
-			label_color = :lightgrey,
+			label_size = 10,
+			# label_offset = -20,
+			# label_color = :lightgrey,
 			label_formatter = Int,
 			label_font = firasans("Light"),
 		),
@@ -2062,7 +2047,7 @@ version = "3.6.0+0"
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═9d8a71a0-510d-4789-8822-d6757d73fb86
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
-# ╠═99d32265-92c0-4af4-ac08-83bcb83a22bd
+# ╟─99d32265-92c0-4af4-ac08-83bcb83a22bd
 # ╟─81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 # ╟─957b85f4-95f7-4870-8c37-477e1454f243
 # ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
@@ -2070,13 +2055,11 @@ version = "3.6.0+0"
 # ╠═a1006f60-435c-4265-be5f-2cc5c06ab3a6
 # ╟─7b42b588-5b30-453b-ac54-62b6d5ca456b
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
-# ╠═6d0f1c39-b741-429d-b56f-15ee42c46d34
+# ╟─6d0f1c39-b741-429d-b56f-15ee42c46d34
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─ac6e0f10-c526-4e13-99b6-04618923e0ea
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╠═ed5249f3-d0b9-4aec-b46d-f38a27645ce0
-# ╠═a90e2300-3e2e-48b9-9544-11178c925983
-# ╠═4fb57d7f-bfb2-410f-86b0-696e962af401
 # ╟─7b37bbe3-346f-4168-9a45-66ff93a61f35
 # ╟─95f393b9-ad23-4195-bd96-0c62b559c2a6
 # ╠═f91d4ca2-afa1-4977-934b-04092ef119b1
