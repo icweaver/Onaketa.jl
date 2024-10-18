@@ -34,6 +34,9 @@ We read the data in from a simple csv file stored with this notebook.
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 df = CSV.read("./data/student_applications.csv", DataFrame);
 
+# ╔═╡ e9477102-379b-4f70-8578-bb3b2b8d5cb6
+df_accepted = @rsubset df :internal_status == "accept";
+
 # ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
 md"""
 Here are what the first few rows look like:
@@ -68,7 +71,6 @@ function active_terms_count(arr)
 		"Fall 2023" => 0,
 		"Spring 2024" => 0,
 		"Fall 2024" => 0,
-		"n/a" => 0,
 	)
 	
 	for terms in arr
@@ -86,16 +88,14 @@ end
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
-	p = data(df) * mapping(:course_subject;
+	p = data(df) * mapping(:course_subject => "Subject";
 		group = :course_subject,
 		color = :internal_status,
 		# dodge = :internal_status,
 	) *
 	frequency()
 
-	axis = (; xticklabelrotation=π/4)
-
-	draw(p; axis)
+	draw(p; axis=(; xticklabelrotation=π/4))
 end
 
 # ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
@@ -142,6 +142,23 @@ end
 # ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
 growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
 
+# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
+md"""
+### Semester
+
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
+"""
+
+# ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
+avg_percent_growth = let
+	df_terms = df_served
+
+	n_terms = nrow(df_terms)
+	percent_diffs = diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
+
+	mean(percent_diffs) * 100
+end
+
 # ╔═╡ 68aa9ace-3140-4381-9d59-80d13b11cd6f
 md"""
 ### Subject
@@ -167,11 +184,29 @@ Self reported race/ethnicity for each student. Our largest demographics supporte
 md"""
 ## Summary
 
-Total number of applications received: $(nrow(df_clean))<br>
-Total number of students supported: $(nrow(df))
-
-We combine all of the figures above into a single graphic for quick comparison.
+Total number of applications received: $(nrow(df))\
+Total number of students supported: $(nrow(df_accepted))
 """
+
+# ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
+# let
+# 	fig = Figure(; size=(1400, 1200))
+# 	ax1 = Axis(fig[1, 1]); hidedecorations!(ax1)
+# 	ax2 = Axis(fig[1, 2]); hidedecorations!(ax2)
+# 	ax3 = Axis(fig[2, 1]); hidedecorations!(ax3)
+# 	ax4 = Axis(fig[2, 2]); hidedecorations!(ax4)
+
+# 	hideydecorations!.((ax2, ax4))
+	
+# 	draw!(fig[1, 1], plt_served; axis=axis_served)
+# 	draw!(fig[1, 2], plt_subject; axis=axis_subject)
+# 	draw!(fig[2, 1], plt_grade; axis=axis_grade)
+# 	draw!(fig[2, 2], plt_re; axis=axis_re)
+	
+# 	save_fig(fig, "Summary")
+	
+# 	fig
+# end
 
 # ╔═╡ 4fb57d7f-bfb2-410f-86b0-696e962af401
 to_county = let
@@ -196,24 +231,24 @@ begin
 set_aog_theme!()
 update_theme!(
 	Theme(
-		fontsize = 16,
+		fontsize = 12,
 		Axis = (;
-			limits = (nothing, nothing, -0.5, 70),
-			titlesize = 26,
+			# limits = (nothing, nothing, -0.5, 70),
+			titlesize = 22,
 			titlecolor = "#ec008c",
 			titlegap = -60,
-			subtitlesize = 20,
+			subtitlesize = 18,
 			subtitlecolor = :grey,
 			subtitlefont = firasans("Light"),
 		),
-		BarPlot = (;
-			bar_labels = :y,
-			label_size = 16,
-			label_offset = -20,
-			label_color = :lightgrey,
-			label_formatter = Int,
-			label_font = firasans("Light"),
-		),
+		# BarPlot = (;
+		# 	bar_labels = :y,
+		# 	label_size = 16,
+		# 	label_offset = -20,
+		# 	label_color = :lightgrey,
+		# 	label_formatter = Int,
+		# 	label_font = firasans("Light"),
+		# ),
 	)
 )
 end
@@ -286,8 +321,8 @@ function barplot_groups(df_countmap;
 end
 
 # ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-begin
-	d = active_terms_count(df.term_active)
+let
+	d = active_terms_count(df_accepted.term_active)
 	df_served = stack(DataFrame(d), All(); value_name=:nrow)
 
 	labels_served = [term => replace(titlecase(term), '_' => ' ')
@@ -301,23 +336,6 @@ begin
 	)
 
 	fg_served
-end
-
-# ╔═╡ 781ee8d2-dcdf-46b3-bb31-393b03b97924
-md"""
-### Semester
-
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
-"""
-
-# ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
-avg_percent_growth = let
-	df_terms = df_served
-
-	n_terms = nrow(df_terms)
-	percent_diffs = diff(df_terms.nrow) ./ df_terms.nrow[begin:end-1]
-
-	mean(percent_diffs) * 100
 end
 
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
@@ -384,28 +402,8 @@ begin
 	fg_re
 end
 
-# ╔═╡ ed5249f3-d0b9-4aec-b46d-f38a27645ce0
-let
-	fig = Figure(; size=(1400, 1200))
-	ax1 = Axis(fig[1, 1]); hidedecorations!(ax1)
-	ax2 = Axis(fig[1, 2]); hidedecorations!(ax2)
-	ax3 = Axis(fig[2, 1]); hidedecorations!(ax3)
-	ax4 = Axis(fig[2, 2]); hidedecorations!(ax4)
-
-	hideydecorations!.((ax2, ax4))
-	
-	draw!(fig[1, 1], plt_served; axis=axis_served)
-	draw!(fig[1, 2], plt_subject; axis=axis_subject)
-	draw!(fig[2, 1], plt_grade; axis=axis_grade)
-	draw!(fig[2, 2], plt_re; axis=axis_re)
-	
-	save_fig(fig, "Summary")
-	
-	fig
-end
-
 # ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
-df_county_zip = @chain df begin
+df_county_zip = @chain df_accepted begin
 	group_counts(_, :student_zip)
 	dropmissing
 	@rtransform :county_name = to_county[:variable]
@@ -2132,13 +2130,14 @@ version = "3.6.0+0"
 # ╟─4b64ccc5-b606-4ae2-9764-73529be867f6
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
+# ╠═e9477102-379b-4f70-8578-bb3b2b8d5cb6
 # ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
+# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
 # ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
