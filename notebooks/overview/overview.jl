@@ -31,8 +31,28 @@ md"""
 We read the data in from a simple csv file stored with this notebook.
 """
 
+# ╔═╡ 914c734b-ccee-456e-af5c-5859ccbf4c97
+function clean_subject(s)
+	ismissing(s) && return s
+	s_norm = (lowercase ∘ strip)(s)
+	if occursin("basic math", s_norm)
+		"Basic math"
+	elseif occursin("mid-level math", s_norm)
+		"Mid-level math"
+	elseif occursin("advanced math", s_norm)
+		"Advanced math"
+	elseif occursin("science", s_norm)
+		"Science"
+	else
+		"Other"
+	end
+end
+
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df = CSV.read("./data/student_applications.csv", DataFrame);
+df = let
+	x = CSV.read("./data/student_applications.csv", DataFrame)
+	@rtransform! x :course_subject = clean_subject(:course_subject)
+end;
 
 # ╔═╡ e9477102-379b-4f70-8578-bb3b2b8d5cb6
 df_accepted = @rsubset df :internal_status == "accept";
@@ -88,16 +108,16 @@ end;
 
 # ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
 begin
-	p = data(df) * mapping(:"Submitted at" => yearhalf;
+	p = data(df) * mapping(:"Submitted at" => yearhalf => "";
 		# group = :"Submitted at" => yearsemester,
 		color = :internal_status,
 		stack = :internal_status,
 	) *
 	frequency()
 
-	axis = (; xticklabelrotation=π/4)
+	# axis = (; xticklabelrotation=π/4)
 
-	draw(p; axis)
+	draw(p)
 end
 
 # ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
@@ -135,20 +155,19 @@ Total number of students supported in each academic subject. We categorize these
 """
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-let
+with_theme(; Text = (; word_wrap_width=50)) do
 	p = data(df) * mapping(:course_subject => "Subject";
 		group = :course_subject,
 		color = :internal_status,
 		# dodge = :internal_status,
-	) *
-	frequency()
+	) * frequency()
 
 	draw(p;
 		axis = (;
 			title = rich(" Course subject"),
 			subtitle = rich(" Total by category"),
 			titlealign = :left,
-			xticklabelrotation = π/8,
+			# xticklabelrotation = π/5,
 			# xticklabelalign = (:right, :top),
 		)
 	)
@@ -334,7 +353,7 @@ update_theme!(
 		# 	label_font = firasans("Light"),
 		# ),
 		Text = (;
-			word_wrap_width = 100,
+			word_wrap_width = 50,
 		)
 	)
 )
@@ -2087,6 +2106,7 @@ version = "3.6.0+0"
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 # ╠═e9477102-379b-4f70-8578-bb3b2b8d5cb6
+# ╟─914c734b-ccee-456e-af5c-5859ccbf4c97
 # ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
