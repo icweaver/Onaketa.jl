@@ -161,15 +161,53 @@ end
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
-	p = data(df) * mapping(:course_subject, group=:course_subject) * frequency()
+	p = data(df_clean) * mapping(:course_subject;
+		group = :course_subject,
+		color = :internal_status,
+		# dodge = :internal_status,
+	) *
+	frequency()
 
 	axis = (; xticklabelrotation=π/4)
 
 	draw(p; axis)
 end
 
-# ╔═╡ 9518d0d5-1e9c-49f0-a888-172f53ff2575
-yee = combine(groupby(df, :course_subject), nrow)
+# ╔═╡ 5c12fe7c-8aa2-4a45-834c-22d30c724d37
+sort(["2021-S2", "2021-S1"])
+
+# ╔═╡ afd42b03-061a-4763-a057-632f67e3b0a2
+yq(dt) = "$(year(dt))Q$(quarterofyear(dt))"
+
+# ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
+function yearsemester(dt)
+	yr = year(dt)
+	semester = 6 ≤ month(dt) ≤ 11 ? "S2" : "S1"
+	"$(yr)-$(semester)"
+end
+
+# ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
+with_theme() do
+	p = data(df_clean) * mapping(:"Submitted at" => yearsemester;
+		group = :"Submitted at" => yearsemester,
+		color = :internal_status,
+		stack = :internal_status,
+	) *
+	frequency()
+
+	axis = (; xticklabelrotation=π/4)
+
+	draw(p; axis)
+end
+
+# ╔═╡ df08d4a9-cee8-43a3-817b-75f4cdb8f35d
+let
+	dt = last(df.:"Submitted at")
+	yearsemester(dt)
+end
+
+# ╔═╡ e6081f9e-489b-4dee-94ba-43f36d8a6177
+df.:"Submitted at"
 
 # ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
 # students_2023 = @chain df begin
@@ -2186,7 +2224,12 @@ version = "3.6.0+0"
 # ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-# ╠═9518d0d5-1e9c-49f0-a888-172f53ff2575
+# ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
+# ╠═5c12fe7c-8aa2-4a45-834c-22d30c724d37
+# ╠═afd42b03-061a-4763-a057-632f67e3b0a2
+# ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
+# ╠═df08d4a9-cee8-43a3-817b-75f4cdb8f35d
+# ╠═e6081f9e-489b-4dee-94ba-43f36d8a6177
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9

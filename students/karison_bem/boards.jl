@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.47
+# v0.20.0
 
 using Markdown
 using InteractiveUtils
@@ -40,6 +40,18 @@ board(
 	"https://link.excalidraw.com/readonly/Kr1gHyMtiswNvGpXXwgb?darkMode=true",
 )
 
+# ╔═╡ 21ef1d34-663b-4c59-8f9d-ac4e3f2ca2a1
+board(
+	"2024-10-17",
+	md"""### Simplifying expressions
+	!!! note "Topics"
+		* Distributive property
+		* Associative property
+		* Commutative property
+	""",
+	"https://link.excalidraw.com/readonly/BKfq8lX0Rq90z4TuJJEd?darkMode=true",
+)
+
 # ╔═╡ f2c740f5-c472-43e5-93a1-10f8a8964e5d
 TableOfContents(; title="Boards 📝")
 
@@ -58,7 +70,7 @@ PlutoUI = "~0.7.59"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.0"
+julia_version = "1.11.1"
 manifest_format = "2.0"
 project_hash = "65877c43b0e7adba5f4c93d8d0c98988bb337300"
 
@@ -338,6 +350,7 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╟─d0bd18f5-f50f-47cf-b39c-ec3ee9183304
 # ╟─1144202e-0363-11ef-3e0d-03ce94bf2bb3
+# ╟─21ef1d34-663b-4c59-8f9d-ac4e3f2ca2a1
 # ╟─45d0f413-6543-48b6-a269-3292c27261a6
 # ╟─cc17e1bf-acbf-4e95-b28b-3b77e5ae4e69
 # ╟─f2c740f5-c472-43e5-93a1-10f8a8964e5d
