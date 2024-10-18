@@ -99,9 +99,19 @@ let
 end
 
 # ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
-function yearsemester(dt)
+function yearhalf(dt)
 	yr = year(dt)
-	semester = 6 ≤ month(dt) ≤ 11 ? "Fall" : "Spring"
+	m = month(dt)
+	if 6 ≤ m ≤ 11
+		semester = "H2"
+	elseif m == 12
+		semester = "H1"
+		yr += 1
+	else
+		semester = "H1"
+	end
+	
+	"H1"
 	# if yr == 2024 && semester == "Spring"
 	# 	@info dt
 	# end
@@ -109,9 +119,9 @@ function yearsemester(dt)
 end
 
 # ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
-with_theme() do
-	p = data(df) * mapping(:"Submitted at" => yearsemester;
-		group = :"Submitted at" => yearsemester,
+let
+	p = data(df) * mapping(:"Submitted at" => yearhalf;
+		# group = :"Submitted at" => yearsemester,
 		color = :internal_status,
 		stack = :internal_status,
 	) *
@@ -121,15 +131,6 @@ with_theme() do
 
 	draw(p; axis)
 end
-
-# ╔═╡ df08d4a9-cee8-43a3-817b-75f4cdb8f35d
-let
-	dt = last(df.:"Submitted at")
-	yearsemester(dt)
-end
-
-# ╔═╡ e6081f9e-489b-4dee-94ba-43f36d8a6177
-df.:"Submitted at"
 
 # ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
 # students_2023 = @chain df begin
@@ -2141,8 +2142,6 @@ version = "3.6.0+0"
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
 # ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
-# ╠═df08d4a9-cee8-43a3-817b-75f4cdb8f35d
-# ╠═e6081f9e-489b-4dee-94ba-43f36d8a6177
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
