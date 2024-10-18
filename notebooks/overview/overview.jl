@@ -146,10 +146,14 @@ let
 	draw(p, scales(
 			X = (;
 				categories = [
-					"Basic math (e.g., multiplication, fractions)" => "Basic math",
-					"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)" => "Mid-level math",
-					"Advanced math (e.g., Precalculus, Calculus)" => "Advanced math",
-					"Science (e.g., Biology, Chemistry, Physics)" => "Science",
+					"Basic math (e.g., multiplication, fractions)" =>
+					"Basic math",
+					"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)" =>
+					"Mid-level math",
+					"Advanced math (e.g., Precalculus, Calculus)" =>
+					"Advanced math",
+					"Science (e.g., Biology, Chemistry, Physics)" =>
+					"Science",
 					"Other",
 				]
 			)
