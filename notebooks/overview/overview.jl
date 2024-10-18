@@ -158,70 +158,38 @@ Total number of students supported in each academic subject. We categorize these
 let
 	labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
 	p = data(df) * mapping(:course_subject => sorter(labels) => "";
-		group = :course_subject,
-		color = :internal_status,
-		# dodge = :internal_status,
+		# group = :course_subject,
+		color = :internal_status => sorter(["reject", "waitlist", "drop", "accept"]),
+		stack = :internal_status,
 	) * frequency()
 
 	draw(p;
 		axis = (;
 			title = rich(" Course subject"),
 			subtitle = rich(" Total by category"),
-			titlealign = :left,
+			titlealign = :right,
 			# xticklabelrotation = π/5,
 			# xticklabelalign = (:right, :top),
 		)
 	)
 end
 
-# ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# function barplot_groups(df_countmap, labels;
-# 	title,
-# 	titlealign = :right,
-# 	subtitle,
-# 	xticklabelrotation = 0,
-# )
-# 	return _barplot_groups(df_countmap, :variable => renamer(labels) => "";
-# 		title,
-# 		titlealign,
-# 		subtitle,
-# 		xticklabelrotation,
-# 	)
-# end
+# ╔═╡ a1006f60-435c-4265-be5f-2cc5c06ab3a6
+let
+	labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
+	p = data(df_accepted) * mapping(:course_subject => sorter(labels) => "";
+	) * frequency()
 
-# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# function barplot_groups(df_countmap;
-# 	labels = [],
-# 	title,
-# 	titlealign = :right,
-# 	subtitle,
-# 	xticklabelrotation = 0,
-# )
-# 	return _barplot_groups(df_countmap, :variable => sorter(labels) => "";
-# 		title,
-# 		titlealign,
-# 		subtitle,
-# 		xticklabelrotation,
-# 	)
-# end
-
-# ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
-# function _barplot_groups(df_countmap, x;
-# 	title,
-# 	titlealign,
-# 	subtitle,
-# 	xticklabelrotation,
-# )
-# 	plt = data(df_countmap) * mapping(
-# 		x,
-# 		:nrow => "",
-# 	) * visual(BarPlot)
-# 	axis = (; title, titlealign, subtitle, xticklabelrotation)
-# 	fg = draw(plt; axis)
-# 	save_fig(fg, strip(title))
-# 	fg
-# 	return fg, plt, axis
-# end
+	draw(p;
+		axis = (;
+			title = rich(" Course subject"),
+			subtitle = rich(" Total enrolled by category"),
+			titlealign = :right,
+			# xticklabelrotation = π/5,
+			# xticklabelalign = (:right, :top),
+		)
+	)
+end
 
 # ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
 md"""
@@ -2121,9 +2089,7 @@ version = "3.6.0+0"
 # ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-# ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╠═a1006f60-435c-4265-be5f-2cc5c06ab3a6
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
