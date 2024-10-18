@@ -155,8 +155,9 @@ Total number of students supported in each academic subject. We categorize these
 """
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-with_theme(; Text = (; word_wrap_width=50)) do
-	p = data(df) * mapping(:course_subject => "Subject";
+let
+	labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
+	p = data(df) * mapping(:course_subject => sorter(labels) => "";
 		group = :course_subject,
 		color = :internal_status,
 		# dodge = :internal_status,
@@ -2117,7 +2118,7 @@ version = "3.6.0+0"
 # ╟─81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
-# ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
+# ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
