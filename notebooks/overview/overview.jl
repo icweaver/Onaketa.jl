@@ -100,12 +100,22 @@ begin
 	draw(p)
 end
 
-# ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
-# students_2023 = @chain df begin
-# 	@rsubset occursin("2023", :term_active)
-# 	unique(:student_name)
-# 	sort(:student_name)
-# end
+# ╔═╡ 99d32265-92c0-4af4-ac08-83bcb83a22bd
+let
+	p = data(df_accepted) * mapping(:"Submitted at" => yearhalf => "";
+	) *
+	frequency()
+
+	draw(p;
+		axis = (;
+				title = rich(" Students served"),
+				subtitle = rich(" Number of accepted students each term"),
+				titlealign = :left,
+				# xticklabelrotation = π/5,
+				# xticklabelalign = (:right, :top),
+			)
+	)
+end
 
 # ╔═╡ 957b85f4-95f7-4870-8c37-477e1454f243
 growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
@@ -151,35 +161,15 @@ scale_subject = scales(
 	)
 );
 
-# ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-let
-	# labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
-	p = data(df) * mapping(:course_subject;
-		# group = :course_subject,
-		color = :internal_status => sorter(["reject", "waitlist", "drop", "accept"]),
-		stack = :internal_status,
-	) * frequency()
-
-	draw(p, scale_subject;
-		axis = (;
-			title = rich(" Course subject"),
-			subtitle = rich(" Total by category"),
-			titlealign = :right,
-			# xticklabelrotation = π/5,
-			# xticklabelalign = (:right, :top),
-		)
-	)
-end
-
 # ╔═╡ a1006f60-435c-4265-be5f-2cc5c06ab3a6
 let
-	p = data(df_accepted) * mapping(:course_subject;
+	p = data(df_accepted) * mapping(:course_subject => "";
 	) * frequency()
 
 	draw(p, scale_subject;
 		axis = (;
-			title = rich(" Course subject"),
-			subtitle = rich(" Total enrolled by category"),
+			title = rich("Course subject"),
+			subtitle = rich("Total enrolled by category"),
 			titlealign = :right,
 			# xticklabelrotation = π/5,
 			# xticklabelalign = (:right, :top),
@@ -194,25 +184,21 @@ md"""
 Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 11th grade, with the largest representation being for students in 11th grade.
 """
 
-# ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
-begin
-	df_grade = group_counts(df, :student_grade);
-	
-	labels_grade = sort(df_grade.variable; lt=natural);
-	
-	fg_grade, plt_grade, axis_grade = barplot_groups(df_grade;
-		labels = labels_grade,
-		title = " Grade",
-		titlealign = :left,
-		subtitle = " Cumulative total by grade level",
-		xticklabelrotation = π/8,
-	)
-
-	fg_grade
-end
-
 # ╔═╡ 6d0f1c39-b741-429d-b56f-15ee42c46d34
+let
+	p = data(df_accepted) * mapping(:student_grade => "";
+	) * frequency()
 
+	draw(p;
+		axis = (;
+			title = rich(" Grade"),
+			subtitle = rich(" Total enrolled by grade level"),
+			titlealign = :left,
+			# xticklabelrotation = π/5,
+			# xticklabelalign = (:right, :top),
+		)
+	)
+end
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
@@ -221,25 +207,20 @@ md"""
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
 
-# ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-begin
-	df_re = group_counts(df, :student_race_ethnicity)
+# ╔═╡ ac6e0f10-c526-4e13-99b6-04618923e0ea
+let
+	p = data(df_accepted) * mapping(:student_race_ethnicity => "";
+	) * frequency()
 
-	labels_re = [
-		"Black or African American" => "Black or\nAfrican American",
-		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
-		"Multiracial" => "Multiracial",
-		"Native American" => "Native American",
-		"Not reported" => "Not reported",
-	]
-
-	fg_re, plt_re, axis_re = barplot_groups(df_re, labels_re;
-		title = "Race and ethnicity",
-		subtitle = "Cumulative total by self-reported identity",
-		xticklabelrotation = π/8,
+	draw(p;
+		axis = (;
+			title = rich("Race and ethnicity"),
+			subtitle = rich("Total enrolled by self-reported identity"),
+			titlealign = :right,
+			xticklabelrotation = π/8,
+			# xticklabelalign = (:right, :top),
+		)
 	)
-
-	fg_re
 end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
@@ -298,13 +279,13 @@ This is where we set things like fontsize and title placement.
 """
 
 # ╔═╡ f91d4ca2-afa1-4977-934b-04092ef119b1
-begin
+let
 set_aog_theme!()
 update_theme!(
 	Theme(
 		fontsize = 12,
 		Axis = (;
-			# limits = (nothing, nothing, -0.5, 70),
+			limits = (nothing, nothing, -0.5, 70),
 			titlesize = 22,
 			titlecolor = "#ec008c",
 			titlegap = -60,
@@ -312,14 +293,14 @@ update_theme!(
 			subtitlecolor = :grey,
 			subtitlefont = firasans("Light"),
 		),
-		# BarPlot = (;
-		# 	bar_labels = :y,
-		# 	label_size = 16,
-		# 	label_offset = -20,
-		# 	label_color = :lightgrey,
-		# 	label_formatter = Int,
-		# 	label_font = firasans("Light"),
-		# ),
+		BarPlot = (;
+			bar_labels = :y,
+			# label_size = 12,
+			label_offset = -20,
+			label_color = :lightgrey,
+			label_formatter = Int,
+			label_font = firasans("Light"),
+		),
 		Text = (;
 			word_wrap_width = 50,
 		)
@@ -2081,19 +2062,17 @@ version = "3.6.0+0"
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
 # ╠═9d8a71a0-510d-4789-8822-d6757d73fb86
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
+# ╠═99d32265-92c0-4af4-ac08-83bcb83a22bd
 # ╟─81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
-# ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
-# ╠═957b85f4-95f7-4870-8c37-477e1454f243
+# ╟─957b85f4-95f7-4870-8c37-477e1454f243
 # ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
-# ╟─a1006f60-435c-4265-be5f-2cc5c06ab3a6
-# ╠═7b42b588-5b30-453b-ac54-62b6d5ca456b
+# ╠═a1006f60-435c-4265-be5f-2cc5c06ab3a6
+# ╟─7b42b588-5b30-453b-ac54-62b6d5ca456b
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
-# ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╠═6d0f1c39-b741-429d-b56f-15ee42c46d34
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
-# ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+# ╟─ac6e0f10-c526-4e13-99b6-04618923e0ea
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 # ╠═ed5249f3-d0b9-4aec-b46d-f38a27645ce0
 # ╠═a90e2300-3e2e-48b9-9544-11178c925983
