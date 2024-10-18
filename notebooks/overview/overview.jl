@@ -60,31 +60,8 @@ With these definitions made, we go on to visualize different aspects of the data
 	Do we want to include dropped student data in some way? For now, just omitting this by default.
 """
 
-# ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
-function active_terms_count(arr)
-	d = OrderedDict(
-		"Spring 2021" => 0,
-		"Fall 2021" => 0,
-		"Spring 2022" => 0,
-		"Fall 2022" => 0,
-		"Spring 2023" => 0,
-		"Fall 2023" => 0,
-		"Spring 2024" => 0,
-		"Fall 2024" => 0,
-	)
-	
-	for terms in arr
-		if ismissing(terms)
-			d["n/a"] += 1
-		else
-			for term ∈ strip.(split(terms, ','))
-				d[term] += 1
-			end
-		end
-	end
-
-	return d
-end
+# ╔═╡ 9d8a71a0-510d-4789-8822-d6757d73fb86
+df_accepted
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
@@ -95,7 +72,7 @@ let
 	) *
 	frequency()
 
-	draw(p; axis=(; xticklabelrotation=π/4))
+	draw(p)
 end
 
 # ╔═╡ 81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
@@ -119,7 +96,7 @@ function yearhalf(dt)
 end
 
 # ╔═╡ d5210e0a-dba8-469c-a369-23aeb88a1815
-let
+begin
 	p = data(df) * mapping(:"Submitted at" => yearhalf;
 		# group = :"Submitted at" => yearsemester,
 		color = :internal_status,
@@ -131,6 +108,9 @@ let
 
 	draw(p; axis)
 end
+
+# ╔═╡ 3dfb671b-a31c-46ba-8bc4-a7bf1677356b
+f = p.transformation
 
 # ╔═╡ d3167139-618d-452b-9d4f-c0eb8d3c61df
 # students_2023 = @chain df begin
@@ -146,7 +126,7 @@ growth_rate(N_before, N_after) = 100.0 * (N_after - N_before) / N_before
 md"""
 ### Semester
 
-Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_served[begin, :nrow], df_served[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
+Cumulative number of students served by our program each semester. We have seen an explosive $(floor(Int, growth_rate(df_accepted[begin, :nrow], df_accepted[end, :nrow])))% growth rate over the short time that our organization has been active. Although we do not expect this rate to persist as membership stabilizes, there is a clear need and demand for the services that our program provides.
 """
 
 # ╔═╡ 6e24469f-9931-478c-a76d-1ffd4305ffc9
@@ -166,6 +146,72 @@ md"""
 Total number of students supported in each academic subject. We categorize these by "basic math" (e.g., multiplication, fractions), "mid-level math" (e.g., Geometry, Algebra I/II, Trigonometry), "advanced math" (e.g., Precalculus, Calculus), and "science" (e.g., Biology, Chemistry, Physics). The subject that we have received the most requests for support in was for mid-level math, followed by an even split in science and advanced math.
 """
 
+# ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
+begin
+	df_subject = group_counts(df, :course_subject)
+	
+	# labels_subject = [
+	# 	"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
+	# ]
+
+	# fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
+	# 	# labels = labels_subject,
+	# 	title = "Course subject",
+	# 	subtitle = "Cumulative total by category",
+	# )
+
+	# fg_subject
+end
+
+# ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# function barplot_groups(df_countmap, labels;
+# 	title,
+# 	titlealign = :right,
+# 	subtitle,
+# 	xticklabelrotation = 0,
+# )
+# 	return _barplot_groups(df_countmap, :variable => renamer(labels) => "";
+# 		title,
+# 		titlealign,
+# 		subtitle,
+# 		xticklabelrotation,
+# 	)
+# end
+
+# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# function barplot_groups(df_countmap;
+# 	labels = [],
+# 	title,
+# 	titlealign = :right,
+# 	subtitle,
+# 	xticklabelrotation = 0,
+# )
+# 	return _barplot_groups(df_countmap, :variable => sorter(labels) => "";
+# 		title,
+# 		titlealign,
+# 		subtitle,
+# 		xticklabelrotation,
+# 	)
+# end
+
+# ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# function _barplot_groups(df_countmap, x;
+# 	title,
+# 	titlealign,
+# 	subtitle,
+# 	xticklabelrotation,
+# )
+# 	plt = data(df_countmap) * mapping(
+# 		x,
+# 		:nrow => "",
+# 	) * visual(BarPlot)
+# 	axis = (; title, titlealign, subtitle, xticklabelrotation)
+# 	fg = draw(plt; axis)
+# 	save_fig(fg, strip(title))
+# 	fg
+# 	return fg, plt, axis
+# end
+
 # ╔═╡ 03e4f45e-a4d6-4606-8d10-7cbe10489a59
 md"""
 ### Grade
@@ -173,12 +219,50 @@ md"""
 Total number of students in each grade of school. This is a gradual increase in the need for support from 8th through 11th grade, with the largest representation being for students in 11th grade.
 """
 
+# ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
+begin
+	df_grade = group_counts(df, :student_grade);
+	
+	labels_grade = sort(df_grade.variable; lt=natural);
+	
+	fg_grade, plt_grade, axis_grade = barplot_groups(df_grade;
+		labels = labels_grade,
+		title = " Grade",
+		titlealign = :left,
+		subtitle = " Cumulative total by grade level",
+		xticklabelrotation = π/8,
+	)
+
+	fg_grade
+end
+
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
 ### Race/ethnicity
 
 Self reported race/ethnicity for each student. Our largest demographics supported are Black or African American students, followed by Latinx/Latina/Latino (non-white Hispanic) students. 
 """
+
+# ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
+begin
+	df_re = group_counts(df, :student_race_ethnicity)
+
+	labels_re = [
+		"Black or African American" => "Black or\nAfrican American",
+		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
+		"Multiracial" => "Multiracial",
+		"Native American" => "Native American",
+		"Not reported" => "Not reported",
+	]
+
+	fg_re, plt_re, axis_re = barplot_groups(df_re, labels_re;
+		title = "Race and ethnicity",
+		subtitle = "Cumulative total by self-reported identity",
+		xticklabelrotation = π/8,
+	)
+
+	fg_re
+end
 
 # ╔═╡ ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
 md"""
@@ -212,6 +296,15 @@ Total number of students supported: $(nrow(df_accepted))
 to_county = let
 	df = CSV.read("data/uszips.csv", DataFrame; select=[:zip, :county_name])
 	Dict(zip(df.zip, df.county_name))
+end
+
+# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
+df_county_zip = @chain df_accepted begin
+	group_counts(_, :student_zip)
+	dropmissing
+	@rtransform :county_name = to_county[:variable]
+	@by :county_name :n_students = sum(:nrow)
+	sort(:county_name)
 end
 
 # ╔═╡ 7b37bbe3-346f-4168-9a45-66ff93a61f35
@@ -271,145 +364,14 @@ function save_fig(fg, fname)
 	@debug "Saved to $(fpath)"
 end
 
-# ╔═╡ caafcf64-1a67-4649-a0d0-3acac6a0f5a8
-function _barplot_groups(df_countmap, x;
-	title,
-	titlealign,
-	subtitle,
-	xticklabelrotation,
-)
-	plt = data(df_countmap) * mapping(
-		x,
-		:nrow => "",
-	) * visual(BarPlot)
-	axis = (; title, titlealign, subtitle, xticklabelrotation)
-	fg = draw(plt; axis)
-	save_fig(fg, strip(title))
-	fg
-	return fg, plt, axis
-end
-
-# ╔═╡ bc24c86d-d2da-44f9-841d-e3ceccad6da1
-function barplot_groups(df_countmap, labels;
-	title,
-	titlealign = :right,
-	subtitle,
-	xticklabelrotation = 0,
-)
-	return _barplot_groups(df_countmap, :variable => renamer(labels) => "";
-		title,
-		titlealign,
-		subtitle,
-		xticklabelrotation,
-	)
-end
-
-# ╔═╡ 1d88cef4-5d4e-4992-98f6-86bd84dfe714
-function barplot_groups(df_countmap;
-	labels = [],
-	title,
-	titlealign = :right,
-	subtitle,
-	xticklabelrotation = 0,
-)
-	return _barplot_groups(df_countmap, :variable => sorter(labels) => "";
-		title,
-		titlealign,
-		subtitle,
-		xticklabelrotation,
-	)
-end
-
-# ╔═╡ 275b634b-3616-40aa-9da2-f2f14db7b6b8
-let
-	d = active_terms_count(df_accepted.term_active)
-	df_served = stack(DataFrame(d), All(); value_name=:nrow)
-
-	labels_served = [term => replace(titlecase(term), '_' => ' ')
-		for term in keys(d)
-	]
-	
-	fg_served, plt_served, axis_served = barplot_groups(df_served, labels_served,
-		title = " Students served",
-		titlealign = :left,
-		subtitle = " Number of active students each semester",
-	)
-
-	fg_served
-end
-
 # ╔═╡ 9ced090e-ebab-427c-b2f1-72a47d97fe81
-function group_counts(df, cat)
-	@chain df begin
-		groupby(cat)
-		combine(nrow)
-		rename!(cat => :variable)
-	end
-end
-
-# ╔═╡ 28a62b38-7b91-4dc7-8480-de491470128e
-begin
-	df_subject = group_counts(df, :course_subject)
-	
-	labels_subject = [
-		"Basic math", "Mid-level math", "Advanced math", "Science", "Other"
-	]
-
-	fg_subject, plt_subject, axis_subject = barplot_groups(df_subject;
-		labels = labels_subject,
-		title = "Course subject",
-		subtitle = "Cumulative total by category",
-	)
-
-	fg_subject
-end
-
-# ╔═╡ cc169622-035d-4d00-aff9-394ad531f597
-begin
-	df_grade = group_counts(df, :student_grade);
-	
-	labels_grade = sort(df_grade.variable; lt=natural);
-	
-	fg_grade, plt_grade, axis_grade = barplot_groups(df_grade;
-		labels = labels_grade,
-		title = " Grade",
-		titlealign = :left,
-		subtitle = " Cumulative total by grade level",
-		xticklabelrotation = π/8,
-	)
-
-	fg_grade
-end
-
-# ╔═╡ d3bddde6-a67f-4332-8e3d-5c8b4e566f56
-begin
-	df_re = group_counts(df, :student_race_ethnicity)
-
-	labels_re = [
-		"Black or African American" => "Black or\nAfrican American",
-		"Latinx/Latina/Latino (non-white Hispanic)" => "Latinx/Latina/Latino\n(non-white Hispanic)",
-		"Multiracial" => "Multiracial",
-		"Native American" => "Native American",
-		"Not reported" => "Not reported",
-	]
-
-	fg_re, plt_re, axis_re = barplot_groups(df_re, labels_re;
-		title = "Race and ethnicity",
-		subtitle = "Cumulative total by self-reported identity",
-		xticklabelrotation = π/8,
-	)
-
-	fg_re
-end
-
-# ╔═╡ a90e2300-3e2e-48b9-9544-11178c925983
-df_county_zip = @chain df_accepted begin
-	group_counts(_, :student_zip)
-	dropmissing
-	@rtransform :county_name = to_county[:variable]
-	@by :county_name :n_students = sum(:nrow)
-	sort(:county_name)
-end
+# function group_counts(df, cat)
+# 	@chain df begin
+# 		groupby(cat)
+# 		combine(nrow)
+# 		rename!(cat => :variable)
+# 	end
+# end
 
 # ╔═╡ a1e0708f-e795-41d1-a75a-3ac6cb392fc7
 md"""
@@ -2135,20 +2097,20 @@ version = "3.6.0+0"
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
-# ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
-# ╠═275b634b-3616-40aa-9da2-f2f14db7b6b8
-# ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
+# ╠═781ee8d2-dcdf-46b3-bb31-393b03b97924
+# ╠═9d8a71a0-510d-4789-8822-d6757d73fb86
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
+# ╠═3dfb671b-a31c-46ba-8bc4-a7bf1677356b
+# ╟─2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═81fb4bb2-bc60-43ff-9b6a-dbe29c7849fd
 # ╠═d3167139-618d-452b-9d4f-c0eb8d3c61df
 # ╠═957b85f4-95f7-4870-8c37-477e1454f243
 # ╟─6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
-# ╟─28a62b38-7b91-4dc7-8480-de491470128e
-# ╟─bc24c86d-d2da-44f9-841d-e3ceccad6da1
-# ╟─1d88cef4-5d4e-4992-98f6-86bd84dfe714
-# ╟─caafcf64-1a67-4649-a0d0-3acac6a0f5a8
+# ╠═28a62b38-7b91-4dc7-8480-de491470128e
+# ╠═bc24c86d-d2da-44f9-841d-e3ceccad6da1
+# ╠═1d88cef4-5d4e-4992-98f6-86bd84dfe714
+# ╠═caafcf64-1a67-4649-a0d0-3acac6a0f5a8
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
