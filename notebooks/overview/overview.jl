@@ -32,7 +32,7 @@ We read the data in from a simple csv file stored with this notebook.
 """
 
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df_raw = CSV.read("./data/student_applications.csv", DataFrame);
+df = CSV.read("./data/student_applications.csv", DataFrame);
 
 # ╔═╡ 4e055d5f-248d-42ee-8270-fd59bd9c178e
 md"""
@@ -40,86 +40,12 @@ Here are what the first few rows look like:
 """
 
 # ╔═╡ ff20fcd3-0c30-46a7-a09e-586d05300d5c
-first(df_raw, 3)
+first(df, 3)
 
 # ╔═╡ ba212dde-6e19-42bb-861e-0f077ffea347
 md"""
 Each row is for an individual student in a given term. Each application question response is given its own column. We also include additional columns for information determined after the fact, like tutor assignment and drop status.
-
-Next, we normalize the data to have uniform formatting, categories, etc.
 """
-
-# ╔═╡ 8404ca5a-b1ae-4d03-bf43-0033747437be
-clean_name(s) = ismissing(s) ? s : s |> strip |> lowercase
-
-# ╔═╡ 52b9162e-7631-4a26-811a-cf2c72575f20
-function clean_grade(s)
-	s_clean = clean_name(s)
-	if occursin("6", s_clean)
-		"6th grade"
-	elseif occursin("7", s_clean)
-		"7th grade"
-	elseif occursin("8", s_clean)
-		"8th grade"
-	elseif occursin("9", s_clean)
-		"9th grade"
-	elseif occursin("10", s_clean)
-		"10th grade"
-	elseif occursin("11", s_clean)
-		"11th grade"
-	elseif occursin("12", s_clean)
-		"12th grade"
-	elseif occursin("under", s_clean)
-		"Undergrad"
-	else
-		s
-	end
-end
-
-# ╔═╡ c96d8756-01e5-4479-8ed6-e197425e5c3a
-function clean_subject(s)
-	s_clean = clean_name(s)
-	ismissing(s) && return s
-	if occursin("basic math", s_clean)
-		"Basic math"
-	elseif occursin("mid-level math", s_clean)
-		"Mid-level math"
-	elseif occursin("advanced math", s_clean)
-		"Advanced math"
-	elseif occursin("science", s_clean)
-		"Science"
-	else
-		"Other"
-	end
-end
-
-# ╔═╡ b2f90e79-d9e1-49d3-8316-520a53851b8a
-function clean_re(s)
-	s_clean = clean_name(s)
-	ismissing(s) && return "Not reported"
-	if occursin("black", s_clean) || occursin("afr", s_clean)
-		"Black or African American"
-	elseif occursin("latin", s_clean)
-		"Latinx/Latina/Latino (non-white Hispanic)"
-	elseif occursin(" and ", s_clean) || occursin("mix", s_clean)
-		"Multiracial"
-	else
-		s
-	end
-end
-
-# ╔═╡ 38da5817-5db1-4f2c-a9dc-752457ad98ef
-df_clean = @transform df_raw begin
-	:tutor_name = clean_name.(:tutor_name)
-	:guardian1_name = clean_name.(:guardian1_name)
-	:guardian2_name = clean_name.(:guardian2_name)
-	:student_grade = clean_grade.(:student_grade)
-	:course_subject = clean_subject.(:course_subject)
-	:student_race_ethnicity = clean_re.(:student_race_ethnicity)
-end
-
-# ╔═╡ a513c01e-355c-42fd-b016-30fab7880a9f
-CSV.write("data/data_cleaned.csv", df_clean)
 
 # ╔═╡ bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
 md"""
@@ -130,12 +56,6 @@ With these definitions made, we go on to visualize different aspects of the data
 !!! todo
 	Do we want to include dropped student data in some way? For now, just omitting this by default.
 """
-
-# ╔═╡ ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
-df = @rsubset dropmissing(df_clean, :term_active) begin
-	:internal_status == "accept"
-	# !occursin("Fall 2024", :term_active)
-end;
 
 # ╔═╡ 7cde66f8-9be5-4ec0-85da-22fdac19fd42
 function active_terms_count(arr)
@@ -148,11 +68,16 @@ function active_terms_count(arr)
 		"Fall 2023" => 0,
 		"Spring 2024" => 0,
 		"Fall 2024" => 0,
+		"n/a" => 0,
 	)
 	
 	for terms in arr
-		for term ∈ strip.(split(terms, ','))
-			d[term] += 1
+		if ismissing(terms)
+			d["n/a"] += 1
+		else
+			for term ∈ strip.(split(terms, ','))
+				d[term] += 1
+			end
 		end
 	end
 
@@ -161,7 +86,7 @@ end
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
-	p = data(df_clean) * mapping(:course_subject;
+	p = data(df) * mapping(:course_subject;
 		group = :course_subject,
 		color = :internal_status,
 		# dodge = :internal_status,
@@ -2212,16 +2137,9 @@ version = "3.6.0+0"
 # ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
-# ╟─8404ca5a-b1ae-4d03-bf43-0033747437be
-# ╟─52b9162e-7631-4a26-811a-cf2c72575f20
-# ╟─c96d8756-01e5-4479-8ed6-e197425e5c3a
-# ╟─b2f90e79-d9e1-49d3-8316-520a53851b8a
-# ╟─38da5817-5db1-4f2c-a9dc-752457ad98ef
-# ╠═a513c01e-355c-42fd-b016-30fab7880a9f
 # ╟─bdbda5dc-b6f7-45cc-9d9d-5271fd62fb18
-# ╠═ce9f0b77-9183-4a6a-b9d0-d30f1cfc3bac
 # ╟─781ee8d2-dcdf-46b3-bb31-393b03b97924
-# ╠═7cde66f8-9be5-4ec0-85da-22fdac19fd42
+# ╟─7cde66f8-9be5-4ec0-85da-22fdac19fd42
 # ╟─275b634b-3616-40aa-9da2-f2f14db7b6b8
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 # ╠═d5210e0a-dba8-469c-a369-23aeb88a1815
