@@ -31,28 +31,8 @@ md"""
 We read the data in from a simple csv file stored with this notebook.
 """
 
-# ╔═╡ 914c734b-ccee-456e-af5c-5859ccbf4c97
-function clean_subject(s)
-	ismissing(s) && return s
-	s_norm = (lowercase ∘ strip)(s)
-	if occursin("basic math", s_norm)
-		"Basic math"
-	elseif occursin("mid-level math", s_norm)
-		"Mid-level math"
-	elseif occursin("advanced math", s_norm)
-		"Advanced math"
-	elseif occursin("science", s_norm)
-		"Science"
-	else
-		"Other"
-	end
-end
-
 # ╔═╡ d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
-df = let
-	x = CSV.read("./data/student_applications.csv", DataFrame)
-	@rtransform! x :course_subject = clean_subject(:course_subject)
-end;
+df = CSV.read("./data/student_applications.csv", DataFrame);
 
 # ╔═╡ e9477102-379b-4f70-8578-bb3b2b8d5cb6
 df_accepted = @rsubset df :internal_status == "accept";
@@ -156,14 +136,24 @@ Total number of students supported in each academic subject. We categorize these
 
 # ╔═╡ 2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
 let
-	labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
-	p = data(df) * mapping(:course_subject => sorter(labels) => "";
+	# labels = ["Basic math", "Mid-level math", "Advanced math", "Science", "Other"]
+	p = data(df) * mapping(:course_subject;
 		# group = :course_subject,
 		color = :internal_status => sorter(["reject", "waitlist", "drop", "accept"]),
 		stack = :internal_status,
 	) * frequency()
 
-	draw(p;
+	draw(p, scales(
+			X = (;
+				categories = [
+					"Basic math (e.g., multiplication, fractions)" => "Basic math",
+					"Mid-level math (e.g., Geometry, Algebra I/II, Trigonometry)" => "Mid-level math",
+					"Advanced math (e.g., Precalculus, Calculus)" => "Advanced math",
+					"Science (e.g., Biology, Chemistry, Physics)" => "Science",
+					"Other",
+				]
+			)
+		);
 		axis = (;
 			title = rich(" Course subject"),
 			subtitle = rich(" Total by category"),
@@ -173,6 +163,11 @@ let
 		)
 	)
 end
+
+# ╔═╡ 0e5f3bf8-14b9-49bb-a5f1-0432614adb90
+,
+"Other",
+"Science (e.g., Biology, Chemistry, Physics)"
 
 # ╔═╡ a1006f60-435c-4265-be5f-2cc5c06ab3a6
 let
@@ -214,6 +209,9 @@ begin
 
 	fg_grade
 end
+
+# ╔═╡ 6d0f1c39-b741-429d-b56f-15ee42c46d34
+
 
 # ╔═╡ 57c7cd70-0274-4698-bc32-dcaa211f507f
 md"""
@@ -2075,7 +2073,6 @@ version = "3.6.0+0"
 # ╟─5b59617c-c17c-41d3-94b4-2022ec56b00c
 # ╠═d1984f0a-2291-4d2b-a0de-6ff3704d5c1c
 # ╠═e9477102-379b-4f70-8578-bb3b2b8d5cb6
-# ╟─914c734b-ccee-456e-af5c-5859ccbf4c97
 # ╟─4e055d5f-248d-42ee-8270-fd59bd9c178e
 # ╠═ff20fcd3-0c30-46a7-a09e-586d05300d5c
 # ╟─ba212dde-6e19-42bb-861e-0f077ffea347
@@ -2089,9 +2086,11 @@ version = "3.6.0+0"
 # ╠═6e24469f-9931-478c-a76d-1ffd4305ffc9
 # ╟─68aa9ace-3140-4381-9d59-80d13b11cd6f
 # ╠═2dbd4943-0e6c-4a45-8f96-f76bbcd64b21
+# ╠═0e5f3bf8-14b9-49bb-a5f1-0432614adb90
 # ╠═a1006f60-435c-4265-be5f-2cc5c06ab3a6
 # ╟─03e4f45e-a4d6-4606-8d10-7cbe10489a59
 # ╟─cc169622-035d-4d00-aff9-394ad531f597
+# ╠═6d0f1c39-b741-429d-b56f-15ee42c46d34
 # ╟─57c7cd70-0274-4698-bc32-dcaa211f507f
 # ╟─d3bddde6-a67f-4332-8e3d-5c8b4e566f56
 # ╟─ae4c9e05-7dbd-4c99-ac1e-7973470e0cf2
